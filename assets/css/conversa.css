@@ -49,19 +49,28 @@ body {
 	height: fit-content;
 	max-width: 95%;
 	display: flex;
+	flex-direction: column;
 }
 
 .mensagem-esquerda {
-	border-radius: 50px 50px 50px 20px;
+	border-radius: 25px 25px 25px 10px;
 	background-color: var(--tm-secondaryColor);
 	margin-right: auto;
 }
 
 .mensagem-direita {
-	border-radius: 50px 50px 20px 50px;
+	border-radius: 25px 25px 10px 25px;
 	background-color: var(--tm-primaryColor);
 	margin-left: auto;
 	justify-content: flex-end;
+}
+
+.resposta-mensagem {
+	border-radius: 15px 15px 15px 15px;
+	padding-right: 30px;
+	margin: 10px;
+	background-color: rgba(0, 0, 0, 0.226);
+	margin-bottom: 0px;
 }
 
 .texto-mensagem {
@@ -69,6 +78,15 @@ body {
 	margin: 8px 10px;
 	font-family: "Shantell Sans", cursive;
 	font-size: 15px;
+	/*word-break: break-all;*/
+	display: flex;
+}
+
+.texto-resposta-mensagem {
+	color: white;
+	margin: 6px 10px;
+	font-family: "Shantell Sans", cursive;
+	font-size: 13px;
 	/*word-break: break-all;*/
 	display: flex;
 }

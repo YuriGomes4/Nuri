@@ -1,3 +1,128 @@
+//ler um txt linha por linha
+fetch('assets/resources/conversa.txt')
+  .then(response => response.text())
+  .then(text => {
+    const linhas = text.split("\n");
+
+	var mensagens = document.getElementById('mensagens');
+
+	for (var i = 0; i < linhas.length; i++) {
+	var linha = linhas[i];
+	
+		if (linha === "Yuri") {
+			var mensagemPH = document.createElement('div');
+			mensagemPH.className = 'mensagem-placeholder';
+			mensagens.appendChild(mensagemPH);
+
+			var mensagemDir = document.createElement('div');
+			mensagemDir.className = 'mensagem mensagem-direita';
+			mensagemPH.appendChild(mensagemDir);
+
+			i++;
+			linha = linhas[i];
+
+			if (linha !== "Nicole") {
+				var msg = document.createElement('p');
+				msg.className = 'texto-mensagem';
+				msg.innerText = linha;
+				mensagemDir.appendChild(msg);
+			} else {
+				var resposta = document.createElement('div');
+				resposta.className = 'resposta-mensagem';
+				mensagemDir.appendChild(resposta);
+
+				var nomeResp = document.createElement('p');
+				nomeResp.className = 'texto-resposta-mensagem';
+				nomeResp.innerText = linha;
+				resposta.appendChild(nomeResp);
+
+				i++;
+				linha = linhas[i];
+
+				var msgResp = document.createElement('p');
+				msgResp.className = 'texto-resposta-mensagem';
+				msgResp.innerText = linha;
+				resposta.appendChild(msgResp);
+
+				i++;
+				linha = linhas[i];
+
+				var msg = document.createElement('p');
+				msg.className = 'texto-mensagem';
+				msg.innerText = linha;
+				mensagemDir.appendChild(msg);
+			}
+		} else {
+			var mensagemPH = document.createElement('div');
+			mensagemPH.className = 'mensagem-placeholder';
+			mensagens.appendChild(mensagemPH);
+
+			var mensagemEsq = document.createElement('div');
+			mensagemEsq.className = 'mensagem mensagem-esquerda';
+			mensagemPH.appendChild(mensagemEsq);
+
+			i++;
+			linha = linhas[i];
+
+			if (linha !== "Yuri") {
+				var msg = document.createElement('p');
+				msg.className = 'texto-mensagem';
+				msg.innerText = linha;
+				mensagemEsq.appendChild(msg);
+			} else {
+				var resposta = document.createElement('div');
+				resposta.className = 'resposta-mensagem';
+				mensagemEsq.appendChild(resposta);
+
+				var nomeResp = document.createElement('p');
+				nomeResp.className = 'texto-resposta-mensagem';
+				nomeResp.innerText = linha;
+				resposta.appendChild(nomeResp);
+
+				i++;
+				linha = linhas[i];
+
+				var msgResp = document.createElement('p');
+				msgResp.className = 'texto-resposta-mensagem';
+				msgResp.innerText = linha;
+				resposta.appendChild(msgResp);
+
+				i++;
+				linha = linhas[i];
+
+				var msg = document.createElement('p');
+				msg.className = 'texto-mensagem';
+				msg.innerText = linha;
+				mensagemEsq.appendChild(msg);
+			}
+		
+		}
+
+	}
+
+	// Select all elements with class "mensagem"
+	var mensagens = $(".mensagem-placeholder");
+
+	for (var i = 0; i < mensagens.length; i++) {
+		var mensagemPlace = mensagens[i]
+		var mensagem = mensagemPlace.querySelector(".mensagem");
+	
+		var tempWidth = mensagemPlace.offsetWidth; // Use offsetWidth instead of innerWidth
+		var tempHeight = mensagemPlace.offsetHeight; // Use offsetHeight instead of innerHeight
+	
+		$(mensagemPlace).attr("ordem", ordem++);
+		$(mensagem).css("display", 'none');
+
+	
+		mensagemPlace.style.width = tempWidth + "px";
+		mensagemPlace.style.height = tempHeight + "px";
+	}
+
+	const windowHeight = window.innerHeight;
+	verificarMensagens(windowHeight);
+
+})
+
 var navlinks = document.querySelectorAll('.nav_link')
 
 var maiorWidth = 0;
@@ -13,30 +138,6 @@ for (var i = 0; i < navlinks.length; i++) {
 }
 
 var ordem = 1; // Counter for order numbers
-
-$(document).ready(function() {
-	
-	// Select all elements with class "mensagem"
-	var mensagens = $(".mensagem-placeholder");
-	
-	for (var i = 0; i < mensagens.length; i++) {
-		var mensagemPlace = mensagens[i]
-		var mensagem = mensagemPlace.querySelector(".mensagem");
-	
-		var tempWidth = mensagemPlace.innerWidth;
-		var tempHeight = mensagemPlace.innerHeight;
-	
-		$(mensagemPlace).attr("ordem", ordem++);
-		$(mensagem).css("display", 'none');
-	
-		mensagemPlace.style.width = tempWidth + "px";
-		mensagemPlace.style.height = 36 + "px";
-	}
-
-	const windowHeight = window.innerHeight;
-	verificarMensagens(windowHeight);
-
-});
 
 function verificarMensagens(windowHeight) {
 	var ordemAtual = $("#mensagens").attr("ordem");

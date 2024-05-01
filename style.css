@@ -85,6 +85,14 @@ body {
 	background-color: white !important;
 }
 
+#div-fotos {
+	width: 100vw !important;
+	height: 100vh !important;
+	position: absolute;
+	top: 0;
+	left: 0;
+}
+
 .drag-foto {
 	padding: 6px 6px 0px;
 	background-color: var(--tm-tertiaryColor);
@@ -92,6 +100,7 @@ body {
 	width: fit-content;
 	height: fit-content;
 	display: none;
+	position: absolute;
 }
 
 .img-foto {
