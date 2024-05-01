@@ -2,7 +2,7 @@ const fpWidth = window.innerWidth;
 const fpHeight = window.innerHeight;
 
 var fullpg = new fullpage('#fullpage', {
-    anchors:['slide1', 'slide2', 'slide3', 'slide4'],
+    //anchors:['slide1', 'slide2', 'slide3', 'slide4'],
     navigation: true,
     navigationPosition: 'right',
     touchSensitivity: 10,

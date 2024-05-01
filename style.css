@@ -40,6 +40,7 @@ body {
 	color: white;
 	font-family: 'Shantell Sans', cursive;
 	text-align: center;
+	text-wrap: nowrap;
 }
 
 .nav_link.active {
