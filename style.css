@@ -113,6 +113,7 @@ body {
 .desc-foto {
 	font-family: "Reenie Beanie", cursive;
 	margin: 5px 0px 5px 0px;
+	max-width: 110px;
 }
 
 #conteudo-section {
