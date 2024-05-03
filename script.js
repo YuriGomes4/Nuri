@@ -124,12 +124,27 @@ fetch('assets/images/fotos/lista.txt')
                     console.log((horCob && verCob));*/
 
                 }
+
+                // função extraída de: https://stackoverflow.com/a/4793630/4921014
+                function insertAfter(newNode, referenceNode) {
+                    //console.log(newNode, referenceNode);
+                    referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
+                }
                 
+                //dragFotos[i].setAttribute('number', i);
                 draggable.top += ntop;
                 draggable.left += nleft;
                 draggable.setOptions()
                 draggable.onDragStart = function() {
                     fullpage_api.setAllowScrolling(false);
+
+                    //Faça ele printar o proprio elemento arrastado
+                    console.log(this.element);
+
+                    var parent = this.element.parentNode;
+                    var nDragFotos = parent.querySelectorAll('.drag-foto');
+
+                    insertAfter(this.element, nDragFotos[nDragFotos.length-1]);
                 };
                 draggable.onDragEnd = function() {
                     fullpage_api.setAllowScrolling(true);
@@ -145,9 +160,24 @@ fetch('assets/images/fotos/lista.txt')
             var dragFotos = sections[destino.index].querySelectorAll('.drag-foto');
 
             for (var i = 0; i < dragFotos.length; i++) {
-                setTimeout(function(i) {
-                    $(dragFotos[i]).fadeIn(1000);
-                }, 300 * (i + 1), i);
+                if (destino.index !== sections.length-1) {
+                    setTimeout(function(i) {
+                        $(dragFotos[i]).fadeIn(1000);
+                    }, 300 * (i + 1), i);
+                } else {
+                    var titulo_pedido_section = document.getElementById('titulo-section-pedido');
+                    var titulo_pedido = titulo_pedido_section.querySelector('#titulo-texto1');
+                    titulo_pedido.style.display = 'none';
+                    titulo_pedido.style.opacity = 1;
+                    setTimeout(function(i) {
+                        $(titulo_pedido).fadeIn(1500);
+                    }, 2000);
+                    setTimeout(function(i) {
+                        $(dragFotos[i]).fadeIn(1000);
+                    }, 600 * (i + 1), i);
+                }
+
+                console.log(destino.index, sections.length-1);
             }
         }
 

@@ -1,3 +1,17 @@
+var navlinks = document.querySelectorAll('.nav_link')
+
+var maiorWidth = 0;
+
+for (var i = 0; i < navlinks.length; i++) {
+    if (navlinks[i].offsetWidth > maiorWidth) {
+        maiorWidth = navlinks[i].offsetWidth;
+    }
+}
+
+for (var i = 0; i < navlinks.length; i++) {
+    navlinks[i].style.width = maiorWidth+'px';
+}
+
 //Conte os dias desde a data 06/01/2024
 var data = new Date('2024-01-06');
 var dataAtual = new Date();
