@@ -181,7 +181,7 @@ fetch('assets/images/fotos/lista.txt')
             const endColor = '#87cefa'; // Daytime sky blue
 
             // Calculate the total number of steps (considering 3 colors)
-            const totalSteps = (sections.length-1)-2; // Double the number of sections
+            const totalSteps = (sections.length-1)-3; // Double the number of sections
 
             // Ensure step stays within valid range (0 to totalSteps)
             currentStep = Math.min(Math.max(currentStep, 0), totalSteps);
@@ -224,7 +224,7 @@ fetch('assets/images/fotos/lista.txt')
                 fundo.style.opacity = 1;
                 $(fundo).fadeIn(1000);
             } else {
-                if (step === (sections.length-1)-1) {
+                if (step === (sections.length-1)-1 || step === (sections.length-1)-2) {
                     fundo.style.backgroundImage = 'url("assets/images/coracoes.png")';
                     fundo.style.opacity = 0.2;
                     document.body.style.backgroundColor = '#fa8787';
