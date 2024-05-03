@@ -5,10 +5,13 @@ var diferenca = dataAtual.getTime() - data.getTime();
 var dias = Math.ceil(diferenca / (1000 * 60 * 60 * 24));
 document.getElementById('titulo-texto2').innerText = dias-1;
 
+//mostre o url base da página
+var url = window.location.origin;
+
 //Ver todos os arquivos da pasta assets/images/fotos
 var fotos = document.getElementById('descricao');
 var xhr = new XMLHttpRequest();
-xhr.open('GET', 'assets/images/fotos/', true);
+xhr.open('GET', url+'/assets/images/fotos/', true);
 xhr.onreadystatechange = function() {
     if (xhr.readyState == 4 && xhr.status == 200) {
         var resposta = xhr.responseText;
