@@ -8,22 +8,17 @@ document.getElementById('titulo-texto2').innerText = dias-1;
 //mostre o url base da página
 var url = window.location.origin;
 
-//Ver todos os arquivos da pasta assets/images/fotos
-var fotos = document.getElementById('descricao');
-var xhr = new XMLHttpRequest();
-xhr.open('GET', url+'/assets/images/fotos/', true);
-xhr.onreadystatechange = function() {
-    if (xhr.readyState == 4 && xhr.status == 200) {
-        var resposta = xhr.responseText;
-        //Cace os links usando a string assets/images/fotos/
-        var links = resposta.match(/assets\/images\/fotos\/[^"]+/g);
-        for (var i = 1; i < links.length; i++) {
+fetch('assets/images/fotos/lista.txt')
+  .then(response => response.text())
+  .then(text => {
+    const links = text.split("\n");
+    var fotos = document.getElementById('descricao');
+        for (var i = 0; i < links.length-1; i++) {
             var link = links[i];
             var img = document.createElement('img');
             img.className = 'fotos';
-            img.src = link;
+            img.src = 'assets/images/fotos/'+link;
             fotos.appendChild(img);
         }
     }
-}
-xhr.send();
+);
