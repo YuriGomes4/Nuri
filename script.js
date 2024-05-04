@@ -49,7 +49,7 @@ fetch('assets/images/fotos/lista.txt')
 
         var fullpg = new fullpage('#fullpage', {
             //anchors:['slide1', 'slide2', 'slide3', 'slide4'],
-            navigation: true,
+            navigation: false,
             navigationPosition: 'right',
             touchSensitivity: 10,
             afterLoad: function(origin, destination) {carregarFotos(origin, destination);},
