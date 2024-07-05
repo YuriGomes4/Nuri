@@ -1,12 +1,42 @@
 <!DOCTYPE html>
 <html>
 
-<body>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width">
+	<title>Nossa história</title>
+	<link href="style.css" rel="stylesheet" type="text/css" />
+	<link href="assets/css/index.css" rel="stylesheet" type="text/css" />
+	  
+	<link rel="icon" type="image/x-icon" href="assets/images/favicon.ico">
 
-	<input type="text" id="input" value="Sua senha">
-	<button onclick="entrar();">Hash</button>
+	<link href='https://fonts.googleapis.com/css?family=Reenie+Beanie|Shantell+Sans|Kavoon' rel='stylesheet' type='text/css'>
+</head>
+
+<body style="background-color: rgb(0, 7, 15);; height: 100vh;">
+
+	<div class="fundo"></div>
+
+	<div class="principal-div">
+
+		<p class="titulo-codigo">Código de acesso</p>
+		<input class="input-p" type="password" id="input" placeholder="Código">
+		<div class="bt-entrar" onclick="entrar()">
+			<p>Entrar</p>
+		</div>
+
+	</div>
 
 	<script>
+
+		// Fazer o enter executar a função entrar
+
+		document.getElementById("input").addEventListener("keyup", function(event) {
+			if (event.keyCode === 13) {
+				event.preventDefault();
+				entrar();
+			}
+		});
 
 		function setCookie(name, value) {
 			document.cookie = name + "=" + value;

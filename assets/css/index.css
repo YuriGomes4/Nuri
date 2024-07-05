@@ -1,0 +1,63 @@
+.fundo {
+    width: 100vw;
+	height: 100vh;
+	position: fixed;
+	top: 0;
+	left: 0;
+	background-image: url("/assets/images/bolinhas-br.png");
+	background-size: 300px 300px; /* Set background image size to 100px x 100px */
+	background-repeat: repeat; /* Make the image repeat horizontally and vertically */
+	opacity: 100%;
+}
+
+.bt-entrar {
+    font-size: 2rem;
+    color: white;
+    font-family: 'Shantell Sans', cursive;
+    background-color: var(--tm-primaryColor);
+    opacity: 1;
+    border-radius: 50px;
+    cursor: pointer;
+    border-color: var(--tm-primaryColor);
+    border-width: 2px;
+    border-style: solid;
+}
+
+.titulo-codigo {
+	color: white;
+	font-size: 35px;
+	font-family: 'Shantell Sans', cursive;
+	font-weight: bold;
+	margin: 0% 10% 0% 10%;
+    text-align: center;
+}
+
+.bt-entrar:hover {
+    border-color: var(--tm-tertiaryColor);
+}
+
+.bt-entrar p {
+    margin: 0.5rem 1rem;
+    font-size: 1.6rem;
+}
+
+.input-p {
+    background-color: rgb(0, 7, 15);;
+    border-color: #ffffff;
+    border-radius: 50px;
+    padding: 0.5rem;
+    font-family: 'Shantell Sans', cursive;
+    font-size: 20px;
+    color: white;
+    text-align: center;
+}
+
+.principal-div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    flex-direction: column;
+    gap: 2rem;
+    position: relative;
+}

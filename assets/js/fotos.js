@@ -3,6 +3,10 @@ function getCookie(name) {
     return cookieValue ? cookieValue.pop() : '';
 }
 
+function setCookie(name, value) {
+    document.cookie = name + "=" + value;
+}
+
 function hash(string) {
   const utf8 = new TextEncoder().encode(string);
   return crypto.subtle.digest('SHA-256', utf8).then((hashBuffer) => {
@@ -14,7 +18,7 @@ function hash(string) {
 
 hash(getCookie("c")).then((result) => {
     hashResult = result;
-    if (hashResult !== "20264a9d385ebd31243b85647adbb293b4770f7ceda7d9a64828939e3e255bc0") {
+    if (hashResult !== "20264a9d385ebd31243b85647adbb293b4770f7ceda7d9a64828939e3e255bc0" && hashResult !== "6baa2eb3b9aa2426a956ddd4aae3211a013279f52815e9a758556c8c8d0f8d20") {
         window.location.href = "/";
     }
 }).catch(console.error);
@@ -54,6 +58,13 @@ fetch('assets/images/fotos/lista.txt')
             img.className = 'fotos';
             img.src = 'assets/images/fotos/'+link;
             fotos.appendChild(img);
+
+            if (i == 16) {
+                img.onclick = function() {
+                    setCookie("c", "");
+                    window.location.href = "/";
+                }
+            }
         }
     }
 );

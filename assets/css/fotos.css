@@ -9,8 +9,21 @@ body {
 	margin: 0;
 	padding: 0;
 
-    background-color: #1c1c1c;
+    background-color: rgb(0, 7, 15);
 }
+
+.fundo {
+    width: 100vw;
+	height: 100vh;
+	position: fixed;
+	top: 0;
+	left: 0;
+	background-image: url("/assets/images/bolinhas-br.png");
+	background-size: 300px 300px; /* Set background image size to 100px x 100px */
+	background-repeat: repeat; /* Make the image repeat horizontally and vertically */
+	opacity: 100%;
+}
+
 
 /* Navbar */
 .navbar_header {
@@ -48,6 +61,7 @@ body {
 
 #main {
 	padding: 5vh 5%;
+	position: relative;
 }
 
 #titulo-texto1 {
