@@ -1,3 +1,24 @@
+function getCookie(name) {
+    const cookieValue = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
+    return cookieValue ? cookieValue.pop() : '';
+}
+
+function hash(string) {
+  const utf8 = new TextEncoder().encode(string);
+  return crypto.subtle.digest('SHA-256', utf8).then((hashBuffer) => {
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const hashHex = hashArray.map(bytes => bytes.toString(16).padStart(2, '0')).join('');
+    return hashHex;
+  });
+}
+
+hash(getCookie("c")).then((result) => {
+    hashResult = result;
+    if (hashResult !== "20264a9d385ebd31243b85647adbb293b4770f7ceda7d9a64828939e3e255bc0") {
+        window.location.href = "/";
+    }
+}).catch(console.error);
+
 //ler um txt linha por linha
 fetch('assets/resources/conversa.txt')
   .then(response => response.text())

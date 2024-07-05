@@ -14,7 +14,7 @@ function hash(string) {
 
 hash(getCookie("c")).then((result) => {
     hashResult = result;
-    if (hashResult !== "6baa2eb3b9aa2426a956ddd4aae3211a013279f52815e9a758556c8c8d0f8d20") {
+    if (hashResult !== "20264a9d385ebd31243b85647adbb293b4770f7ceda7d9a64828939e3e255bc0") {
         window.location.href = "/";
     }
 }).catch(console.error);
