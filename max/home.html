@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width">
+	<title>Nossa história</title>
+
+    <link rel="manifest" href="/assets/pwa/manifest.json">
+	  
+	<link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico">
+
+	<link href='https://fonts.googleapis.com/css?family=Reenie+Beanie|Shantell+Sans|Kavoon' rel='stylesheet' type='text/css'>
+
+    <link rel="stylesheet" href="/assets/fontawesome/css/all.css">
+    
+    <link href="/assets/css/max/home.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+
+    <div id="fundo"></div>
+
+    <div id="main">
+        <div id="header-menu">
+            <div id="header-menu-fundo"></div>
+            <div id="header-menu-logo">
+                <img src="/assets/images/max/logo.png" alt="Logo" id="logo">
+            </div>
+            <div id="header-menu-buttons">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <i class="fa-solid fa-circle-user"></i>
+            </div>
+        </div>
+        <!--<div class="carousel">
+            <div class="carousel-track">
+                <div class="carousel-slides">
+                    <div class="carousel-slide"><img src="https://via.placeholder.com/600x900/FF5733/FFFFFF" alt="Slide 1"></div>
+                    <div class="carousel-slide"><img src="https://via.placeholder.com/600x900/33FF57/FFFFFF" alt="Slide 2"></div>
+                    <div class="carousel-slide"><img src="https://via.placeholder.com/600x900/3357FF/FFFFFF" alt="Slide 3"></div>
+                </div>
+                <div class="carousel-degrade bottom"></div>
+            </div>
+            <div id="carousel-footer">
+                <div class="carousel-footer-bg"></div>
+                <div class="carousel-indicators">
+                    <div class="indicator active" data-index="0"></div>
+                    <div class="indicator" data-index="1"></div>
+                    <div class="indicator" data-index="2"></div>
+                </div>
+            </div>
+        </div>-->
+        <div id="conteudo">
+            <div id="filtros">
+                <div class="filtro">
+                    <p>Especiais</p>
+                </div>
+                <div class="filtro">
+                    <p>Histórias</p>
+                </div>
+            </div>
+            <div id="destaque">
+                <div id="destaque-fundo">
+                    <div id="destaque-cor"></div>
+                    <div id="destaque-cor"></div>
+                    <div id="destaque-imagem">
+                        <img src="/assets/images/max/max.png" alt="Max">
+                    </div>
+                </div>
+                <div id="destaque-info">
+                    <div id="destaque-texto">
+                        <p>Max</p>
+                    </div>
+                    <div id="destaque-botoes">
+                        <div class="destaque-botao">
+                            <i class="fa-solid fa-chevron-right"></i>
+                            <p>Ver história</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /*const track = document.querySelector('.carousel-slides');
+        const slides = Array.from(track.children);
+        const indicators = document.querySelectorAll('.indicator');
+        let currentIndex = 0;
+        let startX = 0;
+        let currentTranslate = 0;
+        let isDragging = false;
+      
+        function updateCarousel(index) {
+          const slideWidth = slides[0].getBoundingClientRect().width;
+          track.style.transform = `translateX(-${index * slideWidth}px)`;
+          indicators.forEach((ind, i) => {
+            ind.classList.toggle('active', i === index);
+          });
+        }
+      
+        function autoSlide() {
+          currentIndex = (currentIndex + 1) % slides.length;
+          updateCarousel(currentIndex);
+        }
+      
+        let autoSlideInterval = setInterval(autoSlide, 10000);
+      
+        function startDragging(e) {
+          isDragging = true;
+          startX = e.touches ? e.touches[0].clientX : e.clientX;
+          track.style.transition = 'none';
+          clearInterval(autoSlideInterval);
+        }
+      
+        function stopDragging(e) {
+          if (!isDragging) return;
+          isDragging = false;
+          track.style.transition = 'transform 0.5s ease';
+          const endX = e.changedTouches ? e.changedTouches[0].clientX : e.clientX;
+          if (startX - endX > 50) {
+            currentIndex = (currentIndex + 1) % slides.length;
+          } else if (endX - startX > 50) {
+            currentIndex = (currentIndex - 1 + slides.length) % slides.length;
+          }
+          updateCarousel(currentIndex);
+          autoSlideInterval = setInterval(autoSlide, 10000);
+        }
+      
+        function dragging(e) {
+          if (!isDragging) return;
+          const currentX = e.touches ? e.touches[0].clientX : e.clientX;
+          const slideWidth = slides[0].getBoundingClientRect().width;
+          currentTranslate = -currentIndex * slideWidth + (currentX - startX);
+          track.style.transform = `translateX(${currentTranslate}px)`;
+        }
+      
+        track.addEventListener('mousedown', startDragging);
+        track.addEventListener('touchstart', startDragging);
+        track.addEventListener('mousemove', dragging);
+        track.addEventListener('touchmove', dragging);
+        track.addEventListener('mouseup', stopDragging);
+        track.addEventListener('touchend', stopDragging);*/
+
+        var especiais = {}
+        var historias = {}
+
+        async function fetchData() {
+            try {
+            const response = await fetch('/assets/conteudo/historia');
+            const html = await response.text();
+            console.log('HTML de /assets/conteudo/historia:', html);
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            const tbody = doc.querySelector('tbody');
+            if (tbody) {
+                const rows = Array.from(tbody.querySelectorAll('tr'));
+                if (rows.length > 4) {
+                const filteredRows = rows.slice(3, -1);
+                const fetchPromises = filteredRows.map(async (row) => {
+                    const secondTd = row.querySelectorAll('td')[1];
+                    if (secondTd) {
+                    var valor = secondTd.textContent;
+                    console.log('Valor:', valor);
+                    if (valor.includes('/')) {
+                        const jsonResponse = await fetch('/assets/conteudo/historia/' + valor.split('/')[0] + '/main.json');
+                        const json = await jsonResponse.json();
+                        console.log('JSON de /assets/conteudo/historia/' + valor.split('/')[0] + '/main.json:', json);
+                        historias[valor.split('/')[0]] = json;
+                    }
+                    }
+                });
+                await Promise.all(fetchPromises);
+                } else {
+                console.log('Menos de 5 linhas encontradas.');
+                }
+            } else {
+                console.log('Nenhum tbody encontrado.');
+            }
+            console.log('Histórias:', historias);
+            } catch (error) {
+            console.error('Erro ao listar pastas:', error);
+            }
+        }
+
+        fetchData().then(() => {
+            var imagem_destaque = document.getElementById('destaque-imagem').querySelector('img');
+        
+            imagem_destaque.src = "/assets/conteudo/historia/" + Object.keys(historias)[0] + "/fotos/" + historias[Object.keys(historias)[0]].capa;
+        });
+      </script>
+
+</body>
+
+</html>

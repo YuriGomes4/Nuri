@@ -1,0 +1,226 @@
+:root {
+    --cor-principal: #440f0f;
+}
+
+#header-menu {
+    display: flex;
+    padding: 8px 16px;
+    align-items: center;
+    position: fixed;
+    z-index: 999;
+    width: calc(100vw - 32px);
+    color: #fff;
+    height: 34px;
+}
+
+#filtros {
+    /* margin-top: 58px; */
+    display: flex;
+    /* padding: 12px; */
+    gap: 12px;
+}
+
+#conteudo {
+    padding: 0px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-top: 50px;
+}
+
+#destaque {
+    /* max-height: calc(100% - 39px); */
+    /* aspect-ratio: 1/1; */
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    /* padding: 0px 20px; */
+    position: relative;
+    /* box-shadow: 10px 18px; */
+}
+
+#destaque-imagem {
+    height: calc(100% - 5px);
+    /* width: 100vw; */
+    position: relative;
+}
+
+#destaque-cor {
+    position: absolute;
+    width: 100%;
+    bottom: 9px;
+    height: 200px;
+    background-image: linear-gradient(to top, var(--cor-principal), transparent);
+    z-index: 998;
+    border-radius: 15px;
+}
+
+#destaque-fundo {
+    height: calc(100% - 10px);
+    /* width: 100vw; */
+    overflow: hidden;
+    border-radius: 15px;
+    /* border-style: solid; */
+    /* border-color: #ffffff63; */
+    /* border-width: 2px; */
+    /* border-inline: 5px solid rgba(255, 255, 255, 0.5); */
+}
+
+#destaque-info {
+    position: absolute;
+    bottom: 10px;
+    width: calc(100% - 3px);
+    display: flex;
+    height: calc(100% - 13px);
+    flex-direction: column;
+    align-items: center;
+    border-radius: 15px;
+    border: 1.5px solid #ffffff2e;
+    z-index: 999;
+    box-shadow: 0 0 60px -15px;
+}
+
+#destaque-texto {
+    margin-top: auto;
+}
+
+#destaque-imagem > img {
+    /* height: 100%; */
+    width: 100%;
+    aspect-ratio: 9/13;
+    object-fit: cover;
+}
+
+.filtro {
+    color: var(--cor);
+    /* height: fit-content; */
+    --cor: #fff;
+    padding: 8px 12px;
+    border-style: solid;
+    border-radius: 30px;
+    border-width: 1px;
+    border-color: var(--cor);
+    font-size: 14px;
+    font-family: Roboto;
+}
+
+.filtro > p {
+    margin: 0;
+}
+
+#header-menu-fundo {
+    position: absolute;
+    /* top: 0; */
+    width: 100vw;
+    height: 200px;
+    left: 0;
+    background-image: linear-gradient(to bottom, #000000d9, #2b000000);
+    z-index: 998;
+    pointer-events: none;
+}
+
+#header-menu-logo {
+    /* display: flex; */
+    width: 16%;
+    z-index: 999;
+}
+
+#header-menu-buttons {
+    margin-left: auto;
+    font-size: 22px;
+    display: flex;
+    gap: 26px;
+    z-index: 999;
+}
+
+#main {
+    max-width: 1024px;
+    position: relative;
+    width: 100vw;
+    display: flex;
+    flex-direction: column;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    margin: 0;
+}
+
+#fundo {
+    /* background-image: linear-gradient(to bottom, #000, #250000); */
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    background-color: var(--cor-principal);
+}
+
+#header-menu-logo > img {
+    width: 100%;
+}
+
+.carousel {position: relative;width: 100%;/* max-width: 600px; *//* overflow: hidden; *//* border-radius: 10px; *//* box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); */}
+
+.carousel-slides {
+display: flex;
+transition: transform 0.5s ease;
+}
+
+.carousel-track {
+    position: relative;
+    overflow: hidden;
+}
+
+.carousel-slide {
+min-width: 100%;
+}
+
+.carousel-slide img {
+width: 100%;
+display: block;
+}
+
+.carousel-indicators {position: relative;/* bottom: 10px; */left: 50%;transform: translateX(-50%);display: flex;gap: 8px;/* width: 100%; */align-items: center;justify-content: center;padding: 10px;/* background-image: linear-gradient(to bottom, #000, #2b000000); */}
+
+.carousel-footer-bg {
+    background-image: linear-gradient(to bottom, #000, #2b000000);
+    position: absolute;
+    top: -1px;
+    width: 100%;
+    height: 100px;
+    pointer-events: none;
+}
+
+#carousel-footer {
+    position: relative;
+}
+
+.indicator {
+width: 10px;
+height: 10px;
+background-color: #333;
+border-radius: 50%;
+transition: background-color 0.3s;
+}
+
+.indicator.active {
+background-color: #bbb;
+}
+
+.carousel-degrade {
+    position: absolute;
+    width: 100%;
+    height: 150px;
+    pointer-events: none;
+}
+
+.carousel-degrade.top {
+    top: 0;
+    background-image: linear-gradient(to bottom, #000000d9, #2b000000);
+}
+
+.carousel-degrade.bottom {
+    bottom: -1px;
+    background-image: linear-gradient(to top, #000000, #2b000000);
+    /* pointer-events: none; */
+}
