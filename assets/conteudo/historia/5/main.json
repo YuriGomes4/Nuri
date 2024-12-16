@@ -1,0 +1,29 @@
+{
+    "nome":"Liberdade",
+    "sinopse":"A história de um homem que luta pela liberdade.",
+    "capa":"foto2.jpg",
+    "data":"2024-03-03",
+    "modo_apresentacao":"stories",
+    "partes":[
+        {
+            "nome":"Parte 1",
+            "descricao":"O início de tudo.",
+            "imagem":"foto1.jpg"
+        },
+        {
+            "nome":"Parte 2",
+            "descricao":"O início de tudo.",
+            "imagem":"foto2.jpg"
+        },
+        {
+            "nome":"Parte 3",
+            "descricao":"O início de tudo.",
+            "imagem":"foto3.jpg"
+        },
+        {
+            "nome":"Parte 4",
+            "descricao":"O início de tudo.",
+            "imagem":"foto4.jpg"
+        }
+    ]
+}

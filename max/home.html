@@ -8,12 +8,13 @@
 
     <link rel="manifest" href="/assets/pwa/manifest.json">
 	  
-	<link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico">
+	<!--<link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico">-->
 
 	<link href='https://fonts.googleapis.com/css?family=Reenie+Beanie|Shantell+Sans|Kavoon' rel='stylesheet' type='text/css'>
 
     <link rel="stylesheet" href="/assets/fontawesome/css/all.css">
     
+    <link href="/assets/css/max/global.css" rel="stylesheet" type="text/css" />
     <link href="/assets/css/max/home.css" rel="stylesheet" type="text/css" />
 </head>
 
@@ -77,6 +78,14 @@
                             <p>Ver história</p>
                         </div>
                     </div>
+                </div>
+            </div>
+            <div class="secao">
+                <div class="secao-titulo">
+                    <p>Recomendados</p>
+                </div>
+                <div class="secao-conteudo" id="secao-recomendados">
+
                 </div>
             </div>
         </div>
@@ -149,44 +158,136 @@
             try {
             const response = await fetch('/assets/conteudo/historia');
             const html = await response.text();
-            console.log('HTML de /assets/conteudo/historia:', html);
             const parser = new DOMParser();
             const doc = parser.parseFromString(html, 'text/html');
             const tbody = doc.querySelector('tbody');
             if (tbody) {
                 const rows = Array.from(tbody.querySelectorAll('tr'));
                 if (rows.length > 4) {
-                const filteredRows = rows.slice(3, -1);
-                const fetchPromises = filteredRows.map(async (row) => {
-                    const secondTd = row.querySelectorAll('td')[1];
-                    if (secondTd) {
-                    var valor = secondTd.textContent;
-                    console.log('Valor:', valor);
-                    if (valor.includes('/')) {
-                        const jsonResponse = await fetch('/assets/conteudo/historia/' + valor.split('/')[0] + '/main.json');
-                        const json = await jsonResponse.json();
-                        console.log('JSON de /assets/conteudo/historia/' + valor.split('/')[0] + '/main.json:', json);
-                        historias[valor.split('/')[0]] = json;
-                    }
-                    }
-                });
-                await Promise.all(fetchPromises);
+                    const filteredRows = rows.slice(3, -1);
+                    const fetchPromises = filteredRows.map(async (row) => {
+                        const secondTd = row.querySelectorAll('td')[1];
+                        if (secondTd) {
+                            var valor = secondTd.textContent;
+                            console.log('Valor:', valor);
+                            if (valor.includes('/')) {
+                                const jsonResponse = await fetch('/assets/conteudo/historia/' + valor.split('/')[0] + '/main.json');
+                                const json = await jsonResponse.json();
+                                console.log('JSON de /assets/conteudo/historia/' + valor.split('/')[0] + '/main.json:', json);
+                                json.id = valor.split('/')[0];
+                                json.tipo = 'historia';
+                                historias[valor.split('/')[0]] = json;
+                            }
+                        }
+                    });
+                    await Promise.all(fetchPromises);
                 } else {
-                console.log('Menos de 5 linhas encontradas.');
+                    console.log('Menos de 5 linhas encontradas.');
                 }
             } else {
                 console.log('Nenhum tbody encontrado.');
             }
             console.log('Histórias:', historias);
             } catch (error) {
-            console.error('Erro ao listar pastas:', error);
+                console.error('Erro ao listar pastas:', error);
+            }
+
+            try {
+            const response = await fetch('/assets/conteudo/especial');
+            const html = await response.text();
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            const tbody = doc.querySelector('tbody');
+            if (tbody) {
+                const rows = Array.from(tbody.querySelectorAll('tr'));
+                if (rows.length > 4) {
+                    const filteredRows = rows.slice(3, -1);
+                    const fetchPromises = filteredRows.map(async (row) => {
+                        const secondTd = row.querySelectorAll('td')[1];
+                        if (secondTd) {
+                            var valor = secondTd.textContent;
+                            console.log('Valor:', valor);
+                            if (valor.includes('/')) {
+                                const jsonResponse = await fetch('/assets/conteudo/especial/' + valor.split('/')[0] + '/main.json');
+                                const json = await jsonResponse.json();
+                                console.log('JSON de /assets/conteudo/especial/' + valor.split('/')[0] + '/main.json:', json);
+                                json.id = valor.split('/')[0];
+                                json.tipo = 'especial';
+                                especiais[valor.split('/')[0]] = json;
+                            }
+                        }
+                    });
+                    await Promise.all(fetchPromises);
+                } else {
+                    console.log('Menos de 5 linhas encontradas.');
+                }
+            } else {
+                console.log('Nenhum tbody encontrado.');
+            }
+            console.log('Especiais:', especiais);
+            } catch (error) {
+                console.error('Erro ao listar pastas:', error);
             }
         }
 
         fetchData().then(() => {
             var imagem_destaque = document.getElementById('destaque-imagem').querySelector('img');
+            var titulo_destaque = document.getElementById('destaque-texto').querySelector('p');
+            var destaque_texto = document.getElementById('destaque-texto');
+            var destaque_botao = document.getElementById('destaque-botoes').querySelector('.destaque-botao');
+
+            if (Object.keys(especiais).length === 0) {
+
+                var destaque = historias[Object.keys(historias)[0]];
+
+                for (var i = 0; i < Object.keys(historias).length; i++) {
+                    var historia = historias[Object.keys(historias)[i]];
+
+                    if (historia.data > destaque.data) {
+                        destaque = historia;
+                    }
+                }
+            } else {
+                var destaque = especiais[Object.keys(especiais)[0]];
+
+                for (var i = 0; i < Object.keys(especiais).length; i++) {
+                    var especial = especiais[Object.keys(especiais)[i]];
+
+                    if (especial.data > destaque.data) {
+                        destaque = especial;
+                    }
+                }
+            }
         
-            imagem_destaque.src = "/assets/conteudo/historia/" + Object.keys(historias)[0] + "/fotos/" + historias[Object.keys(historias)[0]].capa;
+            imagem_destaque.src = "/assets/conteudo/"+ destaque.tipo +"/" + destaque.id + "/fotos/" + destaque.capa;
+            titulo_destaque.textContent = destaque.nome;
+            destaque_texto.onclick = function() {
+                window.location.href = '/max/item.html?tipo=' + destaque.tipo + '&id=' + destaque.id;
+            };
+
+            var secao_recomendados = document.getElementById('secao-recomendados');
+
+            for (var i = 0; i < Object.keys(historias).length; i++) {
+                var historia = historias[Object.keys(historias)[i]];
+
+                var div = document.createElement('div');
+                div.className = 'secao-item';
+                div.setAttribute('item-id', historia.id);
+                div.onclick = function() {
+                    window.location.href = '/max/item.html?tipo=historia&id=' + this.getAttribute('item-id');
+                };
+
+                var img = document.createElement('img');
+                img.src = "/assets/conteudo/historia/" + Object.keys(historias)[i] + "/fotos/" + historia.capa;
+
+                var p = document.createElement('p');
+                p.textContent = historia.nome;
+
+                div.appendChild(img);
+                div.appendChild(p);
+
+                secao_recomendados.appendChild(div);
+            }
         });
       </script>
 

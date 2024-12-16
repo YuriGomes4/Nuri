@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width">
+	<title>Nossa história</title>
+
+    <link rel="manifest" href="/assets/pwa/manifest.json">
+	  
+	<!--<link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico">-->
+
+	<link href='https://fonts.googleapis.com/css?family=Reenie+Beanie|Shantell+Sans|Kavoon' rel='stylesheet' type='text/css'>
+
+    <link rel="stylesheet" href="/assets/fontawesome/css/all.css">
+    
+    <link href="/assets/css/max/global.css" rel="stylesheet" type="text/css" />
+    <link href="/assets/css/max/item.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+
+    <div id="fundo"></div>
+
+    <div id="main">
+        <div id="header-menu">
+            <div id="header-menu-logo">
+                <i class="fa-solid fa-arrow-left" onclick="window.history.back()"></i>
+            </div>
+            <div id="header-menu-buttons">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <i class="fa-solid fa-circle-user"></i>
+            </div>
+        </div>
+        <div id="conteudo">
+            <div id="banner">
+                <img src="" alt="Banner" id="img-principal">
+                <div id="banner-blur">
+                    <img src="" alt="Banner" id="img-secundaria">
+                </div>
+            </div>
+            <div id="item-info">
+                <p id="titulo"></p>
+                <div id="item-carac">
+                    <p id="item-data"></p>
+                    <p id="item-qnt-partes"></p>
+                </div>
+                <div id="btn-verhistoria">
+                    <i class="fa-solid fa-arrow-right"></i>
+                    <p>Ver história do início</p>
+                </div>
+                <p id="item-sinopse"></p>
+                <div id="separador"></div>
+                <div id="item-partes">
+                    <p>Partes</p>
+                    <div id="partes-lista"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const tipo = urlParams.get('tipo');
+        const id = urlParams.get('id');
+
+        if (tipo && id) {
+            console.log(`Tipo: ${tipo}, ID: ${id}`);
+            fetch(`/assets/conteudo/${tipo}/${id}/main.json`)
+                .then(response => response.json())
+                .then(item_json => {
+                    console.log(item_json);
+                    var imagem_capa = `/assets/conteudo/${tipo}/${id}/fotos/` + item_json.capa;
+                    if (tipo === 'historia') {
+                        document.getElementById('img-principal').src = imagem_capa;
+                        document.getElementById('img-secundaria').src = imagem_capa;
+                    } else if (tipo === 'especial') {
+                        document.getElementById('img-principal').src = imagem_capa;
+                        document.getElementById('img-secundaria').src = imagem_capa;
+                    } else {
+                        console.log('Tipo inválido.');
+                    }
+
+                    document.getElementById('titulo').innerText = item_json.nome;
+                    const data = item_json.data.split('-').reverse().join('/');
+                    document.getElementById('item-data').innerText = data;
+                    document.getElementById('item-qnt-partes').innerText = item_json.partes.length + ' partes';
+                    document.getElementById('item-sinopse').innerText = item_json.sinopse;
+
+                    var partes_lista = document.getElementById('partes-lista');
+
+                    item_json.partes.forEach((parte, index) => {
+                        var div = document.createElement('div');
+                        div.className = 'parte-item';
+                        /*div.onclick = function() {
+                            window.location.href = `/max/partes.html?tipo=${tipo}&id=${id}&parte=${index}`;
+                        };*/
+
+                        var img = document.createElement('img');
+                        img.src = `/assets/conteudo/${tipo}/${id}/fotos/` + parte.imagem;
+
+                        div.appendChild(img);
+
+                        var p = document.createElement('p');
+                        p.textContent = index + 1 + '. ' + parte.nome;
+
+                        div.appendChild(p);
+
+                        var icon = document.createElement('i');
+                        icon.className = 'fa-solid fa-chevron-right';
+
+                        div.appendChild(icon);
+
+                        partes_lista.appendChild(div);
+                    });
+                });
+        } else {
+            console.log('Parâmetros tipo e id não encontrados.');
+        }
+    </script>
+</body>
+
+</html>

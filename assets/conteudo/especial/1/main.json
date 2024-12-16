@@ -1,0 +1,144 @@
+{
+    "nome":"O pedido de namoro",
+    "sinopse":"A história de um homem que luta pela liberdade.",
+    "capa":"foto2.jpg",
+    "data":"2024-05-26",
+    "modo_apresentacao":"pedido de namoro",
+    "partes":[
+        {
+            "nome":"Início",
+            "descricao":"Um pequeno resumo da nossa história",
+            "imagem":"foto1.jpg"
+        },
+        {
+            "nome":"Introdução",
+            "descricao":"",
+            "imagem":"foto2.jpg"
+        },
+        {
+            "nome":"O match",
+            "descricao":"",
+            "imagem":"foto3.jpg"
+        },
+        {
+            "nome":"O ano novo",
+            "descricao":"",
+            "imagem":"foto4.jpg"
+        },
+        {
+            "nome":"O hotel",
+            "descricao":"",
+            "imagem":"foto2.jpg"
+        },
+        {
+            "nome":"O shopping",
+            "descricao":"",
+            "imagem":"foto2.jpg"
+        },
+        {
+            "nome":"Conhecendo a casa",
+            "descricao":"",
+            "imagem":"foto2.jpg"
+        },
+        {
+            "nome":"A primeira festa",
+            "descricao":"",
+            "imagem":"foto2.jpg"
+        },
+        {
+            "nome":"Conhecendo seus filhos",
+            "descricao":"",
+            "imagem":"foto2.jpg"
+        },
+        {
+            "nome":"O Garfield",
+            "descricao":"",
+            "imagem":"foto2.jpg"
+        },
+        {
+            "nome":"Terror no cinema",
+            "descricao":"",
+            "imagem":"foto2.jpg"
+        },
+        {
+            "nome":"O primeiro 'Eu te amo'",
+            "descricao":"",
+            "imagem":"foto2.jpg"
+        },
+        {
+            "nome":"A casa do pai dela",
+            "descricao":"",
+            "imagem":"foto2.jpg"
+        },
+        {
+            "nome":"A Liberdade",
+            "descricao":"",
+            "imagem":"foto2.jpg"
+        },
+        {
+            "nome":"A virose",
+            "descricao":"",
+            "imagem":"foto2.jpg"
+        },
+        {
+            "nome":"Conhecendo meus amigos",
+            "descricao":"",
+            "imagem":"foto2.jpg"
+        },
+        {
+            "nome":"A casa do pai dela - Parte 2",
+            "descricao":"",
+            "imagem":"foto2.jpg"
+        },
+        {
+            "nome":"A desilusão do anel",
+            "descricao":"",
+            "imagem":"foto2.jpg"
+        },
+        {
+            "nome":"O chinelo novo",
+            "descricao":"",
+            "imagem":"foto2.jpg"
+        },
+        {
+            "nome":"A tragédia do holocausto",
+            "descricao":"",
+            "imagem":"foto2.jpg"
+        },
+        {
+            "nome":"O passeio no Ibira",
+            "descricao":"",
+            "imagem":"foto2.jpg"
+        },
+        {
+            "nome":"O baile do Perna",
+            "descricao":"",
+            "imagem":"foto2.jpg"
+        },
+        {
+            "nome":"Conclusão",
+            "descricao":"",
+            "imagem":"foto2.jpg"
+        },
+        {
+            "nome":"Para ela - Parte 1",
+            "descricao":"",
+            "imagem":"foto2.jpg"
+        },
+        {
+            "nome":"Para ela - Parte 2",
+            "descricao":"",
+            "imagem":"foto2.jpg"
+        },
+        {
+            "nome":"Para ela - Parte 3",
+            "descricao":"",
+            "imagem":"foto2.jpg"
+        },
+        {
+            "nome":"O pedido",
+            "descricao":"",
+            "imagem":"foto2.jpg"
+        }
+    ]
+}
