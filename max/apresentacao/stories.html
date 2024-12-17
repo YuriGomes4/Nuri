@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width">
+	<title>Nossa história</title>
+
+    <link rel="manifest" href="/assets/pwa/manifest.json">
+	  
+	<!--<link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico">-->
+
+	<link href='https://fonts.googleapis.com/css?family=Reenie+Beanie|Shantell+Sans|Kavoon' rel='stylesheet' type='text/css'>
+
+    <link rel="stylesheet" href="/assets/fontawesome/css/all.css">
+    
+    <link href="/assets/css/max/global.css" rel="stylesheet" type="text/css" />
+    <link href="/assets/css/max/stories.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+    <div id="indicadores">
+        <div class="indicador" indic-id="1">
+            <div class="indicador-sombra"></div>
+            <div class="indicador-atual"></div>
+        </div>
+        <div class="indicador" indic-id="2">
+            <div class="indicador-sombra"></div>
+            <div class="indicador-atual"></div>
+        </div>
+        <div class="indicador" indic-id="3">
+            <div class="indicador-sombra"></div>
+            <div class="indicador-atual"></div>
+        </div>
+        <div class="indicador" indic-id="4">
+            <div class="indicador-sombra"></div>
+            <div class="indicador-atual"></div>
+        </div>
+    </div>
+    <div id="apresentacao">
+        <div id="imagens">
+            <div class="imagem" imagem-id="1">
+                <img class="im-fundo" src="/assets/conteudo/historia/5/fotos/foto1.jpg" alt="Fundo">
+                <img class="im-imagem" src="/assets/conteudo/historia/5/fotos/foto1.jpg" alt="Imagem">
+            </div>
+            <div class="imagem" imagem-id="2">
+                <img class="im-fundo" src="/assets/conteudo/historia/5/fotos/foto2.jpg" alt="Fundo">
+                <img class="im-imagem" src="/assets/conteudo/historia/5/fotos/foto2.jpg" alt="Imagem">
+            </div>
+            <div class="imagem" imagem-id="3">
+                <img class="im-fundo" src="/assets/conteudo/historia/5/fotos/foto3.jpg" alt="Fundo">
+                <img class="im-imagem" src="/assets/conteudo/historia/5/fotos/foto3.jpg" alt="Imagem">
+            </div>
+            <div class="imagem" imagem-id="4">
+                <img class="im-fundo" src="/assets/conteudo/historia/5/fotos/foto4.jpg" alt="Fundo">
+                <img class="im-imagem" src="/assets/conteudo/historia/5/fotos/foto4.jpg" alt="Imagem">
+            </div>
+        </div>
+        <div id="botoes">
+            <div id="btn-header" onclick="btn_header_click()"></div>
+            <div id="btn-body">
+                <div id="btn-anterior"></div>
+                <div id="btn-proximo"></div>
+            </div>
+        </div>
+    </div>
+    <div id="rodape">
+
+    </div>
+
+    <script>
+        var imagens = document.getElementsByClassName('imagem');
+        var botoes = document.getElementById('botoes');
+        var btnAnterior = document.getElementById('btn-anterior');
+        var btnProximo = document.getElementById('btn-proximo');
+        var btnHeader = document.getElementById('btn-header');
+        var indicadores = document.getElementsByClassName('indicador');
+        var ativa = 0;
+        var intervalo;
+        var tempo = 3000; // 3 segundos
+
+        var tempoRestante = tempo;
+        var tempoPausado;
+        var statusTempo = 'rodando';
+
+        function mudarImagem(nova) {
+            imagens[ativa].classList.remove('ativa');
+            imagens[nova].classList.add('ativa');
+            ativa = nova;
+            for (var i = 0; i < indicadores.length; i++) {
+                indicadores[i].classList.remove('ativo');
+                indicadores[i].querySelector('.indicador-atual').style.transition = 'none';
+                indicadores[i].querySelector('.indicador-atual').style.width = '0%';
+                if (i < ativa) {
+                    indicadores[i].classList.add('passado');
+                } else {
+                    indicadores[i].classList.remove('passado');
+                }
+            }
+            indicadores[ativa].classList.add('ativo');
+            indicadores[ativa].querySelector('.indicador-atual').style.transition = 'width ' + tempo + 'ms linear';
+            indicadores[ativa].querySelector('.indicador-atual').style.width = '100%';
+            console.log(indicadores[ativa].querySelector('.indicador-atual'));
+
+            tempoRestante = tempo;
+            clearInterval(intervalo);
+            iniciarIntervalo();
+        }
+
+        function iniciarIntervalo() {
+            intervalo = setInterval(function() {
+            var nova = ativa + 1;
+            if (nova >= imagens.length) {
+                nova = 0;
+            }
+            mudarImagem(nova);
+            }, tempoRestante);
+            if (tempoRestante === tempo) {
+            tempoIniciado = Date.now();
+            tempoEmPausa = 0;
+            }
+            statusTempo = 'rodando';
+        }
+
+        function pausarIntervalo() {
+            clearInterval(intervalo);
+            tempoPausado = Date.now();
+
+            var indicador = indicadores[ativa].querySelector('.indicador-atual');
+            indicador.style.transition = 'none';
+
+            tempoDecorrido = tempoPausado - tempoIniciado - tempoEmPausa;
+
+            var largura = ((tempoDecorrido / tempo) * 100)
+            if (largura < 0) {
+                largura = 0;
+            } else if (largura > 100) {
+                largura = 0;
+            }
+
+            indicador.style.width = largura + '%'; 
+            statusTempo = 'pausado';
+        }
+
+        function despausarIntervalo() {
+            tempoEmPausa += Date.now() - tempoPausado;
+            tempoRestante = tempo - tempoDecorrido;
+
+            var indicador = indicadores[ativa].querySelector('.indicador-atual');
+            indicador.style.transition = 'width ' + tempoRestante + 'ms linear';
+            indicador.style.width = '100%';
+
+            /*if (tempoRestante <= 0) {
+            mudarImagem((ativa + 1) % imagens.length);
+            tempoRestante = tempo;
+            }*/
+
+            iniciarIntervalo();
+        }
+
+        function anterior() {
+            clearInterval(intervalo);
+            var nova = ativa - 1;
+            if (nova < 0) {
+            nova = imagens.length - 1;
+            }
+            tempoRestante = tempo;
+            mudarImagem(nova);
+        }
+
+        function proximo() {
+            clearInterval(intervalo);
+            var nova = ativa + 1;
+            if (nova >= imagens.length) {
+            nova = 0;
+            }
+            tempoRestante = tempo;
+            mudarImagem(nova);
+        }
+
+        btnAnterior.onmousedown = pausarIntervalo;
+        btnAnterior.onmouseup = despausarIntervalo;
+        btnAnterior.ontouchstart = pausarIntervalo;
+        btnAnterior.ontouchend = despausarIntervalo;
+
+        btnProximo.onmousedown = pausarIntervalo;
+        btnProximo.onmouseup = despausarIntervalo;
+        btnProximo.ontouchstart = pausarIntervalo;
+        btnProximo.ontouchend = despausarIntervalo;
+
+        btnAnterior.onclick = anterior;
+        btnProximo.onclick = proximo;
+
+        /*for (var i = 0; i < indicadores.length; i++) {
+            indicadores[i].onclick = function() {
+            mudarImagem(parseInt(this.getAttribute('indic-id')) - 1);
+            iniciarIntervalo();
+            }
+            indicadores[i].ontouchend = function() {
+            mudarImagem(parseInt(this.getAttribute('indic-id')) - 1);
+            iniciarIntervalo();
+            }
+        }*/
+
+        /*btnHeader.onclick = function() {
+            window.location.href = '/max/home.html';
+        }*/
+
+        iniciarIntervalo();
+        mudarImagem(0);
+
+        function btn_header_click() {
+            console.log(statusTempo);
+            if (statusTempo === 'rodando') {
+                pausarIntervalo();
+            } else {
+                despausarIntervalo();
+            }
+        }
+    </script>
+
+</body>
+
+</html>

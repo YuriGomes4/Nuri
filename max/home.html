@@ -382,7 +382,8 @@
         }
 
         const url = window.location.href;
-        if (url.includes("localhost") || url.includes("192.168")) {
+        //if (url.includes("localhost") || url.includes("192.168")) {
+        if (url.includes("192.168")) {
             fetchData().then(() => {
                 carregar_infos();
             });

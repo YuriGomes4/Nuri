@@ -1,0 +1,140 @@
+body {
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    background-color: #000;
+    margin: 0;
+    max-width: 100vw;
+    max-height: 100vh;
+    justify-content: space-between;
+}
+
+#apresentacao {
+    max-width: 100vw;
+    overflow: hidden;
+    height: 100%;
+    border-radius: 35px;
+    position: relative;
+}
+
+#rodape {
+    height: 50px;
+}
+
+#imagens {
+    display: flex;
+    width: 100%;
+    height: 100%;
+}
+
+.imagem {
+    display: none;
+    overflow: hidden;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    position: relative;
+    pointer-events: none;
+}
+
+.imagem.ativa {
+    display: flex;
+}
+
+#botoes {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    /* overflow: hidden; */
+    display: flex;
+    flex-direction: column;
+}
+
+#btn-header {
+    height: 100px;
+    display: flex;
+    flex-direction: row;
+}
+
+#btn-body {
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+}
+
+#btn-body > div {
+    width: 50%;
+    height: 100%;
+}
+
+.im-fundo {
+    display: none;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: blur(20px);
+    pointer-events: none;
+}
+
+.imagem.ativa .im-fundo {
+    display: block;
+}
+
+.im-imagem {
+    display: none;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    pointer-events: none;
+}
+
+.imagem.ativa .im-imagem {
+    display: block;
+}
+
+#indicadores {
+    display: flex;
+    /* width: 100%; */
+    flex-direction: row;
+    /* min-height: 34px; */
+    align-items: center;
+    gap: 5px;
+    padding: 12px 24px;
+    position: relative;
+    justify-content: space-evenly;
+}
+
+.indicador-atual {
+    background-color: #fff;
+    height: 100%;
+    z-index: 20;
+    position: relative;
+    width: 0%;
+}
+
+.indicador-sombra {
+    background-color: #575757;
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 10;
+}
+
+.indicador {
+    height: 2px;
+    /* background-color: #fff; */
+    width: 100%;
+    position: relative;
+}
+
+.indicador.passado .indicador-sombra {
+    /* width: 100%; */
+    background-color: #fff;
+}

@@ -7,22 +7,22 @@
     "partes":[
         {
             "nome":"Parte 1",
-            "descricao":"O início de tudo.",
+            "descricao":"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur at dui tempor, condimentum lectus eget, mattis elit. Nunc dui ex, laoreet ac lacus id, auctor maximus lacus. Nunc at metus.",
             "imagem":"foto1.jpg"
         },
         {
             "nome":"Parte 2",
-            "descricao":"O início de tudo.",
+            "descricao":"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur at dui tempor, condimentum lectus eget, mattis elit. Nunc dui ex, laoreet ac lacus id, auctor maximus lacus. Nunc at metus.",
             "imagem":"foto2.jpg"
         },
         {
             "nome":"Parte 3",
-            "descricao":"O início de tudo.",
+            "descricao":"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur at dui tempor, condimentum lectus eget, mattis elit. Nunc dui ex, laoreet ac lacus id, auctor maximus lacus. Nunc at metus.",
             "imagem":"foto3.jpg"
         },
         {
             "nome":"Parte 4",
-            "descricao":"O início de tudo.",
+            "descricao":"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur at dui tempor, condimentum lectus eget, mattis elit. Nunc dui ex, laoreet ac lacus id, auctor maximus lacus. Nunc at metus.",
             "imagem":"foto4.jpg"
         }
     ]
