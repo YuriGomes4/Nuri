@@ -20,12 +20,14 @@
 
 <body>
 
+    <div id="blackout"></div>
+
     <div id="fundo"></div>
 
     <div id="main">
         <div id="header-menu">
             <div id="header-menu-logo">
-                <i class="fa-solid fa-arrow-left" onclick="window.history.back()"></i>
+                <i class="fa-solid fa-arrow-left" onclick="page_out('/max/home.html?opt=noload')"></i>
             </div>
             <div id="header-menu-buttons">
                 <i class="fa-solid fa-magnifying-glass"></i>
@@ -45,11 +47,15 @@
                     <p id="item-data"></p>
                     <p id="item-qnt-partes"></p>
                 </div>
-                <div id="btn-verhistoria" onclick="window.location.href = `/max/apresentacao/stories.html?tipo=${tipo}&id=${id}`">
-                    <i class="fa-solid fa-arrow-right"></i>
+                <div id="btn-verhistoria" onclick="page_out(`/max/apresentacao/stories.html?tipo=${tipo}&id=${item_id}`)">
+                    <i class="fa-solid fa-book-open-reader"></i>
                     <p>Ver história do início</p>
                 </div>
                 <p id="item-sinopse"></p>
+                <div id="envolvidos">
+                    <p id="m-autor"><span class="mostrador">Quem escreveu: </span><span id="autor"></span></p>
+                    <p id="m-participantes"><span class="mostrador">Quem participa: </span><span id="participantes"></span></p>
+                </div>
                 <div id="separador"></div>
                 <div id="item-partes">
                     <p>Partes</p>
@@ -63,6 +69,16 @@
         const urlParams = new URLSearchParams(window.location.search);
         const tipo = urlParams.get('tipo');
         const id = urlParams.get('id');
+        const item_id = id;
+
+        var texto_btnverhistoria = document.getElementById('btn-verhistoria').querySelector('p');
+        if (tipo === 'historia') {
+            texto_btnverhistoria.textContent = 'Ver recordação do início';
+        } else if (tipo === 'especial') {
+            texto_btnverhistoria.textContent = 'Ver história do início';
+        } else {
+            console.log('Tipo inválido.');
+        }
 
         if (tipo && id) {
             console.log(`Tipo: ${tipo}, ID: ${id}`);
@@ -87,14 +103,53 @@
                     document.getElementById('item-qnt-partes').innerText = item_json.partes.length + ' partes';
                     document.getElementById('item-sinopse').innerText = item_json.sinopse;
 
+                    var envolvidos = document.getElementById('envolvidos');
+
+                    if (item_json.autor || item_json.participantes) {
+                        envolvidos.style.display = 'flex';
+
+                        var m_autor = document.getElementById('m-autor');
+                        var m_participantes = document.getElementById('m-participantes');
+                        var autor = document.getElementById('autor');
+                        var participantes = document.getElementById('participantes');
+
+                        var mostrador_participantes = m_participantes.querySelector('.mostrador');
+                        console.log(mostrador_participantes);
+                        if (tipo === 'historia') {
+                            mostrador_participantes.textContent = 'Quem está na recordação: ';
+                        } else if (tipo === 'especial') {
+                            mostrador_participantes.textContent = 'Quem está na história: ';
+                        }
+
+                        if (item_json.autor) {
+                            m_autor.style.display = 'block';
+                            autor.innerText = item_json.autor;
+                        } else {
+                            m_autor.style.display = 'none';
+                        }
+
+                        if (item_json.participantes) {
+                            if (item_json.participantes.length > 0) {
+                                m_participantes.style.display = 'block';
+                                participantes.innerText = item_json.participantes.join(', ');
+                            } else {
+                                m_participantes.style.display = 'none';
+                            }
+                        } else {
+                            m_participantes.style.display = 'none';
+                        }
+                    } else {
+                        envolvidos.style.display = 'none';
+                    }
+
                     var partes_lista = document.getElementById('partes-lista');
 
                     item_json.partes.forEach((parte, index) => {
                         var div = document.createElement('div');
                         div.className = 'parte-item';
-                        /*div.onclick = function() {
-                            window.location.href = `/max/partes.html?tipo=${tipo}&id=${id}&parte=${index}`;
-                        };*/
+                        div.onclick = function() {
+                            page_out(`/max/apresentacao/stories.html?tipo=${tipo}&id=${id}&parte=${index}`);
+                        };
 
                         var img = document.createElement('img');
                         img.src = `/assets/conteudo/${tipo}/${id}/fotos/` + parte.imagem;
@@ -116,6 +171,47 @@
                 });
         } else {
             console.log('Parâmetros tipo e id não encontrados.');
+        }
+
+        function page_out (link) {
+            var blackout = document.getElementById('blackout');
+            var main = document.getElementById('main');
+
+            blackout.style.transition = 'opacity 1s ease';
+            blackout.offsetHeight;
+            blackout.style.opacity = 1;
+
+            main.style.filter = 'blur(100px)';
+
+            setTimeout(() => {
+                window.location.href = link;
+                page_in();
+            }, 1000);
+
+        }
+
+        function page_in () {
+            var blackout = document.getElementById('blackout');
+            var main = document.getElementById('main');
+
+            //blackout.style.transition = 'none';
+            blackout.style.opacity = 1;
+            blackout.offsetHeight;
+            blackout.style.transition = 'opacity 1s ease';
+            blackout.style.opacity = 0;
+
+            main.style.filter = 'blur(0px)';
+        }
+
+
+
+        if (document.readyState === "loading")
+            document.addEventListener("DOMContentLoaded", onDOMLoaded);
+        else 
+            onDOMLoaded();
+
+        function onDOMLoaded() {
+            page_in();
         }
     </script>
 </body>

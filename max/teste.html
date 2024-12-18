@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width">
+	<title>Nossa história</title>
+
+    <link rel="manifest" href="/assets/pwa/manifest.json">
+	  
+	<!--<link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico">-->
+
+	<link href='https://fonts.googleapis.com/css?family=Reenie+Beanie|Shantell+Sans|Kavoon' rel='stylesheet' type='text/css'>
+
+    <link rel="stylesheet" href="/assets/fontawesome/css/all.css">
+    
+    <link href="/assets/css/max/global.css" rel="stylesheet" type="text/css" />
+    <link href="/assets/css/max/item.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+    <script>
+        function criarArquivo(token, owner, repo, filePath, content, commitMessage) {
+        const xhr = new XMLHttpRequest();
+        const encodedContent = btoa(content);
+        const url = `https://api.github.com/repos/${owner}/${repo}/contents/${filePath}`;
+
+        xhr.open('PUT', url, true);
+        xhr.setRequestHeader('Authorization', `token ${token}`);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+
+        xhr.onload = function() {
+            if (xhr.status === 201) {
+                console.log('Arquivo criado com sucesso:', xhr.responseText);
+            } else {
+                console.error('Erro ao criar arquivo:', xhr.statusText);
+            }
+        };
+
+        xhr.onerror = function() {
+            console.error('Erro de rede:', xhr.statusText);
+        };
+
+        xhr.send(JSON.stringify({
+            message: commitMessage,
+            content: encodedContent
+        }));
+    }
+
+    // Substitua pelos seus dados
+    const token = 'token_de_acesso';
+    const owner = 'yurigomes4';
+    const repo = 'Nuri';
+    const filePath = 'novo_arquivo.txt';
+    const content = 'Conteúdo do novo arquivo';
+    const commitMessage = 'Criando novo arquivo via API';
+
+    criarArquivo(token, owner, repo, filePath, content, commitMessage);
+    </script>
+</body>
+</html>

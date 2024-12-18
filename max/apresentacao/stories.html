@@ -19,73 +19,235 @@
 </head>
 
 <body>
-    <div id="indicadores">
-        <div class="indicador" indic-id="1">
-            <div class="indicador-sombra"></div>
-            <div class="indicador-atual"></div>
-        </div>
-        <div class="indicador" indic-id="2">
-            <div class="indicador-sombra"></div>
-            <div class="indicador-atual"></div>
-        </div>
-        <div class="indicador" indic-id="3">
-            <div class="indicador-sombra"></div>
-            <div class="indicador-atual"></div>
-        </div>
-        <div class="indicador" indic-id="4">
-            <div class="indicador-sombra"></div>
-            <div class="indicador-atual"></div>
-        </div>
-    </div>
-    <div id="apresentacao">
-        <div id="imagens">
-            <div class="imagem" imagem-id="1">
-                <img class="im-fundo" src="/assets/conteudo/historia/5/fotos/foto1.jpg" alt="Fundo">
-                <img class="im-imagem" src="/assets/conteudo/historia/5/fotos/foto1.jpg" alt="Imagem">
-            </div>
-            <div class="imagem" imagem-id="2">
-                <img class="im-fundo" src="/assets/conteudo/historia/5/fotos/foto2.jpg" alt="Fundo">
-                <img class="im-imagem" src="/assets/conteudo/historia/5/fotos/foto2.jpg" alt="Imagem">
-            </div>
-            <div class="imagem" imagem-id="3">
-                <img class="im-fundo" src="/assets/conteudo/historia/5/fotos/foto3.jpg" alt="Fundo">
-                <img class="im-imagem" src="/assets/conteudo/historia/5/fotos/foto3.jpg" alt="Imagem">
-            </div>
-            <div class="imagem" imagem-id="4">
-                <img class="im-fundo" src="/assets/conteudo/historia/5/fotos/foto4.jpg" alt="Fundo">
-                <img class="im-imagem" src="/assets/conteudo/historia/5/fotos/foto4.jpg" alt="Imagem">
-            </div>
-        </div>
-        <div id="botoes">
-            <div id="btn-header" onclick="btn_header_click()"></div>
-            <div id="btn-body">
-                <div id="btn-anterior"></div>
-                <div id="btn-proximo"></div>
-            </div>
-        </div>
-    </div>
-    <div id="rodape">
+    <div id="blackout"></div>
 
+    <div id="main">
+        <div id="indicadores">
+            <div class="indicador" indic-id="1">
+                <div class="indicador-sombra"></div>
+                <div class="indicador-atual"></div>
+            </div>
+            <div class="indicador" indic-id="2">
+                <div class="indicador-sombra"></div>
+                <div class="indicador-atual"></div>
+            </div>
+            <div class="indicador" indic-id="3">
+                <div class="indicador-sombra"></div>
+                <div class="indicador-atual"></div>
+            </div>
+            <div class="indicador" indic-id="4">
+                <div class="indicador-sombra"></div>
+                <div class="indicador-atual"></div>
+            </div>
+        </div>
+        <div id="apresentacao">
+            <div id="imagens">
+                <div class="imagem" imagem-id="1">
+                    <img class="im-fundo" src="/assets/conteudo/historia/5/fotos/foto1.jpg" alt="Fundo">
+                    <img class="im-imagem" src="/assets/conteudo/historia/5/fotos/foto1.jpg" alt="Imagem">
+                </div>
+                <div class="imagem" imagem-id="2">
+                    <img class="im-fundo" src="/assets/conteudo/historia/5/fotos/foto2.jpg" alt="Fundo">
+                    <img class="im-imagem" src="/assets/conteudo/historia/5/fotos/foto2.jpg" alt="Imagem">
+                </div>
+                <div class="imagem" imagem-id="3">
+                    <img class="im-fundo" src="/assets/conteudo/historia/5/fotos/foto3.jpg" alt="Fundo">
+                    <img class="im-imagem" src="/assets/conteudo/historia/5/fotos/foto3.jpg" alt="Imagem">
+                </div>
+                <div class="imagem" imagem-id="4">
+                    <img class="im-fundo" src="/assets/conteudo/historia/5/fotos/foto4.jpg" alt="Fundo">
+                    <img class="im-imagem" src="/assets/conteudo/historia/5/fotos/foto4.jpg" alt="Imagem">
+                </div>
+            </div>
+            <div id="descricoes">
+                <p class="descricao" descricao-id="1">Descrição 1</p>
+                <p class="descricao" descricao-id="2">Descrição 2</p>
+                <p class="descricao" descricao-id="3">Descrição 3</p>
+                <p class="descricao" descricao-id="4">Descrição 4</p>
+            </div>
+            <div id="botoes">
+                <div id="btn-header">
+                    <div id="btn-back" onclick="page_out(`/max/item.html?tipo=${item_tipo}&id=${item_id}`)">
+                        <i class="fas fa-arrow-left"></i>
+                    </div>
+                    <div id="btn-playpause" onclick="btn_playpause_click()">
+                        <i class="fas fa-play"></i>
+                    </div>
+                </div>
+                <div id="btn-body">
+                    <div id="btn-anterior"></div>
+                    <div id="btn-proximo"></div>
+                </div>
+            </div>
+        </div>
+        <div id="rodape">
+            <div id="rodape-logo">
+                <img src="/assets/images/max/logo.png" alt="Logo" id="logo">
+            </div>
+            <div id="rodape-texto">
+                <p id="rodape-nome"></p>
+                <p id="rodape-info"></p>
+            </div>
+            <div id="rodape-botoes"></div>
+        </div>
     </div>
 
     <script>
-        var imagens = document.getElementsByClassName('imagem');
+        const urlParams = new URLSearchParams(window.location.search);
+        const item_tipo = urlParams.get('tipo');
+        const item_id = urlParams.get('id');
+
+        var parte_inicial = urlParams.get('parte');
+        if (parte_inicial !== null) {
+            parte_inicial = parseInt(parte_inicial);
+        } else {
+            parte_inicial = 0;
+        }
+
+        async function carregarDados() {
+            const response = await fetch(`/assets/conteudo/${item_tipo}/${item_id}/main.json`);
+            const item_json = await response.json();
+            console.log(item_json);
+            return item_json;
+        }
+
         var botoes = document.getElementById('botoes');
         var btnAnterior = document.getElementById('btn-anterior');
         var btnProximo = document.getElementById('btn-proximo');
         var btnHeader = document.getElementById('btn-header');
-        var indicadores = document.getElementsByClassName('indicador');
-        var ativa = 0;
+        var ativa = parte_inicial;
         var intervalo;
-        var tempo = 3000; // 3 segundos
+        var tempo = 5000; // 5 segundos
 
         var tempoRestante = tempo;
         var tempoPausado;
         var statusTempo = 'rodando';
 
+        var btn_playpause = document.getElementById('btn-playpause');
+
+        btnAnterior.onmousedown = pausarIntervalo;
+        btnAnterior.onmouseup = despausarIntervalo;
+        btnAnterior.ontouchstart = pausarIntervalo;
+        btnAnterior.ontouchend = despausarIntervalo;
+
+        btnProximo.onmousedown = pausarIntervalo;
+        btnProximo.onmouseup = despausarIntervalo;
+        btnProximo.ontouchstart = pausarIntervalo;
+        btnProximo.ontouchend = despausarIntervalo;
+
+        btnAnterior.onclick = anterior;
+        btnProximo.onclick = proximo;
+
+        var imagens = [];
+        var descricoes = [];
+        var indicadores = [];
+
+        carregarDados().then(item_json => {
+            console.log(item_json);
+            var divImagens = document.getElementById('imagens');
+            var divIndicadores = document.getElementById('indicadores');
+            var divDescricoes = document.getElementById('descricoes');
+
+            divImagens.innerHTML = '';
+            divIndicadores.innerHTML = '';
+            divDescricoes.innerHTML = '';
+
+            for (var i = 0; i < item_json.partes.length; i++) {
+                var imagem = item_json.partes[i].imagem;
+
+                var divImagem = document.createElement('div');
+                divImagem.classList.add('imagem');
+                divImagem.setAttribute('imagem-id', i + 1);
+
+                var imgFundo = document.createElement('img');
+                imgFundo.classList.add('im-fundo');
+                imgFundo.src = `/assets/conteudo/${item_tipo}/${item_id}/fotos/${imagem}`;
+                imgFundo.alt = 'Fundo';
+                divImagem.appendChild(imgFundo);
+
+                var imgImagem = document.createElement('img');
+                imgImagem.classList.add('im-imagem');
+                imgImagem.src = `/assets/conteudo/${item_tipo}/${item_id}/fotos/${imagem}`;
+                imgImagem.alt = 'Imagem';
+                divImagem.appendChild(imgImagem);
+
+                divImagens.appendChild(divImagem);
+
+                var descricao = item_json.partes[i].descricao;
+                
+                var pDescricao = document.createElement('p');
+                pDescricao.classList.add('descricao');
+                pDescricao.setAttribute('descricao-id', i + 1);
+                pDescricao.innerText = descricao;
+
+                divDescricoes.appendChild(pDescricao);
+
+                var divIndicador = document.createElement('div');
+                divIndicador.classList.add('indicador');
+                divIndicador.setAttribute('indic-id', i + 1);
+
+                var divSombra = document.createElement('div');
+                divSombra.classList.add('indicador-sombra');
+                divIndicador.appendChild(divSombra);
+
+                var divAtual = document.createElement('div');
+                divAtual.classList.add('indicador-atual');
+                divAtual.style.width = '0%';
+                divAtual.style.transition = 'width ' + tempo + 'ms linear';
+                divIndicador.appendChild(divAtual);
+
+                divIndicadores.appendChild(divIndicador);
+
+                if (i === parte_inicial) {
+                    palavras_descricao = descricao.split(' ');
+                    tempo = palavras_descricao.length * 400;
+                    if (tempo < 5000) {
+                        tempo = 5000;
+                    }
+                    tempoRestante = tempo;
+                }
+
+            }
+
+            var rodapeNome = document.getElementById('rodape-nome');
+            var rodapeInfo = document.getElementById('rodape-info');
+
+            rodapeNome.innerText = item_json.nome;
+            rodapeInfo.innerText = item_json.data.split('-').reverse().join('/') + ' - ' + item_json.partes.length + ' partes';
+            
+            imagens = document.getElementsByClassName('imagem');
+            descricoes = document.getElementsByClassName('descricao');
+            indicadores = document.getElementsByClassName('indicador');
+
+            //iniciarIntervalo();
+            mudarImagem(parte_inicial);
+            //pausarIntervalo();
+            //despausarIntervalo();
+
+        });
+
         function mudarImagem(nova) {
             imagens[ativa].classList.remove('ativa');
+            var im_imagem_ativa = imagens[ativa].querySelector('.im-imagem');
+            im_imagem_ativa.style.transition = 'none';
+            im_imagem_ativa.style.transform = 'scale(1.1)';
+
             imagens[nova].classList.add('ativa');
+            var im_imagem_nova = imagens[nova].querySelector('.im-imagem');
+            im_imagem_nova.style.transition = 'transform ' + 5000 + 'ms ease-out';
+            im_imagem_nova.offsetWidth;
+            im_imagem_nova.style.transform = 'scale(1)';
+
+            descricoes[ativa].classList.remove('ativa');
+            descricoes[nova].classList.add('ativa');
+
+            descricao = descricoes[nova].innerText;
+            palavras_descricao = descricao.split(' ');
+            tempo = palavras_descricao.length * 400;
+            if (tempo < 5000) {
+                tempo = 5000;
+            }
+
             ativa = nova;
             for (var i = 0; i < indicadores.length; i++) {
                 indicadores[i].classList.remove('ativo');
@@ -99,6 +261,7 @@
             }
             indicadores[ativa].classList.add('ativo');
             indicadores[ativa].querySelector('.indicador-atual').style.transition = 'width ' + tempo + 'ms linear';
+            indicadores[ativa].querySelector('.indicador-atual').offsetWidth;
             indicadores[ativa].querySelector('.indicador-atual').style.width = '100%';
             console.log(indicadores[ativa].querySelector('.indicador-atual'));
 
@@ -115,6 +278,7 @@
             }
             mudarImagem(nova);
             }, tempoRestante);
+            btn_playpause.innerHTML = '<i class="fas fa-pause"></i>';
             if (tempoRestante === tempo) {
             tempoIniciado = Date.now();
             tempoEmPausa = 0;
@@ -124,10 +288,13 @@
 
         function pausarIntervalo() {
             clearInterval(intervalo);
+            btn_playpause.innerHTML = '<i class="fas fa-play"></i>';
             tempoPausado = Date.now();
 
             var indicador = indicadores[ativa].querySelector('.indicador-atual');
+            var imagem = imagens[ativa].querySelector('.im-imagem');
             indicador.style.transition = 'none';
+            imagem.style.transition = 'none';
 
             tempoDecorrido = tempoPausado - tempoIniciado - tempoEmPausa;
 
@@ -138,7 +305,17 @@
                 largura = 0;
             }
 
+            var larguraImagem = ((tempoDecorrido / 5000) * 100)
+            console.log(tempoDecorrido);
+            if (larguraImagem < 0) {
+                larguraImagem = 0;
+            } else if (larguraImagem > 100) {
+                larguraImagem = 100;
+            }
+            console.log(larguraImagem);
+
             indicador.style.width = largura + '%'; 
+            imagem.style.transform = 'scale(' + ((100+((100-larguraImagem)/10))/100) + ')';
             statusTempo = 'pausado';
         }
 
@@ -146,9 +323,19 @@
             tempoEmPausa += Date.now() - tempoPausado;
             tempoRestante = tempo - tempoDecorrido;
 
+            if (tempoDecorrido >= 5000) {
+                tempoRestanteImagem = 0;
+            } else {
+                tempoRestanteImagem = 5000 - tempoDecorrido;
+            }
+
             var indicador = indicadores[ativa].querySelector('.indicador-atual');
+            var imagem = imagens[ativa].querySelector('.im-imagem');
             indicador.style.transition = 'width ' + tempoRestante + 'ms linear';
             indicador.style.width = '100%';
+            imagem.style.transition = 'transform ' + tempoRestanteImagem + 'ms ease-out';
+            imagem.offsetWidth;
+            imagem.style.transform = 'scale(1)';
 
             /*if (tempoRestante <= 0) {
             mudarImagem((ativa + 1) % imagens.length);
@@ -178,44 +365,51 @@
             mudarImagem(nova);
         }
 
-        btnAnterior.onmousedown = pausarIntervalo;
-        btnAnterior.onmouseup = despausarIntervalo;
-        btnAnterior.ontouchstart = pausarIntervalo;
-        btnAnterior.ontouchend = despausarIntervalo;
-
-        btnProximo.onmousedown = pausarIntervalo;
-        btnProximo.onmouseup = despausarIntervalo;
-        btnProximo.ontouchstart = pausarIntervalo;
-        btnProximo.ontouchend = despausarIntervalo;
-
-        btnAnterior.onclick = anterior;
-        btnProximo.onclick = proximo;
-
-        /*for (var i = 0; i < indicadores.length; i++) {
-            indicadores[i].onclick = function() {
-            mudarImagem(parseInt(this.getAttribute('indic-id')) - 1);
-            iniciarIntervalo();
-            }
-            indicadores[i].ontouchend = function() {
-            mudarImagem(parseInt(this.getAttribute('indic-id')) - 1);
-            iniciarIntervalo();
-            }
-        }*/
-
-        /*btnHeader.onclick = function() {
-            window.location.href = '/max/home.html';
-        }*/
-
-        iniciarIntervalo();
-        mudarImagem(0);
-
-        function btn_header_click() {
-            console.log(statusTempo);
+        function btn_playpause_click() {
             if (statusTempo === 'rodando') {
                 pausarIntervalo();
             } else {
                 despausarIntervalo();
             }
+        }
+
+        function page_out (link) {
+            var blackout = document.getElementById('blackout');
+            var main = document.getElementById('main');
+
+            blackout.style.transition = 'opacity 1s ease';
+            blackout.offsetHeight;
+            blackout.style.opacity = 1;
+
+            main.style.filter = 'blur(100px)';
+
+            setTimeout(() => {
+                window.location.href = link;
+                page_in();
+            }, 1000);
+
+        }
+
+        function page_in () {
+            var blackout = document.getElementById('blackout');
+            var main = document.getElementById('main');
+
+            //blackout.style.transition = 'none';
+            blackout.style.opacity = 1;
+            blackout.offsetHeight;
+            blackout.style.transition = 'opacity 1s ease';
+            blackout.style.opacity = 0;
+
+            main.style.filter = 'blur(0px)';
+        }
+
+        if (document.readyState === "loading")
+            document.addEventListener("DOMContentLoaded", onDOMLoaded);
+        else 
+            onDOMLoaded();
+
+        function onDOMLoaded() {
+            page_in();
         }
     </script>
 

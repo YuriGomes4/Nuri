@@ -20,6 +20,12 @@
 
 <body>
 
+    <div id="load">
+        <img src="/assets/images/max/logo.png" alt="Logo">
+    </div>
+
+    <div id="blackout"></div>
+
     <div id="fundo"></div>
 
     <div id="main">
@@ -74,7 +80,7 @@
                     </div>
                     <div id="destaque-botoes">
                         <div class="destaque-botao">
-                            <i class="fa-solid fa-chevron-right"></i>
+                            <i class="fa-solid fa-book-open-reader"></i>
                             <p>Ver história</p>
                         </div>
                     </div>
@@ -92,65 +98,36 @@
     </div>
 
     <script>
-        /*const track = document.querySelector('.carousel-slides');
-        const slides = Array.from(track.children);
-        const indicators = document.querySelectorAll('.indicator');
-        let currentIndex = 0;
-        let startX = 0;
-        let currentTranslate = 0;
-        let isDragging = false;
-      
-        function updateCarousel(index) {
-          const slideWidth = slides[0].getBoundingClientRect().width;
-          track.style.transform = `translateX(-${index * slideWidth}px)`;
-          indicators.forEach((ind, i) => {
-            ind.classList.toggle('active', i === index);
-          });
-        }
-      
-        function autoSlide() {
-          currentIndex = (currentIndex + 1) % slides.length;
-          updateCarousel(currentIndex);
-        }
-      
-        let autoSlideInterval = setInterval(autoSlide, 10000);
-      
-        function startDragging(e) {
-          isDragging = true;
-          startX = e.touches ? e.touches[0].clientX : e.clientX;
-          track.style.transition = 'none';
-          clearInterval(autoSlideInterval);
-        }
-      
-        function stopDragging(e) {
-          if (!isDragging) return;
-          isDragging = false;
-          track.style.transition = 'transform 0.5s ease';
-          const endX = e.changedTouches ? e.changedTouches[0].clientX : e.clientX;
-          if (startX - endX > 50) {
-            currentIndex = (currentIndex + 1) % slides.length;
-          } else if (endX - startX > 50) {
-            currentIndex = (currentIndex - 1 + slides.length) % slides.length;
-          }
-          updateCarousel(currentIndex);
-          autoSlideInterval = setInterval(autoSlide, 10000);
-        }
-      
-        function dragging(e) {
-          if (!isDragging) return;
-          const currentX = e.touches ? e.touches[0].clientX : e.clientX;
-          const slideWidth = slides[0].getBoundingClientRect().width;
-          currentTranslate = -currentIndex * slideWidth + (currentX - startX);
-          track.style.transform = `translateX(${currentTranslate}px)`;
-        }
-      
-        track.addEventListener('mousedown', startDragging);
-        track.addEventListener('touchstart', startDragging);
-        track.addEventListener('mousemove', dragging);
-        track.addEventListener('touchmove', dragging);
-        track.addEventListener('mouseup', stopDragging);
-        track.addEventListener('touchend', stopDragging);*/
 
+        var urlParams = new URLSearchParams(window.location.search);
+        var opt = urlParams.get('opt');
+
+        var load = document.getElementById('load');
+        var blackout = document.getElementById('blackout');
+        var main = document.getElementById('main');
+
+        if (opt === 'noload') {
+            load.style.display = 'none';
+            window.history.replaceState({}, document.title, window.location.pathname);
+
+            //blackout.style.display = 'block';
+            if (document.readyState === "loading")
+                document.addEventListener("DOMContentLoaded", onDOMLoaded2);
+            else 
+                onDOMLoaded2();
+
+            function onDOMLoaded2() {
+                page_in();
+            }
+        } else {
+            blackout.style.display = 'none';
+            blackout.style.opacity = '0';
+            load.style.display = 'flex';
+            main.style.filter = 'blur(0px)';
+        }
+
+
+        var tempoIniciado = Date.now();
 
         var especiais = {}
         var historias = {}
@@ -319,13 +296,17 @@
             }
         }
 
-        listarArquivosDoDiretorio("YuriGomes4", "Nuri");
+        //listarArquivosDoDiretorio("YuriGomes4", "Nuri");
+
+        var imagens_capa = []
+        var outras_imagens = []
 
         function carregar_infos() {
             var imagem_destaque = document.getElementById('destaque-imagem').querySelector('img');
             var titulo_destaque = document.getElementById('destaque-texto').querySelector('p');
             var destaque_texto = document.getElementById('destaque-texto');
             var destaque_botao = document.getElementById('destaque-botoes').querySelector('.destaque-botao');
+            var texto_btnverhistoria = destaque_botao.querySelector('p');
 
             if (Object.keys(especiais).length === 0) {
 
@@ -353,13 +334,45 @@
             imagem_destaque.src = "/assets/conteudo/"+ destaque.tipo +"/" + destaque.id + "/fotos/" + destaque.capa;
             titulo_destaque.textContent = destaque.nome;
             destaque_texto.onclick = function() {
-                window.location.href = '/max/item.html?tipo=' + destaque.tipo + '&id=' + destaque.id;
+                //window.location.href = '/max/item.html?tipo=' + destaque.tipo + '&id=' + destaque.id;
+                page_out('/max/item.html?tipo=' + destaque.tipo + '&id=' + destaque.id);
             };
+            if(destaque.tipo === 'historia') {
+                texto_btnverhistoria.textContent = 'Ver recordação';
+            } else if(destaque.tipo === 'especial') {
+                texto_btnverhistoria.textContent = 'Ver história';
+            }
 
             var secao_recomendados = document.getElementById('secao-recomendados');
 
+            for (var i = 0; i < Object.keys(especiais).length; i++) {
+                var especial = especiais[Object.keys(especiais)[i]];
+
+                imagens_capa.push("/assets/conteudo/especial/" + Object.keys(especiais)[i] + "/fotos/" + especial.capa);
+
+                var div = document.createElement('div');
+                div.className = 'secao-item';
+                div.setAttribute('item-id', especial.id);
+                div.onclick = function() {
+                    window.location.href = '/max/item.html?tipo=especial&id=' + this.getAttribute('item-id');
+                };
+
+                var img = document.createElement('img');
+                img.src = "/assets/conteudo/especial/" + Object.keys(especiais)[i] + "/fotos/" + especial.capa;
+
+                var p = document.createElement('p');
+                p.textContent = especial.nome;
+
+                div.appendChild(img);
+                div.appendChild(p);
+
+                secao_recomendados.appendChild(div);
+            }
+
             for (var i = 0; i < Object.keys(historias).length; i++) {
                 var historia = historias[Object.keys(historias)[i]];
+
+                imagens_capa.push("/assets/conteudo/historia/" + Object.keys(historias)[i] + "/fotos/" + historia.capa);
 
                 var div = document.createElement('div');
                 div.className = 'secao-item';
@@ -382,8 +395,8 @@
         }
 
         const url = window.location.href;
-        //if (url.includes("localhost") || url.includes("192.168")) {
-        if (url.includes("192.168")) {
+        if (url.includes("localhost") || url.includes("192.168")) {
+        //if (url.includes("192.168")) {
             fetchData().then(() => {
                 carregar_infos();
             });
@@ -392,6 +405,102 @@
                 carregar_infos();
             });
         }
+
+        function page_out (link) {
+            var blackout = document.getElementById('blackout');
+            var main = document.getElementById('main');
+
+            blackout.style.display = 'block';
+            blackout.style.transition = 'opacity 1s ease';
+            blackout.offsetHeight;
+            blackout.style.opacity = '1';
+
+            //main.style.transition = 'filter 1s ease';
+            main.style.filter = 'blur(100px)';
+
+            setTimeout(() => {
+                window.location.href = link;
+                page_in();
+            }, 1000);
+
+        }
+
+        function page_in () {
+            var blackout = document.getElementById('blackout');
+            var main = document.getElementById('main');
+
+            //blackout.style.transition = 'none';
+            //blackout.style.opacity = 1;
+            blackout.style.display = 'block';
+            blackout.style.transition = 'opacity 3s ease';
+            blackout.offsetHeight;
+            blackout.style.opacity = 0;
+
+            //main.style.transition = 'filter 1s ease';
+            main.style.filter = 'blur(0px)';
+        }
+
+
+        Promise.all(imagens_capa.map(src => {
+            return new Promise((resolve, reject) => {
+                const img = new Image();
+                img.src = src;
+                img.onload = resolve;
+                img.onerror = reject;
+            });
+        })).then(() => {
+            onDOMLoaded();
+            carregar_outras_imagens();
+        }).catch(error => {
+            console.error('Erro ao carregar imagens:', error);
+        });
+
+        function carregar_outras_imagens() {
+            outras_imagens.forEach(src => {
+            const img = new Image();
+            img.src = src;
+            img.onload = () => {
+                console.log(`Imagem carregada: ${src}`);
+            };
+            img.onerror = () => {
+                console.error(`Erro ao carregar imagem: ${src}`);
+            };
+            });
+        }
+
+        if (document.readyState === "loading")
+            document.addEventListener("DOMContentLoaded", onDOMLoaded);
+        else 
+            onDOMLoaded();
+
+        var controle = 0;
+
+        function onDOMLoaded() {
+            controle++;
+            if (controle === 2) {
+                setTimeout(() => {
+                    var tempoFinal = Date.now();
+                    var tempoTotal = tempoFinal - tempoIniciado;
+
+                    var load = document.getElementById('load');
+                    var imgLoad = load.querySelector('img');
+
+                    console.log(imgLoad);
+
+                    imgLoad.style.transition = 'transform 1s cubic-bezier(0.99, 0.03, 0.92, 0.25)';
+                    imgLoad.offsetHeight;
+                    imgLoad.style.transform = 'scale(10)';
+
+                    load.style.transition = 'opacity 1s cubic-bezier(0.99, 0.03, 0.92, 0.25)';
+                    load.style.opacity = '0';
+
+                    setTimeout(() => {
+                        load.style.display = 'none';
+                    }, 1000);
+                }, 1000);
+            }
+        };
+
       </script>
 
 </body>
