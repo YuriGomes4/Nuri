@@ -1,0 +1,176 @@
+body {
+    margin: 0;
+    display: flex;
+    font-family: Roboto;
+    color: #fff;
+    width: 100dvw;
+    height: 100dvh;
+    max-width: 100vw;
+    max-height: 100vh;
+}
+
+#outras-infos {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    width: 100%;
+    justify-content: space-between;
+    max-width: calc(100vw - 40px);
+}
+
+#textos {
+    display: flex;
+    flex-direction: column;
+    /* width: fit-content; */
+    gap: 20px;
+    max-width: calc(100% - 125px);
+}
+
+#textos .input-group {
+    /* max-width: calc(100% - 99px); */
+}
+
+#ed-exclusivo {
+    width: fit-content;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+#ed-exclusivo > input {
+    --tamanho: 20px;
+    height: var(--tamanho);
+    width: var(--tamanho);
+    /* border-radius: 47px; */
+    /* overflow: hidden; */
+}
+
+body p {
+    margin: 0;
+}
+
+#main {
+    background-color: #000;
+    /* min-height: 100vh; */
+    display: flex;
+    flex-direction: column;
+    filter: blur(100px);
+    transition: filter 1s;
+    width: 100%;
+    padding: 20px;
+}
+
+#editor-header {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#editor-body {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    /* width: fit-content; */
+    /* align-items: center; */
+}
+
+#imagem-capa-upload {align-items: center;}
+
+#imagem-capa-preview {
+    width: 100px;
+    border-color: #2d2d2d;
+    border-style: solid;
+    border-width: 2px;
+    border-radius: 20px;
+    /* aspect-ratio: 9/14; */
+    display: flex;
+    overflow: hidden;
+    flex-direction: column;
+    /* min-height: 160px; */
+}
+
+#btn-remover {
+    background-color: #a12121;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 25px;
+}
+
+#preview-capa {
+    width: 100%;
+    aspect-ratio: 9 / 14;
+}
+
+.input-group > input {
+    padding: 8px 14px;
+    font-size: 20px;
+    border-radius: 10px;
+    /* width: 100%; */
+    /* display: flex; */
+    /* justify-content: space-between; */
+    /* align-items: center; */
+}
+
+input, input:autofill {
+    background-color: #2d2d2d;
+    stroke: none;
+    border: none;
+    transition: color calc(infinity* 1s) step-end, background-color calc(infinity* 1s) step-end;
+    outline: none;
+    color: #fff;
+}
+
+input:-webkit-autofill, input:-webkit-autofill:hover, input:-webkit-autofill:focus, input:-webkit-autofill:active {
+    -webkit-box-shadow: inset 0 0 0 30px #2d2d2d;
+    -webkit-text-fill-color: #fff;
+}
+
+.input-group > label {
+    font-size: 14px;
+    width: fit-content;
+}
+
+#editor {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+#editor-header > p {
+    font-size: 20px;
+}
+
+#back-btn {
+    --tamanho: 35px;
+    height: var(--tamanho);
+    width: var(--tamanho);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 25px;
+}
+
+#btn-salvar {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    --tamanho: 70px;
+    height: var(--tamanho);
+    width: var(--tamanho);
+    background-color: #215d01;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50px;
+    /* color: #000; */
+    font-size: 25px;
+}

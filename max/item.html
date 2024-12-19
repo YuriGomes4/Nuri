@@ -27,7 +27,7 @@
     <div id="main">
         <div id="header-menu">
             <div id="header-menu-logo">
-                <i class="fa-solid fa-arrow-left" onclick="page_out('/max/home.html?opt=noload')"></i>
+                <i class="fa-solid fa-arrow-left" onclick="page_out('back')"></i>
             </div>
             <div id="header-menu-buttons">
                 <i class="fa-solid fa-magnifying-glass"></i>
@@ -66,6 +66,11 @@
     </div>
 
     <script>
+
+        window.onpopstate = function(event) {
+            page_out("https://google.com");
+        };
+
         const urlParams = new URLSearchParams(window.location.search);
         const tipo = urlParams.get('tipo');
         const id = urlParams.get('id');
@@ -184,7 +189,11 @@
             main.style.filter = 'blur(100px)';
 
             setTimeout(() => {
-                window.location.href = link;
+                if (link === 'back') {
+                    window.history.back();
+                } else {
+                    window.location.href = link;
+                }
                 page_in();
             }, 1000);
 

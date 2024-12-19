@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width">
+	<title>Nossa história</title>
+
+    <link rel="manifest" href="/assets/pwa/manifest.json">
+	  
+	<!--<link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico">-->
+
+	<link href='https://fonts.googleapis.com/css?family=Reenie+Beanie|Shantell+Sans|Kavoon' rel='stylesheet' type='text/css'>
+
+    <link rel="stylesheet" href="/assets/fontawesome/css/all.css">
+    
+    <link href="/assets/css/max/global.css" rel="stylesheet" type="text/css" />
+    <link href="/assets/css/max/editar_item.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+
+    <div id="blackout"></div>
+
+    <div id="fundo"></div>
+
+    <div id="main">
+        <div id="editor">
+            <div id="editor-header">
+                <div id="back-btn" onclick="page_out('back')">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </div>
+                <p>Editar item</p>
+            </div>
+            <div id="editor-body">
+                <div id="ed-titulo" class="input-group">
+                    <label for="titulo">Título</label>
+                    <input type="text" id="titulo">
+                </div>
+                <div id="ed-sinopse" class="input-group">
+                    <label for="sinopse">Sinopse</label>
+                    <input type="text" id="sinopse">
+                </div>
+                <div id="outras-infos">
+                    <div id="textos">
+                        <div id="ed-autor" class="input-group">
+                            <label for="autor">Autor</label>
+                            <input type="text" id="autor">
+                        </div>
+                        <div id="ed-data" class="input-group">
+                            <label for="data">Data</label>
+                            <input type="date" id="data">
+                        </div>
+                        <div id="ed-exclusivo">
+                            <label>Exclusivo?</label>
+                            <input type="checkbox" id="exclusivo">
+                        </div>
+                    </div>
+                    <div id="imagem-capa-upload" class="input-group">
+                        <label for="imagem-capa">Capa</label>
+                        <div id="imagem-capa-preview">
+                            <input type="file" id="imagem-capa" style="display: none;" onchange="previewImageCapa(event)">
+                            <img id="preview-capa" src="#" alt="Preview" style="opacity: 0;" onclick="document.getElementById('imagem-capa').click()">
+                            <div id="btn-remover" style="display: none;" onclick="remover_imagem_capa()">
+                                <p>Remover</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="btn-salvar" onclick="salvar()">
+            <i class="fa-solid fa-save"></i>
+        </div>
+    </div>
+
+    <script>
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const tipo = urlParams.get('tipo');
+        const item_id = urlParams.get('id');
+
+        function previewImageCapa(event) {
+            var reader = new FileReader();
+            reader.onload = function() {
+                var output = document.getElementById('preview-capa');
+                output.src = reader.result;
+                output.style.opacity = 1;
+
+                var btn = document.getElementById('btn-remover');
+                btn.style.display = 'flex';
+            }
+            reader.readAsDataURL(event.target.files[0]);
+        }
+
+        function remover_imagem_capa() {
+            var input = document.getElementById('imagem-capa');
+            var preview = document.getElementById('preview-capa');
+            var btn = document.getElementById('btn-remover');
+
+            input.value = '';
+            preview.src = '#';
+            preview.style.opacity = 0;
+            btn.style.display = 'none';
+        }
+
+        function page_out (link) {
+            var blackout = document.getElementById('blackout');
+            var main = document.getElementById('main');
+
+            blackout.style.transition = 'opacity 1s ease';
+            blackout.offsetHeight;
+            blackout.style.opacity = 1;
+
+            main.style.filter = 'blur(100px)';
+
+            setTimeout(() => {
+                if (link === 'back') {
+                    window.history.back();
+                } else {
+                    window.location.href = link;
+                }
+                page_in();
+            }, 1000);
+
+        }
+
+        function page_in () {
+            var blackout = document.getElementById('blackout');
+            var main = document.getElementById('main');
+
+            //blackout.style.transition = 'none';
+            blackout.style.opacity = 1;
+            blackout.offsetHeight;
+            blackout.style.transition = 'opacity 1s ease';
+            blackout.style.opacity = 0;
+
+            main.style.filter = 'blur(0px)';
+        }
+
+
+
+        if (document.readyState === "loading")
+            document.addEventListener("DOMContentLoaded", onDOMLoaded);
+        else 
+            onDOMLoaded();
+
+        function onDOMLoaded() {
+            page_in();
+        }
+    </script>
+</body>
+</html>

@@ -67,7 +67,7 @@
             </div>
             <div id="botoes">
                 <div id="btn-header">
-                    <div id="btn-back" onclick="page_out(`/max/item.html?tipo=${item_tipo}&id=${item_id}`)">
+                    <div id="btn-back" onclick="page_out('back')">
                         <i class="fas fa-arrow-left"></i>
                     </div>
                     <div id="btn-playpause" onclick="btn_playpause_click()">
@@ -384,7 +384,11 @@
             main.style.filter = 'blur(100px)';
 
             setTimeout(() => {
-                window.location.href = link;
+                if (link === 'back') {
+                    window.history.back();
+                } else {
+                    window.location.href = link;
+                }
                 page_in();
             }, 1000);
 

@@ -60,10 +60,10 @@
         <div id="conteudo">
             <div id="filtros">
                 <div class="filtro">
-                    <p>Especiais</p>
+                    <p>Histórias</p>
                 </div>
                 <div class="filtro">
-                    <p>Histórias</p>
+                    <p>Recordações</p>
                 </div>
             </div>
             <div id="destaque">
@@ -109,16 +109,6 @@
         if (opt === 'noload') {
             load.style.display = 'none';
             window.history.replaceState({}, document.title, window.location.pathname);
-
-            //blackout.style.display = 'block';
-            if (document.readyState === "loading")
-                document.addEventListener("DOMContentLoaded", onDOMLoaded2);
-            else 
-                onDOMLoaded2();
-
-            function onDOMLoaded2() {
-                page_in();
-            }
         } else {
             blackout.style.display = 'none';
             blackout.style.opacity = '0';
@@ -418,6 +408,10 @@
             //main.style.transition = 'filter 1s ease';
             main.style.filter = 'blur(100px)';
 
+            const urlParams = new URLSearchParams(window.location.search);
+            urlParams.set('opt', 'noload');
+            window.history.replaceState({}, '', `${window.location.pathname}?${urlParams}`);
+
             setTimeout(() => {
                 window.location.href = link;
                 page_in();
@@ -478,26 +472,34 @@
         function onDOMLoaded() {
             controle++;
             if (controle === 2) {
-                setTimeout(() => {
-                    var tempoFinal = Date.now();
-                    var tempoTotal = tempoFinal - tempoIniciado;
 
-                    var load = document.getElementById('load');
-                    var imgLoad = load.querySelector('img');
+                if (opt === 'noload') {
 
-                    console.log(imgLoad);
+                    page_in();
 
-                    imgLoad.style.transition = 'transform 1s cubic-bezier(0.99, 0.03, 0.92, 0.25)';
-                    imgLoad.offsetHeight;
-                    imgLoad.style.transform = 'scale(10)';
-
-                    load.style.transition = 'opacity 1s cubic-bezier(0.99, 0.03, 0.92, 0.25)';
-                    load.style.opacity = '0';
+                } else {
 
                     setTimeout(() => {
-                        load.style.display = 'none';
+                        var tempoFinal = Date.now();
+                        var tempoTotal = tempoFinal - tempoIniciado;
+
+                        var load = document.getElementById('load');
+                        var imgLoad = load.querySelector('img');
+
+                        console.log(imgLoad);
+
+                        imgLoad.style.transition = 'transform 1s cubic-bezier(0.99, 0.03, 0.92, 0.25)';
+                        imgLoad.offsetHeight;
+                        imgLoad.style.transform = 'scale(10)';
+
+                        load.style.transition = 'opacity 1s cubic-bezier(0.99, 0.03, 0.92, 0.25)';
+                        load.style.opacity = '0';
+
+                        setTimeout(() => {
+                            load.style.display = 'none';
+                        }, 1000);
                     }, 1000);
-                }, 1000);
+                }
             }
         };
 
