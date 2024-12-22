@@ -99,6 +99,12 @@
 
     <script>
 
+        function setCookie(name, value) {
+			document.cookie = name + "=" + value;
+		}
+
+        setCookie("gk", "");
+
         var urlParams = new URLSearchParams(window.location.search);
         var opt = urlParams.get('opt');
 
@@ -343,8 +349,11 @@
                 var div = document.createElement('div');
                 div.className = 'secao-item';
                 div.setAttribute('item-id', especial.id);
-                div.onclick = function() {
+                /*div.onclick = function() {
                     window.location.href = '/max/item.html?tipo=especial&id=' + this.getAttribute('item-id');
+                };*/
+                div.onclick = function() {
+                    page_out('/max/item.html?tipo=especial&id=' + this.getAttribute('item-id'));
                 };
 
                 var img = document.createElement('img');
@@ -367,8 +376,11 @@
                 var div = document.createElement('div');
                 div.className = 'secao-item';
                 div.setAttribute('item-id', historia.id);
-                div.onclick = function() {
+                /*div.onclick = function() {
                     window.location.href = '/max/item.html?tipo=historia&id=' + this.getAttribute('item-id');
+                };*/
+                div.onclick = function() {
+                    page_out('/max/item.html?tipo=historia&id=' + this.getAttribute('item-id'));
                 };
 
                 var img = document.createElement('img');
@@ -401,7 +413,7 @@
             var main = document.getElementById('main');
 
             blackout.style.display = 'block';
-            blackout.style.transition = 'opacity 1s ease';
+            blackout.style.transition = 'opacity 0.5s ease';
             blackout.offsetHeight;
             blackout.style.opacity = '1';
 
@@ -415,7 +427,7 @@
             setTimeout(() => {
                 window.location.href = link;
                 page_in();
-            }, 1000);
+            }, 500);
 
         }
 
@@ -426,7 +438,7 @@
             //blackout.style.transition = 'none';
             //blackout.style.opacity = 1;
             blackout.style.display = 'block';
-            blackout.style.transition = 'opacity 3s ease';
+            blackout.style.transition = 'opacity 1.5s ease';
             blackout.offsetHeight;
             blackout.style.opacity = 0;
 

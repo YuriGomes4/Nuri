@@ -377,7 +377,7 @@
             var blackout = document.getElementById('blackout');
             var main = document.getElementById('main');
 
-            blackout.style.transition = 'opacity 1s ease';
+            blackout.style.transition = 'opacity 0.5s ease';
             blackout.offsetHeight;
             blackout.style.opacity = 1;
 
@@ -390,7 +390,7 @@
                     window.location.href = link;
                 }
                 page_in();
-            }, 1000);
+            }, 500);
 
         }
 
@@ -401,7 +401,7 @@
             //blackout.style.transition = 'none';
             blackout.style.opacity = 1;
             blackout.offsetHeight;
-            blackout.style.transition = 'opacity 1s ease';
+            blackout.style.transition = 'opacity 0.5s ease';
             blackout.style.opacity = 0;
 
             main.style.filter = 'blur(0px)';

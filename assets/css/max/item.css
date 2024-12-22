@@ -17,7 +17,7 @@
     display: flex;
     flex-direction: column;
     filter: blur(100px);
-    transition: filter 1s;
+    transition: filter 0.5s;
 }
 
 body {
@@ -161,17 +161,31 @@ html {
     color: #696969;
 }
 
+#item-buttons {
+    display: flex;
+    padding: 8px 0;
+    flex-direction: column;
+    gap: 8px;
+}
+
+#item-buttons > div {
+    display: flex;
+    justify-content: center;
+    padding: 12px;
+    gap: 10px;
+    font-weight: bold;
+    font-size: 16px;
+    border-radius: 5px;
+}
+
 #btn-verhistoria {
     background-color: #fff;
     color: #000;
-    display: flex;
-    justify-content: center;
-    padding: 10px;
-    gap: 10px;
-    font-weight: bold;
-    font-size: 18px;
-    border-radius: 5px;
-    margin: 8px 0;
+}
+
+#btn-editarhistoria {
+    background-color: #232323;
+    color: #ffffff;
 }
 
 #item-sinopse {

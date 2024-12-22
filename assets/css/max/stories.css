@@ -191,7 +191,7 @@ body p {
 
 #main {
     filter: blur(100px);
-    transition: filter 1s ease;
+    transition: filter 0.5s ease;
 }
 
 .indicador-atual {

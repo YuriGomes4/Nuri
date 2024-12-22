@@ -47,9 +47,15 @@
                     <p id="item-data"></p>
                     <p id="item-qnt-partes"></p>
                 </div>
-                <div id="btn-verhistoria" onclick="page_out(`/max/apresentacao/stories.html?tipo=${tipo}&id=${item_id}`)">
-                    <i class="fa-solid fa-book-open-reader"></i>
-                    <p>Ver história do início</p>
+                <div id="item-buttons">
+                    <div id="btn-verhistoria" onclick="page_out(`/max/apresentacao/stories.html?tipo=${tipo}&id=${item_id}`)">
+                        <i class="fa-solid fa-book-open-reader"></i>
+                        <p>Ver história do início</p>
+                    </div>
+                    <div id="btn-editarhistoria" onclick="page_out(`/max/editar_item.html?tipo=${tipo}&id=${item_id}`)">
+                        <i class="fa-solid fa-pen-to-square"></i>
+                        <p>Editar história</p>
+                    </div>
                 </div>
                 <p id="item-sinopse"></p>
                 <div id="envolvidos">
@@ -66,10 +72,6 @@
     </div>
 
     <script>
-
-        window.onpopstate = function(event) {
-            page_out("https://google.com");
-        };
 
         const urlParams = new URLSearchParams(window.location.search);
         const tipo = urlParams.get('tipo');
@@ -182,7 +184,7 @@
             var blackout = document.getElementById('blackout');
             var main = document.getElementById('main');
 
-            blackout.style.transition = 'opacity 1s ease';
+            blackout.style.transition = 'opacity 0.5s ease';
             blackout.offsetHeight;
             blackout.style.opacity = 1;
 
@@ -195,7 +197,7 @@
                     window.location.href = link;
                 }
                 page_in();
-            }, 1000);
+            }, 500);
 
         }
 
@@ -206,7 +208,7 @@
             //blackout.style.transition = 'none';
             blackout.style.opacity = 1;
             blackout.offsetHeight;
-            blackout.style.transition = 'opacity 1s ease';
+            blackout.style.transition = 'opacity 0.5s ease';
             blackout.style.opacity = 0;
 
             main.style.filter = 'blur(0px)';
