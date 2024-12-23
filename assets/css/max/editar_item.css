@@ -10,6 +10,33 @@ body {
     background-color: #000;
 }
 
+.participante {
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+    font-size: 14px;
+    padding: 4px 8px;
+    background-color: #005f73;
+    border-radius: 50px;
+    align-items: center;
+}
+
+.participante > i {
+    font-size: 8px;
+    pointer-events: none;
+}
+
+.participante > p {
+    pointer-events: none;
+}
+
+#participantes-list {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 5px;
+}
+
 .parte-btns-ordem {
     display: flex;
     gap: 10px;
@@ -234,6 +261,30 @@ body p {
     gap: 5px;
     /* width: fit-content; */
     /* align-items: center; */
+}
+
+#btn-add-participante {
+    --tamanho: 34px;
+    height: var(--tamanho);
+    width: var(--tamanho);
+    background-color: #098500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50px;
+    min-width: var(--tamanho);
+}
+
+#div-ed-participantes {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    align-items: center;
+    gap: 10px;
+}
+
+#div-ed-participantes > input {
+    width: 100%;
 }
 
 #imagem-capa-upload {align-items: center;}
