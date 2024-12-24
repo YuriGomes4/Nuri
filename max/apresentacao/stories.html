@@ -165,7 +165,7 @@
 
         var tempoRestante = tempo;
         var tempoPausado;
-        var statusTempo = 'rodando';
+        var statusTempo = 'pausado';
 
         var btn_playpause = document.getElementById('btn-playpause');
 
@@ -310,7 +310,10 @@
 
         can_autoplay = false;
 
+        video_status = 'imagem';
+
         function mudarImagem(nova) {
+            statusTempo = 'pausado';
             imagens[ativa].classList.remove('ativa');
             var im_imagem_ativa = imagens[ativa].querySelector('.im-imagem');
             if (im_imagem_ativa !== null) {
@@ -327,8 +330,10 @@
                 im_imagem_nova.style.transition = 'transform ' + 5000 + 'ms ease-out';
                 im_imagem_nova.offsetWidth;
                 im_imagem_nova.style.transform = 'scale(1)';
+                //video_status = 'imagem';
             } else {
                 var video = imagens[nova].querySelector('.im-video');
+                //video.controls = true;
                 video.currentTime = 0;
                 var playPromise = video.play();
                 if (playPromise !== undefined) {
@@ -338,10 +343,23 @@
                         console.log('Erro ao reproduzir vídeo:', error);
                     });
                 }
-                /*video.play().then(() => {
-                    can_autoplay = true;
-                }).catch((error) => {
-                    console.log('Erro ao reproduzir vídeo:', error);
+
+                //video_status = 'carregando';
+
+                /*video.addEventListener('waiting', () => {
+                    video_status = 'carregando';
+                    if (typeof tempoIniciado === 'undefined') {
+                        tempoIniciado = Date.now();
+                        tempoEmPausa = 0;
+                    }
+                    pausarIntervalo();
+                });
+
+                video.addEventListener('playing', () => {
+                    video_status = 'rodando';
+                    if (statusTempo === 'rodando') {
+                        despausarIntervalo();
+                    }
                 });*/
             }
 
@@ -354,7 +372,7 @@
             var video = imagens[nova].querySelector('.im-video');
             if (video !== null) {
                 tempo = video.duration * 1000;
-                if (tempo != NaN) {
+                if (isNaN(tempo)) {
                     tempo = 5000;
                 }
             } else {
@@ -375,21 +393,28 @@
                     indicadores[i].classList.remove('passado');
                 }
             }
+
             indicadores[ativa].classList.add('ativo');
-            indicadores[ativa].querySelector('.indicador-atual').style.transition = 'width ' + tempo + 'ms linear';
-            indicadores[ativa].querySelector('.indicador-atual').offsetWidth;
-            indicadores[ativa].querySelector('.indicador-atual').style.width = '100%';
             console.log(indicadores[ativa].querySelector('.indicador-atual'));
 
             tempoRestante = tempo;
             clearInterval(intervalo);
             if (im_imagem_nova !== null) {
                 iniciarIntervalo();
+                indicadores[ativa].querySelector('.indicador-atual').style.transition = 'width ' + tempo + 'ms linear';
+                indicadores[ativa].querySelector('.indicador-atual').offsetWidth;
+                indicadores[ativa].querySelector('.indicador-atual').style.width = '100%';
             } else {
                 if (playPromise !== undefined) {
                     playPromise.then(() => {
                         can_autoplay = true;
+                        tempo = video.duration * 1000;
+                        tempoRestante = tempo;
                         iniciarIntervalo();
+                        indicadores[ativa].querySelector('.indicador-atual').style.transition = 'width ' + tempo + 'ms linear';
+                        indicadores[ativa].querySelector('.indicador-atual').offsetWidth;
+                        indicadores[ativa].querySelector('.indicador-atual').style.width = '100%';
+
                     }).catch((error) => {
                         console.log('Erro ao reproduzir vídeo:', error);
                         tempoIniciado = Date.now();
@@ -401,6 +426,10 @@
         }
 
         function iniciarIntervalo() {
+            console.log(tempo)
+            if (video_status === 'carregando') {
+                return;
+            }
             intervalo = setInterval(function() {
             var nova = ativa + 1;
             if (nova >= imagens.length) {
