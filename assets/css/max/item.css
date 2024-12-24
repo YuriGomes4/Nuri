@@ -136,6 +136,7 @@ html {
     width: 60px;
     aspect-ratio: 9/14;
     border-radius: 10px;
+    object-fit: cover;
 }
 
 .parte-item > p {
