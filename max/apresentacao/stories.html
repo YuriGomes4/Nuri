@@ -169,18 +169,20 @@
 
         var btn_playpause = document.getElementById('btn-playpause');
 
-        btnAnterior.onmousedown = pausarIntervalo;
-        btnAnterior.onmouseup = despausarIntervalo;
-        btnAnterior.ontouchstart = pausarIntervalo;
-        btnAnterior.ontouchend = despausarIntervalo;
+        if ('ontouchstart' in window) {
+            btnAnterior.ontouchstart = touchStartAnterior;
+            btnAnterior.ontouchend = touchEndAnterior;
+            btnProximo.ontouchstart = touchStartProximo;
+            btnProximo.ontouchend = touchEndProximo;
+        } else {
+            btnAnterior.onmousedown = touchStartAnterior;
+            btnAnterior.onmouseup = touchEndAnterior;
+            btnProximo.onmousedown = touchStartProximo;
+            btnProximo.onmouseup = touchEndProximo;
+        }
 
-        btnProximo.onmousedown = pausarIntervalo;
-        btnProximo.onmouseup = despausarIntervalo;
-        btnProximo.ontouchstart = pausarIntervalo;
-        btnProximo.ontouchend = despausarIntervalo;
-
-        btnAnterior.onclick = anterior;
-        btnProximo.onclick = proximo;
+        /*btnAnterior.onclick = anterior;
+        btnProximo.onclick = proximo;*/
 
         var imagens = [];
         var descricoes = [];
@@ -364,7 +366,7 @@
             console.log(larguraImagem);
 
             indicador.style.width = largura + '%'; 
-            imagem.style.transform = 'scale(' + ((100+((100-larguraImagem)/10))/100) + ')';
+            imagem.style.transform = 'scale(' + (((100+((100-larguraImagem)/10))/100) * ((100 - ((100-larguraImagem)/100))/100)) + ')';
             statusTempo = 'pausado';
         }
 
@@ -412,6 +414,49 @@
             }
             tempoRestante = tempo;
             mudarImagem(nova);
+        }
+
+        var btnProximoStatus = "solto";
+
+        function touchStartProximo() {
+            intervalo_proximo = setTimeout(() => {
+                btnProximoStatus = "segurado";
+                console.log(btnProximoStatus);
+                pausarIntervalo();
+            }, 200);
+        }
+
+        function touchEndProximo() {
+            console.log("Opa");
+            clearTimeout(intervalo_proximo);
+            if (btnProximoStatus === "segurado") {
+                despausarIntervalo();
+            } else {
+                proximo();
+            }
+
+            btnProximoStatus = "solto";
+        }
+
+        var btnAnteriorStatus = "solto";
+
+        function touchStartAnterior() {
+            intervalo_anterior = setTimeout(() => {
+                btnAnteriorStatus = "segurado";
+                console.log(btnAnteriorStatus);
+                pausarIntervalo();
+            }, 200);
+        }
+
+        function touchEndAnterior() {
+            clearTimeout(intervalo_anterior);
+            if (btnAnteriorStatus === "segurado") {
+                despausarIntervalo();
+            } else {
+                anterior();
+            }
+
+            btnAnteriorStatus = "solto";
         }
 
         function btn_playpause_click() {
