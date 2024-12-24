@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-br">
 
 <head>
 	<meta charset="utf-8">
@@ -32,7 +32,8 @@
                 <div id="back-btn" onclick="page_out('back')">
                     <i class="fa-solid fa-arrow-left"></i>
                 </div>
-                <p>Editar item</p>
+                <p>Editar</p>
+                <span onclick="remover_item()" style="display: none;">Remover</span>
             </div>
             <div id="editor-body">
                 <div id="ed-titulo" class="input-group">
@@ -62,7 +63,7 @@
                         <label for="imagem-capa">Capa</label>
                         <div id="imagem-capa-preview">
                             <input type="file" id="imagem-capa" style="display: none;" onchange="previewImageCapa(event)">
-                            <img id="preview-capa" src="#" alt="Preview" style="opacity: 0;" onclick="document.getElementById('imagem-capa').click()">
+                            <img id="preview-capa" src="" alt="Preview" style="opacity: 0;" onclick="document.getElementById('imagem-capa').click()">
                             <div id="btn-remover" style="display: none;" onclick="remover_imagem_capa()">
                                 <p>Remover</p>
                             </div>
@@ -106,7 +107,7 @@
                                     </div>
                                     <div class="parte-imagem-upload">
                                         <input type="file" id="pt-imagem-0" class="pt-imagem" style="display: none;" onchange="previewImageParte(event)">
-                                        <img id="pt-preview-imagem-0" class="pt-preview-imagem" src="#" alt="Preview" style="opacity: 0;" onclick="document.getElementById('pt-imagem-0').click()">
+                                        <img id="pt-preview-imagem-0" class="pt-preview-imagem" src="" alt="Preview" style="opacity: 0;" onclick="document.getElementById('pt-imagem-0').click()">
                                         <div id="pt-btn-remover-imagem-0" class="pt-btn-remover-imagem" style="display: none;" onclick="remover_imagem_parte(event)">
                                             <p>Remover</p>
                                         </div>
@@ -137,10 +138,30 @@
     <script>
 
         const urlParams = new URLSearchParams(window.location.search);
-        const tipo = urlParams.get('tipo');
-        const item_id = urlParams.get('id');
+        var tipo = urlParams.get('tipo');
+        var item_id = urlParams.get('id');
         var item = {};
         var dict_imagens = {};
+        var tipo_editor = 'editar';
+
+        if (tipo && item_id) {
+            tipo_editor = 'editar';
+        } else {
+            tipo_editor = 'criar';
+            tipo = 'historia';
+            item_id = Math.floor(100000 + Math.random() * 900000).toString();
+        }
+
+        console.log(window.location.href);
+
+        //var titulo_item = document.getElementById('editor-header').querySelector('p');
+        //titulo_item.innerText = `Editar ${tipo} - ${item_id}`;
+
+        if (tipo_editor === 'editar') {
+            var btn_remover = document.getElementById('editor-header').querySelector('span');
+            btn_remover.style.display = 'block';
+            btn_remover.textContent = `Remover ${tipo}`;
+        }
 
         function previewImageCapa(event) {
 
@@ -172,7 +193,7 @@
             delete dict_imagens[preview.getAttribute('file-name')];
 
             input.value = '';
-            preview.src = '#';
+            preview.src = '';
             preview.style.opacity = 0;
             btn.style.display = 'none';
         }
@@ -210,7 +231,7 @@
             delete dict_imagens[preview.getAttribute('file-name')];
 
             input.value = '';
-            preview.src = '#';
+            preview.src = '';
             preview.style.opacity = 0;
             btn.style.display = 'none';
         }
@@ -464,7 +485,14 @@
             }
         }
 
-        carregar_item();
+        if (tipo_editor === 'editar') {
+            carregar_item();
+        } else {
+            var partes_body = document.getElementById('partes-body');
+            partes_body.innerHTML = '';
+            addParte();
+        }
+
 
         function addParte() {
             var partes_body = document.getElementById('partes-body');
@@ -557,7 +585,7 @@
             var pt_preview_imagem = document.createElement('img');
             pt_preview_imagem.setAttribute('id', `pt-preview-imagem-${parte_local_id}`);
             pt_preview_imagem.classList.add('pt-preview-imagem');
-            pt_preview_imagem.setAttribute('src', '#');
+            pt_preview_imagem.setAttribute('src', '');
             pt_preview_imagem.style.opacity = 0;
             pt_preview_imagem.addEventListener('click', function() {
                 document.getElementById(`pt-imagem-${parte_local_id}`).click();
@@ -728,6 +756,10 @@
 			return cookieValue ? cookieValue.pop() : '';
 		}
 
+        function setCookie(name, value) {
+			document.cookie = name + "=" + value;
+		}
+
         function convertToBase64(file) {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
@@ -740,44 +772,57 @@
         async function listar_imagens_alteradas() {
             var imagens_json = [];
 
-            imagens_json.push(item.capa);
+            if (tipo_editor === 'editar') {
 
-            item.partes.forEach((parte, index) => {
-                if (!imagens_json.includes(parte.imagem)) {
-                    imagens_json.push(parte.imagem);
+                if (item.capa !== '' && item.capa !== null) {
+                    imagens_json.push(item.capa);
                 }
-            });
 
-            try {
-                const response = await fetch(`https://api.github.com/repos/YuriGomes4/Nuri/contents/assets/conteudo/${tipo}/${item_id}/fotos`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        //'Authorization': `Bearer ${getCookie('gk')}`
+                item.partes.forEach((parte, index) => {
+                    if (!imagens_json.includes(parte.imagem) && parte.imagem !== '') {
+                        imagens_json.push(parte.imagem);
                     }
                 });
-                const response_json = await response.json();
-                response_json.forEach(imagem => {
-                    if (!imagens_json.includes(imagem.name) && imagem.type === "file") {
-                        imagens_json.push(imagem.name);
+
+                try {
+                    const response = await fetch(`https://api.github.com/repos/YuriGomes4/Nuri/contents/assets/conteudo/${tipo}/${item_id}/fotos`, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            //'Authorization': `Bearer ${getCookie('gk')}`
+                        }
+                    });
+                    if (!response.ok) {
+                        console.error('Erro ao listar imagens:', response);
+                        return [];
                     }
-                });
-            } catch (error) {
-                console.error('Erro ao listar imagens:', error);
-                return [];
+                    const response_json = await response.json();
+                    response_json.forEach(imagem => {
+                        if (!imagens_json.includes(imagem.name) && imagem.type === "file") {
+                            imagens_json.push(imagem.name);
+                        }
+                    });
+                } catch (error) {
+                    console.error('Erro ao listar imagens:', error);
+                    return [];
+                }
             }
 
             var imagens_atuais = [];
 
             var imagem_capa = document.getElementById('preview-capa');
 
-            if (imagem_capa.src.includes(";base64,")) {
-                if (!imagens_atuais.includes(imagem_capa.getAttribute('file-name'))) {
-                    imagens_atuais.push(imagem_capa.getAttribute('file-name'));
-                }
-            } else if (imagem_capa.src.includes("/")) {
-                if (!imagens_atuais.includes(imagem_capa.src.split('/').pop())) {
-                    imagens_atuais.push(imagem_capa.src.split('/').pop());
+            console.log(imagem_capa.src);
+
+            if (imagem_capa.src !== '#' && imagem_capa.src !== '' && imagem_capa.src !== window.location.href) {
+                if (imagem_capa.src.includes(";base64,")) {
+                    if (!imagens_atuais.includes(imagem_capa.getAttribute('file-name'))) {
+                        imagens_atuais.push(imagem_capa.getAttribute('file-name'));
+                    }
+                } else if (imagem_capa.src.includes("/")) {
+                    if (!imagens_atuais.includes(imagem_capa.src.split('/').pop())) {
+                        imagens_atuais.push(imagem_capa.src.split('/').pop());
+                    }
                 }
             }
 
@@ -787,24 +832,67 @@
                 const parte_id = parte.getAttribute('parte-local-id');
                 const imagem_parte = document.getElementById(`pt-preview-imagem-${parte_id}`);
 
-                if (imagem_parte.src.includes(";base64,")) {
-                    if (!imagens_atuais.includes(imagem_parte.getAttribute('file-name'))) {
-                        imagens_atuais.push(imagem_parte.getAttribute('file-name'));
-                    }
-                } else if (imagem_parte.src.includes("/")) {
-                    if (!imagens_atuais.includes(imagem_parte.src.split('/').pop())) {
-                        imagens_atuais.push(imagem_parte.src.split('/').pop());
+                if (imagem_parte.src !== '#' && imagem_parte.src !== '' && imagem_parte.src !== window.location.href) {
+                    if (imagem_parte.src.includes(";base64,")) {
+                        if (!imagens_atuais.includes(imagem_parte.getAttribute('file-name'))) {
+                            imagens_atuais.push(imagem_parte.getAttribute('file-name'));
+                        }
+                    } else if (imagem_parte.src.includes("/")) {
+                        if (!imagens_atuais.includes(imagem_parte.src.split('/').pop())) {
+                            imagens_atuais.push(imagem_parte.src.split('/').pop());
+                        }
                     }
                 }
             }
 
-            var imagens_excluir = imagens_json.filter(imagem => !imagens_atuais.includes(imagem));
-            var imagens_adicionar = imagens_atuais.filter(imagem => !imagens_json.includes(imagem));
+            var imagens_excluir = [];
+            var imagens_adicionar = [];
+            imagens_excluir = imagens_json.filter(imagem => !imagens_atuais.includes(imagem));
+            imagens_adicionar = imagens_atuais.filter(imagem => !imagens_json.includes(imagem));
+
+            console.log('Imagens a excluir:', imagens_json);
+            console.log('Imagens a adicionar:', imagens_atuais);
 
             return { imagens_excluir, imagens_adicionar };
         }
 
+        function remover_item() {
+            if (confirm('Tem certeza que deseja remover este item?')) {
+                fetch(`https://api.github.com/repos/YuriGomes4/Nuri/contents/assets/conteudo/${tipo}/${item_id}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${getCookie('gk')}`
+                    }
+                })
+                    .then(response => response.json())
+                    .then(response_json => {
+                        const files = response_json.map(file => {
+                            return { path: file.path, sha: file.sha, content: null, encoding: 'utf-8' };
+                        });
+
+                        createCommit('YuriGomes4', 'Nuri', 'Removendo item', files).then(() => {
+                            alert('Item removido com sucesso!');
+                            page_out("back");
+                        }).catch(error => {
+                            console.error('Erro ao remover item:', error);
+                            alert('Erro ao remover item.');
+                        });
+                    });
+            }
+        }
+
         function salvar() {
+            var imagem_capa = document.getElementById('preview-capa');
+            var imagem_capa_src = '';
+            if (imagem_capa.src !== '#' && imagem_capa.src !== '' && imagem_capa.src !== window.location.href) {
+                if (imagem_capa.src.includes(";base64,")) {
+                    imagem_capa_src = imagem_capa.getAttribute('file-name');
+                } else if (imagem_capa.src.includes("/")) {
+                    imagem_capa_src = imagem_capa.src.split('/').pop();
+                }
+            }
+
             const novo_item = {
             nome: document.getElementById('titulo').value,
             sinopse: document.getElementById('sinopse').value,
@@ -812,7 +900,7 @@
             participantes: Array.from(document.querySelectorAll('.participante p')).map(participante => participante.innerText),
             data: document.getElementById('data').value,
             exclusivo: document.getElementById('exclusivo').checked,
-            capa: document.getElementById('preview-capa').src.split('/').pop(),
+            capa: imagem_capa_src,
             partes: []
             };
 
@@ -822,10 +910,12 @@
 
             var imagem_parte = document.getElementById(`pt-preview-imagem-${parte_id}`);
             var imagem_parte_src = '';
-            if (imagem_parte.src.includes(";base64,")) {
-                imagem_parte_src = imagem_parte.getAttribute('file-name');
-            } else if (imagem_parte.src.includes("/")) {
-                imagem_parte_src = imagem_parte.src.split('/').pop();
+            if (imagem_parte.src !== '#' && imagem_parte.src !== '' && imagem_parte.src !== window.location.href) {
+                if (imagem_parte.src.includes(";base64,")) {
+                    imagem_parte_src = imagem_parte.getAttribute('file-name');
+                } else if (imagem_parte.src.includes("/")) {
+                    imagem_parte_src = imagem_parte.src.split('/').pop();
+                }
             }
 
             novo_item.partes.push({
@@ -841,17 +931,21 @@
                     { path: `assets/conteudo/${tipo}/${item_id}/main.json`, content: JSON.stringify(novo_item), encoding: 'utf-8' }
                 ];
 
-                for (let imagem of imagens.imagens_excluir) {
-                    files.push({ path: `assets/conteudo/${tipo}/${item_id}/fotos/${imagem}`, content: null, encoding: 'utf-8' });
+                if (imagens.imagens_excluir) {
+                    for (let imagem of imagens.imagens_excluir) {
+                        files.push({ path: `assets/conteudo/${tipo}/${item_id}/fotos/${imagem}`, content: null, encoding: 'utf-8' });
+                    }
                 }
 
-                for (let imagem of imagens.imagens_adicionar) {
-                    files.push({ path: `assets/conteudo/${tipo}/${item_id}/fotos/${imagem}`, content: dict_imagens[imagem], encoding: 'base64' });
+                if (imagens.imagens_adicionar) {
+                    for (let imagem of imagens.imagens_adicionar) {
+                        files.push({ path: `assets/conteudo/${tipo}/${item_id}/fotos/${imagem}`, content: dict_imagens[imagem], encoding: 'base64' });
+                    }
                 }
 
                 createCommit('YuriGomes4', 'Nuri', 'Atualizando item', files).then(() => {
                     alert('Item atualizado com sucesso!');
-                    page_out(`/max/item.html?tipo=${tipo}&id=${item_id}`);
+                    page_out("back");
                 }).catch(error => {
                     console.error('Erro ao atualizar item:', error);
                     alert('Erro ao atualizar item.');
@@ -990,8 +1084,6 @@
             await updateBranch(commitSha);
         }
         
-
-
         ////////////////////////////////////////////////////////////////////////////////////
 
         function page_out (link) {
@@ -1028,7 +1120,70 @@
             main.style.filter = 'blur(0px)';
         }
 
+        function verify_token () {
+            const token = getCookie('gk');
+            if (!token) {
+                alert("Token não encontrado. Você será redirecionado.");
+                page_out("back");
+            } else {
+                fetch('https://api.github.com/user', {
+                    headers: {
+                        'Authorization': `token ${token}`
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Token inválido');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Usuário autenticado:', data);
+                    onDOMLoaded();
+                })
+                .catch(error => {
+                    alert("Token inválido. Você será redirecionado.");
+                    page_out("back");
+                });
+            }
+        }
 
+        var controle = 0;
+
+        window.onload = function() {
+            /*if (senha !== "sua_senha_aqui") {
+                alert("Senha incorreta. Você será redirecionado.");
+                window.location.href = "/";
+            }*/
+
+            const token = getCookie('gk');
+            if (!token) {
+                var senha = prompt("Digite a senha de alteração:");
+                setCookie('gk', senha);
+                verify_token();
+            } else {
+                fetch('https://api.github.com/user', {
+                    headers: {
+                        'Authorization': `token ${token}`
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Token inválido');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Usuário autenticado:', data);
+                    onDOMLoaded();
+                })
+                .catch(error => {
+                    var senha = prompt("Digite a senha de alteração:");
+                    setCookie('gk', senha);
+                    verify_token();
+                });
+            }
+        };
 
         if (document.readyState === "loading")
             document.addEventListener("DOMContentLoaded", onDOMLoaded);
@@ -1036,7 +1191,11 @@
             onDOMLoaded();
 
         function onDOMLoaded() {
-            page_in();
+            controle++;
+
+            if (controle === 2) {
+                page_in();
+            }
         }
     </script>
 </body>

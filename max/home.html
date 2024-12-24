@@ -36,7 +36,7 @@
             </div>
             <div id="header-menu-buttons">
                 <i class="fa-solid fa-magnifying-glass"></i>
-                <i class="fa-solid fa-circle-user"></i>
+                <i class="fa-solid fa-circle-plus" onclick="page_out('/max/editar_item.html')"></i>
             </div>
         </div>
         <!--<div class="carousel">
@@ -103,7 +103,9 @@
 			document.cookie = name + "=" + value;
 		}
 
-        setCookie("gk", "");
+        if (!document.cookie.split('; ').find(row => row.startsWith('gk='))) {
+            setCookie("gk", "");
+        }
 
         var urlParams = new URLSearchParams(window.location.search);
         var opt = urlParams.get('opt');
@@ -435,17 +437,16 @@
             var blackout = document.getElementById('blackout');
             var main = document.getElementById('main');
 
+            //main.style.transition = 'filter 1s ease';
+            main.style.filter = 'blur(0px)';
+
             //blackout.style.transition = 'none';
             //blackout.style.opacity = 1;
             blackout.style.display = 'block';
             blackout.style.transition = 'opacity 1.5s ease';
             blackout.offsetHeight;
             blackout.style.opacity = 0;
-
-            //main.style.transition = 'filter 1s ease';
-            main.style.filter = 'blur(0px)';
         }
-
 
         Promise.all(imagens_capa.map(src => {
             return new Promise((resolve, reject) => {
@@ -487,7 +488,9 @@
 
                 if (opt === 'noload') {
 
-                    page_in();
+                    setTimeout(() => {
+                        page_in();
+                    }, 500);
 
                 } else {
 

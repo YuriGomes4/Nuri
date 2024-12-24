@@ -249,6 +249,14 @@ body p {
     align-items: center;
 }
 
+#editor-header > span {
+    font-size: 12px;
+    height: 100%;
+    align-content: center;
+    color: #ff4949;
+    font-weight: bold;
+}
+
 #editor-body {
     display: flex;
     flex-direction: column;
