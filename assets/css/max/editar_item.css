@@ -94,6 +94,7 @@ body textarea {
 .pt-preview-imagem {
     width: 100%;
     aspect-ratio: 9 / 14;
+    object-fit: cover;
 }
 
 #partes-body {
@@ -323,6 +324,7 @@ body p {
 #preview-capa {
     width: 100%;
     aspect-ratio: 9 / 14;
+    object-fit: cover;
 }
 
 .input-group > input {

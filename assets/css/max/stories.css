@@ -32,16 +32,21 @@ body p {
     height: 100vh;
     border-radius: 25px;
     position: relative;
-    max-height: calc(100vh - 70px - 26px);
+    max-height: calc(100dvh - 70px - 26px);
 }
 
 #rodape {
-    height: 50px;
+    max-height: 70px;
     display: flex;
     flex-direction: row;
     align-items: center;
     padding: 10px 20px;
     gap: 10px;
+    height: 70px;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    overflow: hidden;
 }
 
 #rodape-texto {
@@ -193,6 +198,7 @@ body p {
 #main {
     filter: blur(100px);
     transition: filter 0.5s ease;
+    max-height: 100vh;
 }
 
 .indicador-atual {
