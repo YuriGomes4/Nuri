@@ -37,7 +37,7 @@
             </div>
             <div id="editor-body">
                 <div id="ed-titulo" class="input-group">
-                    <label for="titulo">Título</label>
+                    <label for="titulo">Título *</label>
                     <input type="text" id="titulo">
                 </div>
                 <div id="ed-sinopse" class="input-group">
@@ -51,7 +51,7 @@
                             <input type="text" id="autor">
                         </div>
                         <div id="ed-data" class="input-group">
-                            <label for="data">Data</label>
+                            <label for="data">Data *</label>
                             <input type="date" id="data">
                         </div>
                         <div id="ed-exclusivo">
@@ -282,17 +282,20 @@
                     .then(item_json => {
                         console.log(item_json);
                         item = item_json;
-                        var imagem_capa = `/assets/conteudo/${tipo}/${item_id}/fotos/` + item_json.capa;
-
+            
                         document.getElementById('titulo').value = item_json.nome;
                         document.getElementById('sinopse').value = item_json.sinopse;
                         document.getElementById('autor').value = item_json.autor || '';
                         document.getElementById('data').value = item_json.data;
                         document.getElementById('exclusivo').checked = item_json.exclusivo;
 
-                        document.getElementById('preview-capa').src = imagem_capa;
-                        document.getElementById('preview-capa').style.opacity = 1;
-                        document.getElementById('btn-remover').style.display = 'flex';
+                        var imagem_capa = '';
+                        if (item_json.capa !== '') {
+                            imagem_capa = `/assets/conteudo/${tipo}/${item_id}/fotos/` + item_json.capa;
+                            document.getElementById('preview-capa').src = imagem_capa;
+                            document.getElementById('preview-capa').style.opacity = 1;
+                            document.getElementById('btn-remover').style.display = 'flex';
+                        }
 
                         if ("participantes" in item_json) {
                             var participantes_list = document.getElementById('participantes-list');
@@ -410,8 +413,14 @@
                             var pt_preview_imagem = document.createElement('img');
                             pt_preview_imagem.setAttribute('id', `pt-preview-imagem-${index}`);
                             pt_preview_imagem.classList.add('pt-preview-imagem');
-                            pt_preview_imagem.setAttribute('src', `/assets/conteudo/${tipo}/${item_id}/fotos/` + parte.imagem);
-                            pt_preview_imagem.style.opacity = 1;
+                            var imagem_parte = '';
+                            if (parte.imagem !== '') {
+                                imagem_parte = `/assets/conteudo/${tipo}/${item_id}/fotos/` + parte.imagem;
+                                pt_preview_imagem.setAttribute('src', imagem_parte);
+                                pt_preview_imagem.style.opacity = 1;
+                            } else {
+                                pt_preview_imagem.style.opacity = 0;
+                            }
                             pt_preview_imagem.addEventListener('click', function() {
                                 document.getElementById(`pt-imagem-${index}`).click();
                             });
@@ -419,7 +428,11 @@
                             var pt_btn_remover_imagem = document.createElement('div');
                             pt_btn_remover_imagem.setAttribute('id', `pt-btn-remover-imagem-${index}`);
                             pt_btn_remover_imagem.classList.add('pt-btn-remover-imagem');
-                            pt_btn_remover_imagem.style.display = 'flex';
+                            if (parte.imagem !== '') {
+                                pt_btn_remover_imagem.style.display = 'flex';
+                            } else {
+                                pt_btn_remover_imagem.style.display = 'none';
+                            }
                             pt_btn_remover_imagem.addEventListener('click', remover_imagem_parte);
 
                             var pt_btn_remover_imagem_p = document.createElement('p');
@@ -850,9 +863,6 @@
             imagens_excluir = imagens_json.filter(imagem => !imagens_atuais.includes(imagem));
             imagens_adicionar = imagens_atuais.filter(imagem => !imagens_json.includes(imagem));
 
-            console.log('Imagens a excluir:', imagens_json);
-            console.log('Imagens a adicionar:', imagens_atuais);
-
             return { imagens_excluir, imagens_adicionar };
         }
 
@@ -873,7 +883,7 @@
 
                         createCommit('YuriGomes4', 'Nuri', 'Removendo item', files).then(() => {
                             alert('Item removido com sucesso!');
-                            page_out("back");
+                            page_out("/max/home.html?opt=noload");
                         }).catch(error => {
                             console.error('Erro ao remover item:', error);
                             alert('Erro ao remover item.');
@@ -904,26 +914,42 @@
             partes: []
             };
 
-            const partes = document.getElementsByClassName('parte');
-            for (let parte of partes) {
-            const parte_id = parte.getAttribute('parte-local-id');
-
-            var imagem_parte = document.getElementById(`pt-preview-imagem-${parte_id}`);
-            var imagem_parte_src = '';
-            if (imagem_parte.src !== '#' && imagem_parte.src !== '' && imagem_parte.src !== window.location.href) {
-                if (imagem_parte.src.includes(";base64,")) {
-                    imagem_parte_src = imagem_parte.getAttribute('file-name');
-                } else if (imagem_parte.src.includes("/")) {
-                    imagem_parte_src = imagem_parte.src.split('/').pop();
-                }
+            if (novo_item.nome === '' || novo_item.data === '') {
+                alert('Preencha todos os campos obrigatórios.');
+                return;
             }
 
-            novo_item.partes.push({
-                nome: document.getElementById(`pt-titulo-${parte_id}`).value,
-                exclusivo: document.getElementById(`pt-exclusivo-${parte_id}`).checked,
-                imagem: imagem_parte_src,
-                descricao: document.getElementById(`pt-descricao-${parte_id}`).value
-            });
+            const partes = document.getElementsByClassName('parte');
+            for (let parte of partes) {
+                const parte_id = parte.getAttribute('parte-local-id');
+
+                var imagem_parte = document.getElementById(`pt-preview-imagem-${parte_id}`);
+                var imagem_parte_src = '';
+                if (imagem_parte.src !== '#' && imagem_parte.src !== '' && imagem_parte.src !== window.location.href) {
+                    if (imagem_parte.src.includes(";base64,")) {
+                        imagem_parte_src = imagem_parte.getAttribute('file-name');
+                    } else if (imagem_parte.src.includes("/")) {
+                        imagem_parte_src = imagem_parte.src.split('/').pop();
+                    }
+                }
+
+                var nome_parte = document.getElementById(`pt-titulo-${parte_id}`).value;
+                var descricao_parte = document.getElementById(`pt-descricao-${parte_id}`).value;
+
+                if (nome_parte !== '' || descricao_parte !== '' || imagem_parte_src !== '') {
+                    novo_item.partes.push({
+                        nome: document.getElementById(`pt-titulo-${parte_id}`).value,
+                        exclusivo: document.getElementById(`pt-exclusivo-${parte_id}`).checked,
+                        imagem: imagem_parte_src,
+                        descricao: document.getElementById(`pt-descricao-${parte_id}`).value
+                    });
+                }
+
+            }
+
+            if (novo_item.partes.length === 0) {
+                alert('Preencha pelo menos uma parte.');
+                return;
             }
 
             listar_imagens_alteradas().then(async imagens => {
@@ -945,7 +971,11 @@
 
                 createCommit('YuriGomes4', 'Nuri', 'Atualizando item', files).then(() => {
                     alert('Item atualizado com sucesso!');
-                    page_out("back");
+                    if (tipo_editor === 'editar') {
+                        page_out("back");
+                    } else {
+                        page_out("/max/item.html?tipo=" + tipo + "&id=" + item_id);
+                    }
                 }).catch(error => {
                     console.error('Erro ao atualizar item:', error);
                     alert('Erro ao atualizar item.');

@@ -63,6 +63,8 @@ body textarea {
     background-color: #5b62ff;
     padding: 8px;
     border-radius: 10px;
+    align-items: center;
+    gap: 10px;
 }
 
 #partes {
