@@ -69,6 +69,7 @@
     aspect-ratio: 9/14;
     /* font-size: 0; */
     display: block;
+    object-fit: cover;
 }
 
 .secao-conteudo {
