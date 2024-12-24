@@ -103,8 +103,31 @@
 			document.cookie = name + "=" + value;
 		}
 
+        function getCookie(name) {
+			const cookieValue = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
+			return cookieValue ? cookieValue.pop() : '';
+		}
+
         if (!document.cookie.split('; ').find(row => row.startsWith('gk='))) {
             setCookie("gk", "");
+        } else {
+            await fetch(`https://api.github.com/user`, {
+                headers: {
+                    Authorization: `token ${getCookie("gk")}`
+                }
+            }).then(response => {
+                if (response.ok) {
+                    console.log('Usuário autenticado:', response);
+                    const token = getCookie("gk");
+                    const api_headers = {
+                        Authorization: `Bearer ${token}`
+                    };
+                } else {
+                    console.error('Erro ao autenticar usuário:', response.statusText);
+                }
+            }).catch(error => {
+                console.error('Erro ao autenticar usuário:', error);
+            });
         }
 
         var urlParams = new URLSearchParams(window.location.search);
@@ -136,10 +159,7 @@
             try {
                 const url = `https://api.github.com/repos/${owner}/${repo}/contents/assets/conteudo/historia?timestamp=${new Date().getTime()}`;
                 const response = await fetch(url, {
-                    headers: {
-                        // Opcional: você pode usar um token de autenticação aqui para aumentar o limite de requisições
-                        // Authorization: `Bearer SEU_TOKEN_AQUI`
-                    }
+                    headers: api_headers
                 });
 
                 if (!response.ok) {
@@ -156,7 +176,9 @@
                 
                 for (var i = 0; i < arquivos.length; i++) {
                     //const response = await fetch(`/assets/conteudo/historia/${arquivos[i]}/main.json`);
-                    const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/assets/conteudo/historia/${arquivos[i]}/main.json?timestamp=${new Date().getTime()}`);
+                    const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/assets/conteudo/historia/${arquivos[i]}/main.json?timestamp=${new Date().getTime()}`, {
+                        headers: api_headers
+                    });
 
                     if (!response.ok) {
                         throw new Error(`Erro ao acessar o arquivo: ${response.statusText}`);
@@ -174,10 +196,7 @@
             try {
                 const url = `https://api.github.com/repos/${owner}/${repo}/contents/assets/conteudo/especial`;
                 const response = await fetch(url, {
-                    headers: {
-                        // Opcional: você pode usar um token de autenticação aqui para aumentar o limite de requisições
-                        // Authorization: `Bearer SEU_TOKEN_AQUI`
-                    }
+                    headers: api_headers
                 });
 
                 if (!response.ok) {
@@ -194,7 +213,9 @@
                 
                 for (var i = 0; i < arquivos.length; i++) {
                     //const response = await fetch(`/assets/conteudo/especial/${arquivos[i]}/main.json`);
-                    const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/assets/conteudo/especial/${arquivos[i]}/main.json?timestamp=${new Date().getTime()}`);
+                    const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/assets/conteudo/especial/${arquivos[i]}/main.json?timestamp=${new Date().getTime()}`, {
+                        headers: api_headers
+                    });
 
                     if (!response.ok) {
                         throw new Error(`Erro ao acessar o arquivo: ${response.statusText}`);
