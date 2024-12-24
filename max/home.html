@@ -108,27 +108,33 @@
 			return cookieValue ? cookieValue.pop() : '';
 		}
 
-        if (!document.cookie.split('; ').find(row => row.startsWith('gk='))) {
+        async function verify_token() {
+            if (!document.cookie.split('; ').find(row => row.startsWith('gk='))) {
             setCookie("gk", "");
-        } else {
-            await fetch(`https://api.github.com/user`, {
+            } else {
+            try {
+                const response = await fetch(`https://api.github.com/user`, {
                 headers: {
                     Authorization: `token ${getCookie("gk")}`
                 }
-            }).then(response => {
+                });
+
                 if (response.ok) {
-                    console.log('Usuário autenticado:', response);
-                    const token = getCookie("gk");
-                    const api_headers = {
-                        Authorization: `Bearer ${token}`
-                    };
+                console.log('Usuário autenticado:', response);
+                const token = getCookie("gk");
+                window.api_headers = {
+                    Authorization: `Bearer ${token}`
+                };
                 } else {
-                    console.error('Erro ao autenticar usuário:', response.statusText);
+                console.error('Erro ao autenticar usuário:', response.statusText);
                 }
-            }).catch(error => {
+            } catch (error) {
                 console.error('Erro ao autenticar usuário:', error);
-            });
+            }
+            }
         }
+
+        await verify_token();
 
         var urlParams = new URLSearchParams(window.location.search);
         var opt = urlParams.get('opt');
