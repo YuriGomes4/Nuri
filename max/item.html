@@ -96,7 +96,7 @@
 			return cookieValue ? cookieValue.pop() : '';
 		}
 
-        var api_headers = {};
+        /*var api_headers = {};
 
         async function verify_token_header() {
             if (!document.cookie.split('; ').find(row => row.startsWith('gk='))) {
@@ -126,11 +126,12 @@
 
         (async () => {
             await verify_token_header();
-        })();
+        })();*/
 
         if (tipo && id) {
             console.log(`Tipo: ${tipo}, ID: ${id}`);
-            fetch(`https://api.github.com/repos/YuriGomes4/Nuri/contents/assets/conteudo/${tipo}/${id}/main.json?timestamp=${new Date().getTime()}`, {headers: api_headers})
+            //fetch(`https://api.github.com/repos/YuriGomes4/Nuri/contents/assets/conteudo/${tipo}/${id}/main.json?timestamp=${new Date().getTime()}`, {headers: api_headers})
+            fetch(`https://raw.githubusercontent.com/YuriGomes4/Nuri/main/assets/conteudo/${tipo}/${id}/main.json?timestamp=${new Date().getTime()}`)
                 .then(response => {
                     if (!response.ok) {
                         throw new Error('Network response was not ok ' + response.statusText);
@@ -141,7 +142,8 @@
                     console.error('There has been a problem with your fetch operation:', error);
                 })
                 .then(item_json => {
-                    main_json = JSON.parse(decodeURIComponent(escape(atob(item_json.content))));
+                    //main_json = JSON.parse(decodeURIComponent(escape(atob(item_json.content))));
+                    main_json = item_json;
 
                     console.log(main_json);
                     var imagem_capa = `https://raw.githubusercontent.com/YuriGomes4/Nuri/main/assets/conteudo/${tipo}/${id}/fotos/` + main_json.capa;

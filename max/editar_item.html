@@ -172,7 +172,7 @@
 			return cookieValue ? cookieValue.pop() : '';
 		}
 
-        var api_headers = {};
+        /*var api_headers = {};
 
         async function verify_token_header() {
             if (!document.cookie.split('; ').find(row => row.startsWith('gk='))) {
@@ -202,7 +202,7 @@
 
         (async () => {
             await verify_token_header();
-        })();
+        })();*/
 
         function previewImageCapa(event) {
 
@@ -318,10 +318,12 @@
                         console.log(item_sha);
                     });*/
 
-                fetch(`https://api.github.com/repos/YuriGomes4/Nuri/contents/assets/conteudo/${tipo}/${item_id}/main.json?timestamp=${new Date().getTime()}`)
+                //fetch(`https://api.github.com/repos/YuriGomes4/Nuri/contents/assets/conteudo/${tipo}/${item_id}/main.json?timestamp=${new Date().getTime()}`)
+                fetch(`https://raw.githubusercontent.com/YuriGomes4/Nuri/main/assets/conteudo/${tipo}/${item_id}/main.json?timestamp=${new Date().getTime()}`)
                     .then(response => response.json())
                     .then(item_json => {
-                        item = JSON.parse(decodeURIComponent(escape(atob(item_json.content))));
+                        //item = JSON.parse(decodeURIComponent(escape(atob(item_json.content))));
+                        item = item_json;
                         console.log(item);
             
                         document.getElementById('titulo').value = item.nome;
