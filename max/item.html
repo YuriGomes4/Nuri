@@ -87,9 +87,50 @@
             console.log('Tipo inválido.');
         }
 
+        function setCookie(name, value) {
+			document.cookie = name + "=" + value;
+		}
+
+        function getCookie(name) {
+			const cookieValue = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
+			return cookieValue ? cookieValue.pop() : '';
+		}
+
+        var api_headers = {};
+
+        async function verify_token_header() {
+            if (!document.cookie.split('; ').find(row => row.startsWith('gk='))) {
+            setCookie("gk", "");
+            } else {
+            try {
+                const response = await fetch(`https://api.github.com/user`, {
+                headers: {
+                    Authorization: `token ${getCookie("gk")}`
+                }
+                });
+
+                if (response.ok) {
+                console.log('Usuário autenticado:', response);
+                const token = getCookie("gk");
+                api_headers = {
+                    Authorization: `Bearer ${token}`
+                };
+                } else {
+                console.error('Erro ao autenticar usuário:', response.statusText);
+                }
+            } catch (error) {
+                console.error('Erro ao autenticar usuário:', error);
+            }
+            }
+        }
+
+        (async () => {
+            await verify_token_header();
+        })();
+
         if (tipo && id) {
             console.log(`Tipo: ${tipo}, ID: ${id}`);
-            fetch(`https://api.github.com/repos/YuriGomes4/Nuri/contents/assets/conteudo/${tipo}/${id}/main.json?timestamp=${new Date().getTime()}`)
+            fetch(`https://api.github.com/repos/YuriGomes4/Nuri/contents/assets/conteudo/${tipo}/${id}/main.json?timestamp=${new Date().getTime()}`, {headers: api_headers})
                 .then(response => {
                     if (!response.ok) {
                         throw new Error('Network response was not ok ' + response.statusText);
@@ -100,7 +141,7 @@
                     console.error('There has been a problem with your fetch operation:', error);
                 })
                 .then(item_json => {
-                    main_json = JSON.parse(atob(item_json.content));
+                    main_json = JSON.parse(decodeURIComponent(escape(atob(item_json.content))));
 
                     console.log(main_json);
                     var imagem_capa = `https://raw.githubusercontent.com/YuriGomes4/Nuri/main/assets/conteudo/${tipo}/${id}/fotos/` + main_json.capa;

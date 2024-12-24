@@ -108,6 +108,8 @@
 			return cookieValue ? cookieValue.pop() : '';
 		}
 
+        var api_headers = {};
+
         async function verify_token() {
             if (!document.cookie.split('; ').find(row => row.startsWith('gk='))) {
             setCookie("gk", "");
@@ -122,7 +124,7 @@
                 if (response.ok) {
                 console.log('Usuário autenticado:', response);
                 const token = getCookie("gk");
-                window.api_headers = {
+                api_headers = {
                     Authorization: `Bearer ${token}`
                 };
                 } else {
@@ -134,7 +136,9 @@
             }
         }
 
-        await verify_token();
+        (async () => {
+            await verify_token();
+        })();
 
         var urlParams = new URLSearchParams(window.location.search);
         var opt = urlParams.get('opt');
