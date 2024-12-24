@@ -277,7 +277,7 @@
                         console.log(item_sha);
                     });*/
 
-                fetch(`https://api.github.com/repos/YuriGomes4/Nuri/contents/assets/conteudo/${tipo}/${item_id}/main.json`)
+                fetch(`https://api.github.com/repos/YuriGomes4/Nuri/contents/assets/conteudo/${tipo}/${item_id}/main.json?timestamp=${new Date().getTime()}`)
                     .then(response => response.json())
                     .then(item_json => {
                         item = JSON.parse(atob(item_json.content));
