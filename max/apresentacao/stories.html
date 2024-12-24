@@ -96,6 +96,17 @@
         const urlParams = new URLSearchParams(window.location.search);
         const item_tipo = urlParams.get('tipo');
         const item_id = urlParams.get('id');
+        const opt = urlParams.get('opt');
+
+        if (opt) {
+            if (opt === 'refresh') {
+                const url = new URL(window.location.href);
+                url.searchParams.delete('opt');
+                window.history.replaceState({}, document.title, url.toString());
+                window.location.href = window.location.href;
+                //page_out('back');
+            }
+        }
 
         var parte_inicial = urlParams.get('parte');
         if (parte_inicial !== null) {
@@ -145,15 +156,49 @@
             await verify_token_header();
         })();
 
-        async function carregarDados() {
-            /*const response = await fetch(`https://api.github.com/repos/yurigomes4/Nuri/contents/assets/conteudo/${item_tipo}/${item_id}/main.json?timestamp=${new Date().getTime()}`, {
-                headers: api_headers
-            });*/
-            const response = await fetch(`https://raw.githubusercontent.com/YuriGomes4/Nuri/main/assets/conteudo/${item_tipo}/${item_id}/main.json?timestamp=${new Date().getTime()}`);
-            const item_json = await response.json();
-            console.log(item_json);
-            return item_json;
+
+        if (item_tipo && item_id) {
+            console.log(`Tipo: ${item_tipo}, ID: ${item_id}`);
+            fetch(`https://api.github.com/repos/YuriGomes4/Nuri/contents/assets/conteudo/${item_tipo}/${item_id}/main.json?timestamp=${new Date().getTime()}`, {headers: api_headers})
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok ' + response.statusText);
+                    }
+                    return response.json();
+                })
+                .catch(error => {
+                    console.error('There has been a problem with your fetch operation:', error);
+
+                    fetch(`https://raw.githubusercontent.com/YuriGomes4/Nuri/main/assets/conteudo/${item_tipo}/${item_id}/main.json?timestamp=${new Date().getTime()}`)
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Network response was not ok ' + response.statusText);
+                            }
+                            return response.json();
+                        })
+                        .catch(error => {
+                            console.error('There has been a problem with your fetch operation:', error);
+                        })
+                        .then(item_json => {
+                            //main_json = JSON.parse(decodeURIComponent(escape(atob(item_json.content))));
+                            
+                            carregar_item(item_json);
+                        });
+                })
+                .then(item_json => {
+                    //main_json = JSON.parse(decodeURIComponent(escape(atob(item_json.content))));
+                    
+                    carregar_item(JSON.parse(decodeURIComponent(escape(atob(item_json.content)))));
+                });
+        } else {
+            console.log('Parâmetros tipo e id não encontrados.');
         }
+
+        var tamanhoTelaDisponivel = window.innerHeight;
+        var divApresentacao = document.getElementById('apresentacao');
+
+        divApresentacao.style.height = (tamanhoTelaDisponivel - 70 - 26)+'px';
+        divApresentacao.offsetHeight;
 
         var botoes = document.getElementById('botoes');
         var btnAnterior = document.getElementById('btn-anterior');
@@ -188,7 +233,7 @@
         var descricoes = [];
         var indicadores = [];
 
-        carregarDados().then(item_json => {
+        function carregar_item(item_json){
             //var item = JSON.parse(decodeURIComponent(escape(atob(item_json.content))));
             var item = item_json;
 
@@ -213,7 +258,7 @@
                     video.classList.add('im-video');
                     video.crossOrigin = "anonymous";
                     video.src = `https://raw.githubusercontent.com/YuriGomes4/Nuri/main/assets/conteudo/${item_tipo}/${item_id}/fotos/${imagem}`;
-                    video.autoplay = true;
+                    video.autoplay = false;
                     video.controls = false;
                     video.muted = false;
                     video.loop = false;
@@ -306,7 +351,7 @@
             //pausarIntervalo();
             //despausarIntervalo();
 
-        });
+        }
 
         can_autoplay = false;
 

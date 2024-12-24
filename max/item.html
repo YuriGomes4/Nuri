@@ -96,7 +96,7 @@
 			return cookieValue ? cookieValue.pop() : '';
 		}
 
-        /*var api_headers = {};
+        var api_headers = {};
 
         async function verify_token_header() {
             if (!document.cookie.split('; ').find(row => row.startsWith('gk='))) {
@@ -126,12 +126,11 @@
 
         (async () => {
             await verify_token_header();
-        })();*/
+        })();
 
         if (tipo && id) {
             console.log(`Tipo: ${tipo}, ID: ${id}`);
-            //fetch(`https://api.github.com/repos/YuriGomes4/Nuri/contents/assets/conteudo/${tipo}/${id}/main.json?timestamp=${new Date().getTime()}`, {headers: api_headers})
-            fetch(`https://raw.githubusercontent.com/YuriGomes4/Nuri/main/assets/conteudo/${tipo}/${id}/main.json?timestamp=${new Date().getTime()}`)
+            fetch(`https://api.github.com/repos/YuriGomes4/Nuri/contents/assets/conteudo/${tipo}/${id}/main.json?timestamp=${new Date().getTime()}`, {headers: api_headers})
                 .then(response => {
                     if (!response.ok) {
                         throw new Error('Network response was not ok ' + response.statusText);
@@ -140,111 +139,132 @@
                 })
                 .catch(error => {
                     console.error('There has been a problem with your fetch operation:', error);
+
+                    fetch(`https://raw.githubusercontent.com/YuriGomes4/Nuri/main/assets/conteudo/${tipo}/${id}/main.json?timestamp=${new Date().getTime()}`)
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Network response was not ok ' + response.statusText);
+                            }
+                            return response.json();
+                        })
+                        .catch(error => {
+                            console.error('There has been a problem with your fetch operation:', error);
+                        })
+                        .then(item_json => {
+                            //main_json = JSON.parse(decodeURIComponent(escape(atob(item_json.content))));
+                            
+                            carregar_dados(item_json);
+                        });
                 })
                 .then(item_json => {
                     //main_json = JSON.parse(decodeURIComponent(escape(atob(item_json.content))));
-                    main_json = item_json;
-
-                    console.log(main_json);
-                    var imagem_capa = `https://raw.githubusercontent.com/YuriGomes4/Nuri/main/assets/conteudo/${tipo}/${id}/fotos/` + main_json.capa;
-                    if (tipo === 'historia') {
-                        document.getElementById('img-principal').src = imagem_capa;
-                        document.getElementById('img-secundaria').src = imagem_capa;
-                    } else if (tipo === 'especial') {
-                        document.getElementById('img-principal').src = imagem_capa;
-                        document.getElementById('img-secundaria').src = imagem_capa;
-                    } else {
-                        console.log('Tipo inválido.');
-                    }
-
-                    document.getElementById('titulo').innerText = main_json.nome;
-                    const data = main_json.data.split('-').reverse().join('/');
-                    document.getElementById('item-data').innerText = data;
-                    document.getElementById('item-qnt-partes').innerText = main_json.partes.length + ' partes';
-                    document.getElementById('item-sinopse').innerText = main_json.sinopse;
-
-                    var envolvidos = document.getElementById('envolvidos');
-
-                    if (main_json.autor || main_json.participantes) {
-                        envolvidos.style.display = 'flex';
-
-                        var m_autor = document.getElementById('m-autor');
-                        var m_participantes = document.getElementById('m-participantes');
-                        var autor = document.getElementById('autor');
-                        var participantes = document.getElementById('participantes');
-
-                        var mostrador_participantes = m_participantes.querySelector('.mostrador');
-                        console.log(mostrador_participantes);
-                        if (tipo === 'historia') {
-                            mostrador_participantes.textContent = 'Quem está na recordação: ';
-                        } else if (tipo === 'especial') {
-                            mostrador_participantes.textContent = 'Quem está na história: ';
-                        }
-
-                        if (main_json.autor) {
-                            m_autor.style.display = 'block';
-                            autor.innerText = main_json.autor;
-                        } else {
-                            m_autor.style.display = 'none';
-                        }
-
-                        if (main_json.participantes) {
-                            if (main_json.participantes.length > 0) {
-                                m_participantes.style.display = 'block';
-                                participantes.innerText = main_json.participantes.join(', ');
-                            } else {
-                                m_participantes.style.display = 'none';
-                            }
-                        } else {
-                            m_participantes.style.display = 'none';
-                        }
-                    } else {
-                        envolvidos.style.display = 'none';
-                    }
-
-                    var partes_lista = document.getElementById('partes-lista');
-
-                    main_json.partes.forEach((parte, index) => {
-                        var div = document.createElement('div');
-                        div.className = 'parte-item';
-                        div.onclick = function() {
-                            page_out(`/max/apresentacao/stories.html?tipo=${tipo}&id=${id}&parte=${index}`);
-                        };
-
-                        //var imagem_parte = `https://api.github.com/repos/YuriGomes4/Nuri/contents/assets/conteudo/${tipo}/${id}/fotos/` + parte.imagem;
-                        var imagem_parte = `https://raw.githubusercontent.com/YuriGomes4/Nuri/main/assets/conteudo/${tipo}/${id}/fotos/` + parte.imagem;
-
-                        if (parte.imagem.includes('.mp4')) {
-                            var video = document.createElement('video');
-                            video.src = imagem_parte;
-                            video.autoplay = false;
-                            video.controls = false;
-                            video.muted = false;
-                            video.loop = false;
-
-                            div.appendChild(video);
-                        } else {
-                            var img = document.createElement('img');
-                            img.src = imagem_parte;
-
-                            div.appendChild(img);
-                        }
-
-                        var p = document.createElement('p');
-                        p.textContent = index + 1 + '. ' + parte.nome;
-
-                        div.appendChild(p);
-
-                        var icon = document.createElement('i');
-                        icon.className = 'fa-solid fa-chevron-right';
-
-                        div.appendChild(icon);
-
-                        partes_lista.appendChild(div);
-                    });
+                    
+                    carregar_dados(JSON.parse(decodeURIComponent(escape(atob(item_json.content)))));
                 });
         } else {
             console.log('Parâmetros tipo e id não encontrados.');
+        }
+
+        function carregar_dados(item_json) {
+            main_json = item_json;
+
+            console.log(main_json);
+            var imagem_capa = `https://raw.githubusercontent.com/YuriGomes4/Nuri/main/assets/conteudo/${tipo}/${id}/fotos/` + main_json.capa;
+            if (tipo === 'historia') {
+                document.getElementById('img-principal').src = imagem_capa;
+                document.getElementById('img-secundaria').src = imagem_capa;
+            } else if (tipo === 'especial') {
+                document.getElementById('img-principal').src = imagem_capa;
+                document.getElementById('img-secundaria').src = imagem_capa;
+            } else {
+                console.log('Tipo inválido.');
+            }
+
+            document.getElementById('titulo').innerText = main_json.nome;
+            const data = main_json.data.split('-').reverse().join('/');
+            document.getElementById('item-data').innerText = data;
+            document.getElementById('item-qnt-partes').innerText = main_json.partes.length + ' partes';
+            document.getElementById('item-sinopse').innerText = main_json.sinopse;
+
+            var envolvidos = document.getElementById('envolvidos');
+
+            if (main_json.autor || main_json.participantes) {
+                envolvidos.style.display = 'flex';
+
+                var m_autor = document.getElementById('m-autor');
+                var m_participantes = document.getElementById('m-participantes');
+                var autor = document.getElementById('autor');
+                var participantes = document.getElementById('participantes');
+
+                var mostrador_participantes = m_participantes.querySelector('.mostrador');
+                console.log(mostrador_participantes);
+                if (tipo === 'historia') {
+                    mostrador_participantes.textContent = 'Quem está na recordação: ';
+                } else if (tipo === 'especial') {
+                    mostrador_participantes.textContent = 'Quem está na história: ';
+                }
+
+                if (main_json.autor) {
+                    m_autor.style.display = 'block';
+                    autor.innerText = main_json.autor;
+                } else {
+                    m_autor.style.display = 'none';
+                }
+
+                if (main_json.participantes) {
+                    if (main_json.participantes.length > 0) {
+                        m_participantes.style.display = 'block';
+                        participantes.innerText = main_json.participantes.join(', ');
+                    } else {
+                        m_participantes.style.display = 'none';
+                    }
+                } else {
+                    m_participantes.style.display = 'none';
+                }
+            } else {
+                envolvidos.style.display = 'none';
+            }
+
+            var partes_lista = document.getElementById('partes-lista');
+
+            main_json.partes.forEach((parte, index) => {
+                var div = document.createElement('div');
+                div.className = 'parte-item';
+                div.onclick = function() {
+                    page_out(`/max/apresentacao/stories.html?tipo=${tipo}&id=${id}&parte=${index}`);
+                };
+
+                //var imagem_parte = `https://api.github.com/repos/YuriGomes4/Nuri/contents/assets/conteudo/${tipo}/${id}/fotos/` + parte.imagem;
+                var imagem_parte = `https://raw.githubusercontent.com/YuriGomes4/Nuri/main/assets/conteudo/${tipo}/${id}/fotos/` + parte.imagem;
+
+                if (parte.imagem.includes('.mp4')) {
+                    var video = document.createElement('video');
+                    video.src = imagem_parte;
+                    video.autoplay = false;
+                    video.controls = false;
+                    video.muted = false;
+                    video.loop = false;
+
+                    div.appendChild(video);
+                } else {
+                    var img = document.createElement('img');
+                    img.src = imagem_parte;
+
+                    div.appendChild(img);
+                }
+
+                var p = document.createElement('p');
+                p.textContent = index + 1 + '. ' + parte.nome;
+
+                div.appendChild(p);
+
+                var icon = document.createElement('i');
+                icon.className = 'fa-solid fa-chevron-right';
+
+                div.appendChild(icon);
+
+                partes_lista.appendChild(div);
+            });
         }
 
         function page_out (link) {

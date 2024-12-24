@@ -16,12 +16,24 @@
     
     <link href="/assets/css/max/global.css" rel="stylesheet" type="text/css" />
     <link href="/assets/css/max/item.css" rel="stylesheet" type="text/css" />
+    <style>
+        .body {
+            background-color: #f0f0f0;
+            width: 100vw;
+            height: 100vh;
+        }
+    </style>
 </head>
 
 <body>
-    <video width="320" height="240" controls autoplay>
-        <source src="/assets/conteudo/historia/5/fotos/video1.mp4" type="video/mp4">
-        Your browser does not support the video tag.
-    </video>
+    <p class="titulo-codigo">Código de acesso</p>
+
+    <script src="/assets/js/viewport-units-buggyfill.js"></script>
+    <script>
+        window.viewportUnitsBuggyfill.init();
+
+        var tituloCodigo = document.querySelector('.titulo-codigo');
+        tituloCodigo.textContent = window.innerHeight;
+    </script>
 </body>
 </html>

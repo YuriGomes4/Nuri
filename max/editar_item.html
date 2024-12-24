@@ -172,7 +172,7 @@
 			return cookieValue ? cookieValue.pop() : '';
 		}
 
-        /*var api_headers = {};
+        var api_headers = {};
 
         async function verify_token_header() {
             if (!document.cookie.split('; ').find(row => row.startsWith('gk='))) {
@@ -202,7 +202,7 @@
 
         (async () => {
             await verify_token_header();
-        })();*/
+        })();
 
         function previewImageCapa(event) {
 
@@ -323,267 +323,39 @@
         function carregar_item () {
             if (tipo && item_id) {
                 console.log(`Tipo: ${tipo}, ID: ${item_id}`);
-                /*fetch(`https://api.github.com/repos/YuriGomes4/Nuri/contents/assets/conteudo/${tipo}/${item_id}/main.json`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${getCookie('gk')}`
-                    }
-                })
-                    .then(response => response.json())
-                    .then(response_json => {
-                        item_sha = response_json.sha;
-                        console.log(item_sha);
-                    });*/
+                fetch(`https://api.github.com/repos/YuriGomes4/Nuri/contents/assets/conteudo/${tipo}/${item_id}/main.json?timestamp=${new Date().getTime()}`, {headers: api_headers})
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok ' + response.statusText);
+                        }
+                        return response.json();
+                    })
+                    .catch(error => {
+                        console.error('There has been a problem with your fetch operation:', error);
 
-                //fetch(`https://api.github.com/repos/YuriGomes4/Nuri/contents/assets/conteudo/${tipo}/${item_id}/main.json?timestamp=${new Date().getTime()}`)
-                fetch(`https://raw.githubusercontent.com/YuriGomes4/Nuri/main/assets/conteudo/${tipo}/${item_id}/main.json?timestamp=${new Date().getTime()}`)
-                    .then(response => response.json())
+                        fetch(`https://raw.githubusercontent.com/YuriGomes4/Nuri/main/assets/conteudo/${tipo}/${item_id}/main.json?timestamp=${new Date().getTime()}`)
+                            .then(response => {
+                                if (!response.ok) {
+                                    throw new Error('Network response was not ok ' + response.statusText);
+                                }
+                                return response.json();
+                            })
+                            .catch(error => {
+                                console.error('There has been a problem with your fetch operation:', error);
+                            })
+                            .then(item_json => {
+                                //main_json = JSON.parse(decodeURIComponent(escape(atob(item_json.content))));
+                                
+                                carregar_dados(item_json);
+                            });
+                    })
                     .then(item_json => {
-                        //item = JSON.parse(decodeURIComponent(escape(atob(item_json.content))));
-                        item = item_json;
-                        console.log(item);
-            
-                        document.getElementById('titulo').value = item.nome;
-                        document.getElementById('sinopse').value = item.sinopse;
-                        document.getElementById('autor').value = item.autor || '';
-                        document.getElementById('data').value = item.data;
-                        document.getElementById('exclusivo').checked = item.exclusivo;
-
-                        var imagem_capa = '';
-                        if (item.capa !== '') {
-                            imagem_capa = `https://raw.githubusercontent.com/YuriGomes4/Nuri/main/assets/conteudo/${tipo}/${item_id}/fotos/` + item.capa;
-                            document.getElementById('preview-capa').src = imagem_capa;
-                            document.getElementById('preview-capa').style.opacity = 1;
-                            document.getElementById('btn-remover').style.display = 'flex';
-                        }
-
-                        if ("participantes" in item) {
-                            var participantes_list = document.getElementById('participantes-list');
-                            item.participantes.forEach(participante => {
-                                var participante_div = document.createElement('div');
-                                participante_div.classList.add('participante');
-                                participante_div.addEventListener('click', function(event) {
-                                    event.target.remove();
-                                });
-
-                                var participante_p = document.createElement('p');
-                                participante_p.innerText = participante;
-
-                                var participante_i = document.createElement('i');
-                                participante_i.classList.add('fa-solid', 'fa-x');
-
-                                participante_div.appendChild(participante_p);
-                                participante_div.appendChild(participante_i);
-
-                                participantes_list.appendChild(participante_div);
-                            });
-                        }
-
-                        var partes_body = document.getElementById('partes-body');
-
-                        partes_body.innerHTML = '';
-
-                        item.partes.forEach((parte, index) => {
-                            var parte_div = document.createElement('div');
-                            parte_div.classList.add('parte');
-                            parte_div.setAttribute('parte-local-id', index);
-
-                            var parte_header = document.createElement('div');
-                            parte_header.classList.add('parte-header');
-
-                            var parte_header_p = document.createElement('p');
-                            parte_header_p.innerText = `${index + 1}° Parte`;
-
-                            var parte_header_btns_ordem = document.createElement('div');
-                            parte_header_btns_ordem.classList.add('parte-btns-ordem');
-                            
-                            var parte_header_btns_ordem_up = document.createElement('i');
-                            parte_header_btns_ordem_up.classList.add('fa-solid', 'fa-chevron-up');
-                            parte_header_btns_ordem_up.addEventListener('click', subirOrdemItem);
-
-                            var parte_header_btns_ordem_down = document.createElement('i');
-                            parte_header_btns_ordem_down.classList.add('fa-solid', 'fa-chevron-down');
-                            parte_header_btns_ordem_down.addEventListener('click', descerOrdemItem);
-                            parte_header_btns_ordem_down.style.display = 'none';
-
-                            parte_header_btns_ordem.appendChild(parte_header_btns_ordem_up);
-                            parte_header_btns_ordem.appendChild(parte_header_btns_ordem_down);
-
-                            var parte_header_i = document.createElement('i');
-                            parte_header_i.classList.add('fa-solid', 'fa-trash');
-                            parte_header_i.addEventListener('click', remParte);
-
-                            parte_header.appendChild(parte_header_p);
-                            parte_header.appendChild(parte_header_btns_ordem);
-                            parte_header.appendChild(parte_header_i);
-
-                            var parte_body = document.createElement('div');
-                            parte_body.classList.add('parte-body');
-
-                            var pt_body_main = document.createElement('div');
-                            pt_body_main.classList.add('pt-body-main');
-
-                            var pbm_infos = document.createElement('div');
-                            pbm_infos.classList.add('pbm-infos');
-
-                            var pt_titulo = document.createElement('div');
-                            pt_titulo.classList.add('input-group');
-
-                            var pt_titulo_label = document.createElement('label');
-                            pt_titulo_label.setAttribute('for', `pt-titulo-${index}`);
-                            pt_titulo_label.innerText = 'Título';
-
-                            var pt_titulo_input = document.createElement('input');
-                            pt_titulo_input.setAttribute('type', 'text');
-                            pt_titulo_input.setAttribute('id', `pt-titulo-${index}`);
-                            pt_titulo_input.classList.add('pt-titulo');
-                            pt_titulo_input.value = parte.nome;
-
-                            pt_titulo.appendChild(pt_titulo_label);
-                            pt_titulo.appendChild(pt_titulo_input);
-
-                            var div_pt_exclusivo = document.createElement('div');
-                            div_pt_exclusivo.classList.add('div-pt-exclusivo');
-
-                            var pt_exclusivo_label = document.createElement('label');
-                            pt_exclusivo_label.innerText = 'Exclusivo?';
-
-                            var pt_exclusivo_input = document.createElement('input');
-                            pt_exclusivo_input.setAttribute('type', 'checkbox');
-                            pt_exclusivo_input.setAttribute('id', `pt-exclusivo-${index}`);
-                            pt_exclusivo_input.classList.add('pt-exclusivo');
-                            pt_exclusivo_input.checked = parte.exclusivo;
-
-                            div_pt_exclusivo.appendChild(pt_exclusivo_label);
-                            div_pt_exclusivo.appendChild(pt_exclusivo_input);
-
-                            pbm_infos.appendChild(pt_titulo);
-                            pbm_infos.appendChild(div_pt_exclusivo);
-
-                            var parte_imagem_upload = document.createElement('div');
-                            parte_imagem_upload.classList.add('parte-imagem-upload');
-
-                            var pt_imagem_input = document.createElement('input');
-                            pt_imagem_input.setAttribute('type', 'file');
-                            pt_imagem_input.setAttribute('id', `pt-imagem-${index}`);
-                            pt_imagem_input.classList.add('pt-imagem');
-                            pt_imagem_input.style.display = 'none';
-                            pt_imagem_input.addEventListener('change', previewImageParte);
-
-                            if (parte.imagem.includes('.mp4')) {
-                                var pt_preview_video = document.createElement('video');
-                                pt_preview_video.setAttribute('id', `pt-preview-imagem-${index}`);
-                                pt_preview_video.classList.add('pt-preview-imagem');
-                                pt_preview_video.setAttribute('src', `https://raw.githubusercontent.com/YuriGomes4/Nuri/main/assets/conteudo/${tipo}/${item_id}/fotos/` + parte.imagem);
-                                //pt_preview_video.setAttribute('controls', 'controls');
-                                pt_preview_video.style.opacity = 1;
-                                pt_preview_video.addEventListener('click', function() {
-                                    document.getElementById(`pt-imagem-${index}`).click();
-                                });
-
-                                var pt_btn_remover_imagem = document.createElement('div');
-                                pt_btn_remover_imagem.setAttribute('id', `pt-btn-remover-imagem-${index}`);
-                                pt_btn_remover_imagem.classList.add('pt-btn-remover-imagem');
-                                pt_btn_remover_imagem.style.display = 'flex';
-                                pt_btn_remover_imagem.addEventListener('click', remover_imagem_parte);
-
-                                var pt_btn_remover_imagem_p = document.createElement('p');
-                                pt_btn_remover_imagem_p.innerText = 'Remover';
-
-                                pt_btn_remover_imagem.appendChild(pt_btn_remover_imagem_p);
-
-                                parte_imagem_upload.appendChild(pt_imagem_input);
-                                parte_imagem_upload.appendChild(pt_preview_video);
-                                parte_imagem_upload.appendChild(pt_btn_remover_imagem);
-                            } else {
-                                var pt_preview_imagem = document.createElement('img');
-                                pt_preview_imagem.setAttribute('id', `pt-preview-imagem-${index}`);
-                                pt_preview_imagem.classList.add('pt-preview-imagem');
-                                var imagem_parte = '';
-                                if (parte.imagem !== '') {
-                                    //imagem_parte = `/assets/conteudo/${tipo}/${item_id}/fotos/` + parte.imagem;
-                                    imagem_parte = `https://raw.githubusercontent.com/YuriGomes4/Nuri/main/assets/conteudo/${tipo}/${item_id}/fotos/` + parte.imagem;
-                                    pt_preview_imagem.setAttribute('src', imagem_parte);
-                                    pt_preview_imagem.style.opacity = 1;
-                                } else {
-                                    pt_preview_imagem.style.opacity = 0;
-                                }
-                                pt_preview_imagem.addEventListener('click', function() {
-                                    document.getElementById(`pt-imagem-${index}`).click();
-                                });
-
-                                var pt_btn_remover_imagem = document.createElement('div');
-                                pt_btn_remover_imagem.setAttribute('id', `pt-btn-remover-imagem-${index}`);
-                                pt_btn_remover_imagem.classList.add('pt-btn-remover-imagem');
-                                if (parte.imagem !== '') {
-                                    pt_btn_remover_imagem.style.display = 'flex';
-                                } else {
-                                    pt_btn_remover_imagem.style.display = 'none';
-                                }
-                                pt_btn_remover_imagem.addEventListener('click', remover_imagem_parte);
-
-                                var pt_btn_remover_imagem_p = document.createElement('p');
-                                pt_btn_remover_imagem_p.innerText = 'Remover';
-
-                                pt_btn_remover_imagem.appendChild(pt_btn_remover_imagem_p);
-
-                                parte_imagem_upload.appendChild(pt_imagem_input);
-                                parte_imagem_upload.appendChild(pt_preview_imagem);
-                                parte_imagem_upload.appendChild(pt_btn_remover_imagem);
-                            }
-
-                            pt_body_main.appendChild(pbm_infos);
-                            pt_body_main.appendChild(parte_imagem_upload);
-
-                            var pt_descricao = document.createElement('div');
-                            pt_descricao.classList.add('input-group');
-
-                            var pt_descricao_label = document.createElement('label');
-                            pt_descricao_label.setAttribute('for', `pt-descricao-${index}`);
-                            pt_descricao_label.innerText = 'Descrição';
-
-                            var pt_descricao_textarea = document.createElement('textarea');
-                            pt_descricao_textarea.setAttribute('id', `pt-descricao-${index}`);
-                            pt_descricao_textarea.innerText = parte.descricao;
-
-                            pt_descricao.appendChild(pt_descricao_label);
-                            pt_descricao.appendChild(pt_descricao_textarea);
-
-                            parte_body.appendChild(pt_body_main);
-                            parte_body.appendChild(pt_descricao);
-
-                            parte_div.appendChild(parte_header);
-                            parte_div.appendChild(parte_body);
-
-                            partes_body.appendChild(parte_div);
-
-                            // Adjust textarea height
-                            pt_descricao_textarea.style.height = "auto";
-                            pt_descricao_textarea.style.height = (pt_descricao_textarea.scrollHeight) + "px";
-                            pt_descricao_textarea.addEventListener("input", function() {
-                                const scrollPosition = window.scrollY;
-                                this.style.height = "auto";
-                                this.style.height = (this.scrollHeight) + "px";
-                                window.scrollTo(0, scrollPosition);
-                            });
-                        });
-
-                        // Hide the up button for the first item
-                        document.querySelectorAll('.parte-btns-ordem .fa-chevron-up').forEach((btn, index) => {
-                            btn.style.display = index === 0 ? 'none' : 'flex';
-                        });
-
-                        var partes = document.getElementsByClassName('parte');
-                        // Hide the down button for the last item
-                        document.querySelectorAll('.parte-btns-ordem .fa-chevron-down').forEach((btn, index) => {
-                            btn.style.display = index === partes.length - 1 ? 'none' : 'flex';
-                        });
-
+                        //main_json = JSON.parse(decodeURIComponent(escape(atob(item_json.content))));
+                        
+                        carregar_dados(JSON.parse(decodeURIComponent(escape(atob(item_json.content)))));
                     });
-
             } else {
-                console.log('Tipo e/ou ID não foram passados como parâmetros.');
+                console.log('Parâmetros tipo e id não encontrados.');
             }
         }
 
@@ -595,6 +367,246 @@
             addParte();
         }
 
+        function carregar_dados(item_json) {
+            item = item_json;
+            console.log(item);
+
+            document.getElementById('titulo').value = item.nome;
+            document.getElementById('sinopse').value = item.sinopse;
+            document.getElementById('autor').value = item.autor || '';
+            document.getElementById('data').value = item.data;
+            document.getElementById('exclusivo').checked = item.exclusivo;
+
+            var imagem_capa = '';
+            if (item.capa !== '') {
+                imagem_capa = `https://raw.githubusercontent.com/YuriGomes4/Nuri/main/assets/conteudo/${tipo}/${item_id}/fotos/` + item.capa;
+                document.getElementById('preview-capa').src = imagem_capa;
+                document.getElementById('preview-capa').style.opacity = 1;
+                document.getElementById('btn-remover').style.display = 'flex';
+            }
+
+            if ("participantes" in item) {
+                var participantes_list = document.getElementById('participantes-list');
+                item.participantes.forEach(participante => {
+                    var participante_div = document.createElement('div');
+                    participante_div.classList.add('participante');
+                    participante_div.addEventListener('click', function(event) {
+                        event.target.remove();
+                    });
+
+                    var participante_p = document.createElement('p');
+                    participante_p.innerText = participante;
+
+                    var participante_i = document.createElement('i');
+                    participante_i.classList.add('fa-solid', 'fa-x');
+
+                    participante_div.appendChild(participante_p);
+                    participante_div.appendChild(participante_i);
+
+                    participantes_list.appendChild(participante_div);
+                });
+            }
+
+            var partes_body = document.getElementById('partes-body');
+
+            partes_body.innerHTML = '';
+
+            item.partes.forEach((parte, index) => {
+                var parte_div = document.createElement('div');
+                parte_div.classList.add('parte');
+                parte_div.setAttribute('parte-local-id', index);
+
+                var parte_header = document.createElement('div');
+                parte_header.classList.add('parte-header');
+
+                var parte_header_p = document.createElement('p');
+                parte_header_p.innerText = `${index + 1}° Parte`;
+
+                var parte_header_btns_ordem = document.createElement('div');
+                parte_header_btns_ordem.classList.add('parte-btns-ordem');
+                
+                var parte_header_btns_ordem_up = document.createElement('i');
+                parte_header_btns_ordem_up.classList.add('fa-solid', 'fa-chevron-up');
+                parte_header_btns_ordem_up.addEventListener('click', subirOrdemItem);
+
+                var parte_header_btns_ordem_down = document.createElement('i');
+                parte_header_btns_ordem_down.classList.add('fa-solid', 'fa-chevron-down');
+                parte_header_btns_ordem_down.addEventListener('click', descerOrdemItem);
+                parte_header_btns_ordem_down.style.display = 'none';
+
+                parte_header_btns_ordem.appendChild(parte_header_btns_ordem_up);
+                parte_header_btns_ordem.appendChild(parte_header_btns_ordem_down);
+
+                var parte_header_i = document.createElement('i');
+                parte_header_i.classList.add('fa-solid', 'fa-trash');
+                parte_header_i.addEventListener('click', remParte);
+
+                parte_header.appendChild(parte_header_p);
+                parte_header.appendChild(parte_header_btns_ordem);
+                parte_header.appendChild(parte_header_i);
+
+                var parte_body = document.createElement('div');
+                parte_body.classList.add('parte-body');
+
+                var pt_body_main = document.createElement('div');
+                pt_body_main.classList.add('pt-body-main');
+
+                var pbm_infos = document.createElement('div');
+                pbm_infos.classList.add('pbm-infos');
+
+                var pt_titulo = document.createElement('div');
+                pt_titulo.classList.add('input-group');
+
+                var pt_titulo_label = document.createElement('label');
+                pt_titulo_label.setAttribute('for', `pt-titulo-${index}`);
+                pt_titulo_label.innerText = 'Título';
+
+                var pt_titulo_input = document.createElement('input');
+                pt_titulo_input.setAttribute('type', 'text');
+                pt_titulo_input.setAttribute('id', `pt-titulo-${index}`);
+                pt_titulo_input.classList.add('pt-titulo');
+                pt_titulo_input.value = parte.nome;
+
+                pt_titulo.appendChild(pt_titulo_label);
+                pt_titulo.appendChild(pt_titulo_input);
+
+                var div_pt_exclusivo = document.createElement('div');
+                div_pt_exclusivo.classList.add('div-pt-exclusivo');
+
+                var pt_exclusivo_label = document.createElement('label');
+                pt_exclusivo_label.innerText = 'Exclusivo?';
+
+                var pt_exclusivo_input = document.createElement('input');
+                pt_exclusivo_input.setAttribute('type', 'checkbox');
+                pt_exclusivo_input.setAttribute('id', `pt-exclusivo-${index}`);
+                pt_exclusivo_input.classList.add('pt-exclusivo');
+                pt_exclusivo_input.checked = parte.exclusivo;
+
+                div_pt_exclusivo.appendChild(pt_exclusivo_label);
+                div_pt_exclusivo.appendChild(pt_exclusivo_input);
+
+                pbm_infos.appendChild(pt_titulo);
+                pbm_infos.appendChild(div_pt_exclusivo);
+
+                var parte_imagem_upload = document.createElement('div');
+                parte_imagem_upload.classList.add('parte-imagem-upload');
+
+                var pt_imagem_input = document.createElement('input');
+                pt_imagem_input.setAttribute('type', 'file');
+                pt_imagem_input.setAttribute('id', `pt-imagem-${index}`);
+                pt_imagem_input.classList.add('pt-imagem');
+                pt_imagem_input.style.display = 'none';
+                pt_imagem_input.addEventListener('change', previewImageParte);
+
+                if (parte.imagem.includes('.mp4')) {
+                    var pt_preview_video = document.createElement('video');
+                    pt_preview_video.setAttribute('id', `pt-preview-imagem-${index}`);
+                    pt_preview_video.classList.add('pt-preview-imagem');
+                    pt_preview_video.setAttribute('src', `https://raw.githubusercontent.com/YuriGomes4/Nuri/main/assets/conteudo/${tipo}/${item_id}/fotos/` + parte.imagem);
+                    //pt_preview_video.setAttribute('controls', 'controls');
+                    pt_preview_video.style.opacity = 1;
+                    pt_preview_video.addEventListener('click', function() {
+                        document.getElementById(`pt-imagem-${index}`).click();
+                    });
+
+                    var pt_btn_remover_imagem = document.createElement('div');
+                    pt_btn_remover_imagem.setAttribute('id', `pt-btn-remover-imagem-${index}`);
+                    pt_btn_remover_imagem.classList.add('pt-btn-remover-imagem');
+                    pt_btn_remover_imagem.style.display = 'flex';
+                    pt_btn_remover_imagem.addEventListener('click', remover_imagem_parte);
+
+                    var pt_btn_remover_imagem_p = document.createElement('p');
+                    pt_btn_remover_imagem_p.innerText = 'Remover';
+
+                    pt_btn_remover_imagem.appendChild(pt_btn_remover_imagem_p);
+
+                    parte_imagem_upload.appendChild(pt_imagem_input);
+                    parte_imagem_upload.appendChild(pt_preview_video);
+                    parte_imagem_upload.appendChild(pt_btn_remover_imagem);
+                } else {
+                    var pt_preview_imagem = document.createElement('img');
+                    pt_preview_imagem.setAttribute('id', `pt-preview-imagem-${index}`);
+                    pt_preview_imagem.classList.add('pt-preview-imagem');
+                    var imagem_parte = '';
+                    if (parte.imagem !== '') {
+                        //imagem_parte = `/assets/conteudo/${tipo}/${item_id}/fotos/` + parte.imagem;
+                        imagem_parte = `https://raw.githubusercontent.com/YuriGomes4/Nuri/main/assets/conteudo/${tipo}/${item_id}/fotos/` + parte.imagem;
+                        pt_preview_imagem.setAttribute('src', imagem_parte);
+                        pt_preview_imagem.style.opacity = 1;
+                    } else {
+                        pt_preview_imagem.style.opacity = 0;
+                    }
+                    pt_preview_imagem.addEventListener('click', function() {
+                        document.getElementById(`pt-imagem-${index}`).click();
+                    });
+
+                    var pt_btn_remover_imagem = document.createElement('div');
+                    pt_btn_remover_imagem.setAttribute('id', `pt-btn-remover-imagem-${index}`);
+                    pt_btn_remover_imagem.classList.add('pt-btn-remover-imagem');
+                    if (parte.imagem !== '') {
+                        pt_btn_remover_imagem.style.display = 'flex';
+                    } else {
+                        pt_btn_remover_imagem.style.display = 'none';
+                    }
+                    pt_btn_remover_imagem.addEventListener('click', remover_imagem_parte);
+
+                    var pt_btn_remover_imagem_p = document.createElement('p');
+                    pt_btn_remover_imagem_p.innerText = 'Remover';
+
+                    pt_btn_remover_imagem.appendChild(pt_btn_remover_imagem_p);
+
+                    parte_imagem_upload.appendChild(pt_imagem_input);
+                    parte_imagem_upload.appendChild(pt_preview_imagem);
+                    parte_imagem_upload.appendChild(pt_btn_remover_imagem);
+                }
+
+                pt_body_main.appendChild(pbm_infos);
+                pt_body_main.appendChild(parte_imagem_upload);
+
+                var pt_descricao = document.createElement('div');
+                pt_descricao.classList.add('input-group');
+
+                var pt_descricao_label = document.createElement('label');
+                pt_descricao_label.setAttribute('for', `pt-descricao-${index}`);
+                pt_descricao_label.innerText = 'Descrição';
+
+                var pt_descricao_textarea = document.createElement('textarea');
+                pt_descricao_textarea.setAttribute('id', `pt-descricao-${index}`);
+                pt_descricao_textarea.innerText = parte.descricao;
+
+                pt_descricao.appendChild(pt_descricao_label);
+                pt_descricao.appendChild(pt_descricao_textarea);
+
+                parte_body.appendChild(pt_body_main);
+                parte_body.appendChild(pt_descricao);
+
+                parte_div.appendChild(parte_header);
+                parte_div.appendChild(parte_body);
+
+                partes_body.appendChild(parte_div);
+
+                // Adjust textarea height
+                pt_descricao_textarea.style.height = "auto";
+                pt_descricao_textarea.style.height = (pt_descricao_textarea.scrollHeight) + "px";
+                pt_descricao_textarea.addEventListener("input", function() {
+                    const scrollPosition = window.scrollY;
+                    this.style.height = "auto";
+                    this.style.height = (this.scrollHeight) + "px";
+                    window.scrollTo(0, scrollPosition);
+                });
+            });
+
+            // Hide the up button for the first item
+            document.querySelectorAll('.parte-btns-ordem .fa-chevron-up').forEach((btn, index) => {
+                btn.style.display = index === 0 ? 'none' : 'flex';
+            });
+
+            var partes = document.getElementsByClassName('parte');
+            // Hide the down button for the last item
+            document.querySelectorAll('.parte-btns-ordem .fa-chevron-down').forEach((btn, index) => {
+                btn.style.display = index === partes.length - 1 ? 'none' : 'flex';
+            });
+        }
 
         function addParte() {
             var partes_body = document.getElementById('partes-body');
