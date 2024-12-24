@@ -110,6 +110,13 @@ body p {
     pointer-events: none;
 }
 
+.imagem .im-video {
+    object-fit: contain;
+    height: 100%;
+    width: 100%;
+    position: absolute;
+}
+
 .imagem.ativa {
     display: flex;
 }

@@ -28,6 +28,13 @@ body {
     /* min-height: 100vh; */
 }
 
+.parte-item > video {
+    width: 60px;
+    aspect-ratio: 9 / 14;
+    border-radius: 10px;
+    object-fit: cover;
+}
+
 html {
     background-color: #000;
 }

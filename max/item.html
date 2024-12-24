@@ -214,10 +214,21 @@
                         //var imagem_parte = `https://api.github.com/repos/YuriGomes4/Nuri/contents/assets/conteudo/${tipo}/${id}/fotos/` + parte.imagem;
                         var imagem_parte = `https://raw.githubusercontent.com/YuriGomes4/Nuri/main/assets/conteudo/${tipo}/${id}/fotos/` + parte.imagem;
 
-                        var img = document.createElement('img');
-                        img.src = imagem_parte;
+                        if (parte.imagem.includes('.mp4')) {
+                            var video = document.createElement('video');
+                            video.src = imagem_parte;
+                            video.autoplay = false;
+                            video.controls = false;
+                            video.muted = false;
+                            video.loop = false;
 
-                        div.appendChild(img);
+                            div.appendChild(video);
+                        } else {
+                            var img = document.createElement('img');
+                            img.src = imagem_parte;
+
+                            div.appendChild(img);
+                        }
 
                         var p = document.createElement('p');
                         p.textContent = index + 1 + '. ' + parte.nome;

@@ -208,19 +208,50 @@
                 divImagem.classList.add('imagem');
                 divImagem.setAttribute('imagem-id', i + 1);
 
-                var imgFundo = document.createElement('img');
-                imgFundo.classList.add('im-fundo');
-                //imgFundo.src = `/assets/conteudo/${item_tipo}/${item_id}/fotos/${imagem}`;
-                imgFundo.src = `https://raw.githubusercontent.com/YuriGomes4/Nuri/main/assets/conteudo/${item_tipo}/${item_id}/fotos/${imagem}`;
-                imgFundo.alt = 'Fundo';
-                divImagem.appendChild(imgFundo);
+                if (imagem.includes('.mp4')) {
+                    var video = document.createElement('video');
+                    video.classList.add('im-video');
+                    video.crossOrigin = "anonymous";
+                    video.src = `https://raw.githubusercontent.com/YuriGomes4/Nuri/main/assets/conteudo/${item_tipo}/${item_id}/fotos/${imagem}`;
+                    video.autoplay = true;
+                    video.controls = false;
+                    video.muted = false;
+                    video.loop = false;
+                    divImagem.appendChild(video);
 
-                var imgImagem = document.createElement('img');
-                imgImagem.classList.add('im-imagem');
-                //imgImagem.src = `/assets/conteudo/${item_tipo}/${item_id}/fotos/${imagem}`;
-                imgImagem.src = `https://raw.githubusercontent.com/YuriGomes4/Nuri/main/assets/conteudo/${item_tipo}/${item_id}/fotos/${imagem}`;
-                imgImagem.alt = 'Imagem';
-                divImagem.appendChild(imgImagem);
+                    video.addEventListener('loadeddata', () => {
+                        video.currentTime = video.duration / 2;
+                    });
+
+                    video.addEventListener('seeked', () => {
+                        var canvas = document.createElement('canvas');
+                        canvas.width = video.videoWidth;
+                        canvas.height = video.videoHeight;
+                        var context = canvas.getContext('2d');
+                        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+                        var imgFundo = document.createElement('img');
+                        imgFundo.classList.add('im-fundo');
+                        imgFundo.src = canvas.toDataURL();
+                        imgFundo.alt = 'Fundo';
+                        divImagem.insertBefore(imgFundo, video);
+                    });
+                } else {
+
+                    var imgFundo = document.createElement('img');
+                    imgFundo.classList.add('im-fundo');
+                    //imgFundo.src = `/assets/conteudo/${item_tipo}/${item_id}/fotos/${imagem}`;
+                    imgFundo.src = `https://raw.githubusercontent.com/YuriGomes4/Nuri/main/assets/conteudo/${item_tipo}/${item_id}/fotos/${imagem}`;
+                    imgFundo.alt = 'Fundo';
+                    divImagem.appendChild(imgFundo);
+
+                    var imgImagem = document.createElement('img');
+                    imgImagem.classList.add('im-imagem');
+                    //imgImagem.src = `/assets/conteudo/${item_tipo}/${item_id}/fotos/${imagem}`;
+                    imgImagem.src = `https://raw.githubusercontent.com/YuriGomes4/Nuri/main/assets/conteudo/${item_tipo}/${item_id}/fotos/${imagem}`;
+                    imgImagem.alt = 'Imagem';
+                    divImagem.appendChild(imgImagem);
+
+                }
 
                 divImagens.appendChild(divImagem);
 
@@ -277,26 +308,60 @@
 
         });
 
+        can_autoplay = false;
+
         function mudarImagem(nova) {
             imagens[ativa].classList.remove('ativa');
             var im_imagem_ativa = imagens[ativa].querySelector('.im-imagem');
-            im_imagem_ativa.style.transition = 'none';
-            im_imagem_ativa.style.transform = 'scale(1.1)';
+            if (im_imagem_ativa !== null) {
+                im_imagem_ativa.style.transition = 'transform ' + 5000 + 'ms ease-out';
+                im_imagem_ativa.offsetWidth;
+                im_imagem_ativa.style.transform = 'scale(1.1)';
+            } else {
+                imagens[ativa].querySelector('.im-video').pause();
+            }
 
             imagens[nova].classList.add('ativa');
             var im_imagem_nova = imagens[nova].querySelector('.im-imagem');
-            im_imagem_nova.style.transition = 'transform ' + 5000 + 'ms ease-out';
-            im_imagem_nova.offsetWidth;
-            im_imagem_nova.style.transform = 'scale(1)';
+            if (im_imagem_nova !== null) {
+                im_imagem_nova.style.transition = 'transform ' + 5000 + 'ms ease-out';
+                im_imagem_nova.offsetWidth;
+                im_imagem_nova.style.transform = 'scale(1)';
+            } else {
+                var video = imagens[nova].querySelector('.im-video');
+                video.currentTime = 0;
+                var playPromise = video.play();
+                if (playPromise !== undefined) {
+                    playPromise.then(() => {
+                        can_autoplay = true;
+                    }).catch((error) => {
+                        console.log('Erro ao reproduzir vídeo:', error);
+                    });
+                }
+                /*video.play().then(() => {
+                    can_autoplay = true;
+                }).catch((error) => {
+                    console.log('Erro ao reproduzir vídeo:', error);
+                });*/
+            }
 
             descricoes[ativa].classList.remove('ativa');
             descricoes[nova].classList.add('ativa');
 
             descricao = descricoes[nova].innerText;
             palavras_descricao = descricao.split(' ');
-            tempo = palavras_descricao.length * 400;
-            if (tempo < 5000) {
-                tempo = 5000;
+
+            var video = imagens[nova].querySelector('.im-video');
+            if (video !== null) {
+                tempo = video.duration * 1000;
+                if (tempo != NaN) {
+                    tempo = 5000;
+                }
+            } else {
+                tempo = palavras_descricao.length * 400;
+                if (tempo < 5000) {
+                    tempo = 5000;
+                }
             }
 
             ativa = nova;
@@ -318,7 +383,21 @@
 
             tempoRestante = tempo;
             clearInterval(intervalo);
-            iniciarIntervalo();
+            if (im_imagem_nova !== null) {
+                iniciarIntervalo();
+            } else {
+                if (playPromise !== undefined) {
+                    playPromise.then(() => {
+                        can_autoplay = true;
+                        iniciarIntervalo();
+                    }).catch((error) => {
+                        console.log('Erro ao reproduzir vídeo:', error);
+                        tempoIniciado = Date.now();
+                        tempoEmPausa = 0;
+                        pausarIntervalo();
+                    });
+                }
+            }
         }
 
         function iniciarIntervalo() {
@@ -344,8 +423,12 @@
 
             var indicador = indicadores[ativa].querySelector('.indicador-atual');
             var imagem = imagens[ativa].querySelector('.im-imagem');
+            if (imagem !== null) {
+                imagem.style.transition = 'none';
+            } else {
+                imagens[ativa].querySelector('.im-video').pause();
+            }
             indicador.style.transition = 'none';
-            imagem.style.transition = 'none';
 
             tempoDecorrido = tempoPausado - tempoIniciado - tempoEmPausa;
 
@@ -366,7 +449,9 @@
             console.log(larguraImagem);
 
             indicador.style.width = largura + '%'; 
-            imagem.style.transform = 'scale(' + (((100+((100-larguraImagem)/10))/100) * ((100 - ((100-larguraImagem)/100))/100)) + ')';
+            if (imagem !== null) {
+                imagem.style.transform = 'scale(' + (((100+((100-larguraImagem)/10))/100) * ((100 - ((100-larguraImagem)/100))/100)) + ')';
+            }
             statusTempo = 'pausado';
         }
 
@@ -381,12 +466,27 @@
             }
 
             var indicador = indicadores[ativa].querySelector('.indicador-atual');
-            var imagem = imagens[ativa].querySelector('.im-imagem');
             indicador.style.transition = 'width ' + tempoRestante + 'ms linear';
             indicador.style.width = '100%';
-            imagem.style.transition = 'transform ' + tempoRestanteImagem + 'ms ease-out';
-            imagem.offsetWidth;
-            imagem.style.transform = 'scale(1)';
+            var imagem = imagens[ativa].querySelector('.im-imagem');
+            if (imagem !== null) {
+                imagem.style.transition = 'transform ' + tempoRestanteImagem + 'ms ease-out';
+                imagem.offsetWidth;
+                imagem.style.transform = 'scale(1)';
+            } else {
+                var video = imagens[ativa].querySelector('.im-video');
+                if (!can_autoplay) {
+                    tempo = video.duration * 1000;
+                    tempoRestante = tempo;
+                    video.currentTime = 0;
+                    can_autoplay = true;
+
+                    indicador.style.transition = 'width ' + tempo + 'ms linear';
+                    indicador.offsetWidth;
+                    indicador.style.width = '100%';
+                }
+                video.play();
+            }
 
             /*if (tempoRestante <= 0) {
             mudarImagem((ativa + 1) % imagens.length);

@@ -246,14 +246,32 @@
             var file = event.target.files[0];
             var fileExtension = file.name.split('.').pop();
             var randomDigits = Math.floor(100000 + Math.random() * 900000);
-            var newFileName = `imagem_${randomDigits}.${fileExtension}`;
+            if (file.type.startsWith('video/')) {
+                var newFileName = `video_${randomDigits}.${fileExtension}`;
+            } else {
+                var newFileName = `imagem_${randomDigits}.${fileExtension}`;
+            }
 
             var reader = new FileReader();
             reader.onload = function() {
-                var output = document.getElementById('pt-preview-imagem-' + parte_id);
+                var output;
+                if (file.type.startsWith('video/')) {
+                    output = document.createElement('video');
+                    //output.setAttribute('controls', 'controls');
+                } else {
+                    output = document.createElement('img');
+                }
+                output.id = 'pt-preview-imagem-' + parte_id;
+                output.classList.add('pt-preview-imagem');
+                output.onclick = function() {
+                    document.getElementById('pt-imagem-' + parte_id).click();
+                };
                 output.src = reader.result;
                 output.setAttribute('file-name', newFileName);
                 output.style.opacity = 1;
+
+                var previewContainer = document.getElementById('pt-preview-imagem-' + parte_id).parentNode;
+                previewContainer.replaceChild(output, document.getElementById('pt-preview-imagem-' + parte_id));
 
                 var btn = document.getElementById('pt-btn-remover-imagem-' + parte_id);
                 btn.style.display = 'flex';
@@ -453,40 +471,67 @@
                             pt_imagem_input.style.display = 'none';
                             pt_imagem_input.addEventListener('change', previewImageParte);
 
-                            var pt_preview_imagem = document.createElement('img');
-                            pt_preview_imagem.setAttribute('id', `pt-preview-imagem-${index}`);
-                            pt_preview_imagem.classList.add('pt-preview-imagem');
-                            var imagem_parte = '';
-                            if (parte.imagem !== '') {
-                                //imagem_parte = `/assets/conteudo/${tipo}/${item_id}/fotos/` + parte.imagem;
-                                imagem_parte = `https://raw.githubusercontent.com/YuriGomes4/Nuri/main/assets/conteudo/${tipo}/${item_id}/fotos/` + parte.imagem;
-                                pt_preview_imagem.setAttribute('src', imagem_parte);
-                                pt_preview_imagem.style.opacity = 1;
-                            } else {
-                                pt_preview_imagem.style.opacity = 0;
-                            }
-                            pt_preview_imagem.addEventListener('click', function() {
-                                document.getElementById(`pt-imagem-${index}`).click();
-                            });
+                            if (parte.imagem.includes('.mp4')) {
+                                var pt_preview_video = document.createElement('video');
+                                pt_preview_video.setAttribute('id', `pt-preview-imagem-${index}`);
+                                pt_preview_video.classList.add('pt-preview-imagem');
+                                pt_preview_video.setAttribute('src', `https://raw.githubusercontent.com/YuriGomes4/Nuri/main/assets/conteudo/${tipo}/${item_id}/fotos/` + parte.imagem);
+                                //pt_preview_video.setAttribute('controls', 'controls');
+                                pt_preview_video.style.opacity = 1;
+                                pt_preview_video.addEventListener('click', function() {
+                                    document.getElementById(`pt-imagem-${index}`).click();
+                                });
 
-                            var pt_btn_remover_imagem = document.createElement('div');
-                            pt_btn_remover_imagem.setAttribute('id', `pt-btn-remover-imagem-${index}`);
-                            pt_btn_remover_imagem.classList.add('pt-btn-remover-imagem');
-                            if (parte.imagem !== '') {
+                                var pt_btn_remover_imagem = document.createElement('div');
+                                pt_btn_remover_imagem.setAttribute('id', `pt-btn-remover-imagem-${index}`);
+                                pt_btn_remover_imagem.classList.add('pt-btn-remover-imagem');
                                 pt_btn_remover_imagem.style.display = 'flex';
+                                pt_btn_remover_imagem.addEventListener('click', remover_imagem_parte);
+
+                                var pt_btn_remover_imagem_p = document.createElement('p');
+                                pt_btn_remover_imagem_p.innerText = 'Remover';
+
+                                pt_btn_remover_imagem.appendChild(pt_btn_remover_imagem_p);
+
+                                parte_imagem_upload.appendChild(pt_imagem_input);
+                                parte_imagem_upload.appendChild(pt_preview_video);
+                                parte_imagem_upload.appendChild(pt_btn_remover_imagem);
                             } else {
-                                pt_btn_remover_imagem.style.display = 'none';
+                                var pt_preview_imagem = document.createElement('img');
+                                pt_preview_imagem.setAttribute('id', `pt-preview-imagem-${index}`);
+                                pt_preview_imagem.classList.add('pt-preview-imagem');
+                                var imagem_parte = '';
+                                if (parte.imagem !== '') {
+                                    //imagem_parte = `/assets/conteudo/${tipo}/${item_id}/fotos/` + parte.imagem;
+                                    imagem_parte = `https://raw.githubusercontent.com/YuriGomes4/Nuri/main/assets/conteudo/${tipo}/${item_id}/fotos/` + parte.imagem;
+                                    pt_preview_imagem.setAttribute('src', imagem_parte);
+                                    pt_preview_imagem.style.opacity = 1;
+                                } else {
+                                    pt_preview_imagem.style.opacity = 0;
+                                }
+                                pt_preview_imagem.addEventListener('click', function() {
+                                    document.getElementById(`pt-imagem-${index}`).click();
+                                });
+
+                                var pt_btn_remover_imagem = document.createElement('div');
+                                pt_btn_remover_imagem.setAttribute('id', `pt-btn-remover-imagem-${index}`);
+                                pt_btn_remover_imagem.classList.add('pt-btn-remover-imagem');
+                                if (parte.imagem !== '') {
+                                    pt_btn_remover_imagem.style.display = 'flex';
+                                } else {
+                                    pt_btn_remover_imagem.style.display = 'none';
+                                }
+                                pt_btn_remover_imagem.addEventListener('click', remover_imagem_parte);
+
+                                var pt_btn_remover_imagem_p = document.createElement('p');
+                                pt_btn_remover_imagem_p.innerText = 'Remover';
+
+                                pt_btn_remover_imagem.appendChild(pt_btn_remover_imagem_p);
+
+                                parte_imagem_upload.appendChild(pt_imagem_input);
+                                parte_imagem_upload.appendChild(pt_preview_imagem);
+                                parte_imagem_upload.appendChild(pt_btn_remover_imagem);
                             }
-                            pt_btn_remover_imagem.addEventListener('click', remover_imagem_parte);
-
-                            var pt_btn_remover_imagem_p = document.createElement('p');
-                            pt_btn_remover_imagem_p.innerText = 'Remover';
-
-                            pt_btn_remover_imagem.appendChild(pt_btn_remover_imagem_p);
-
-                            parte_imagem_upload.appendChild(pt_imagem_input);
-                            parte_imagem_upload.appendChild(pt_preview_imagem);
-                            parte_imagem_upload.appendChild(pt_btn_remover_imagem);
 
                             pt_body_main.appendChild(pbm_infos);
                             pt_body_main.appendChild(parte_imagem_upload);
