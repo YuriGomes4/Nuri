@@ -329,7 +329,8 @@
                 }
             }
         
-            imagem_destaque.src = "/assets/conteudo/"+ destaque.tipo +"/" + destaque.id + "/fotos/" + destaque.capa;
+            //imagem_destaque.src = "/assets/conteudo/"+ destaque.tipo +"/" + destaque.id + "/fotos/" + destaque.capa;
+            imagem_destaque.src = `https://raw.githubusercontent.com/YuriGomes4/Nuri/main/assets/conteudo/${destaque.tipo}/${destaque.id}/fotos/${destaque.capa}`;
             titulo_destaque.textContent = destaque.nome;
             destaque_texto.onclick = function() {
                 //window.location.href = '/max/item.html?tipo=' + destaque.tipo + '&id=' + destaque.id;
@@ -346,7 +347,8 @@
             for (var i = 0; i < Object.keys(especiais).length; i++) {
                 var especial = especiais[Object.keys(especiais)[i]];
 
-                imagens_capa.push("/assets/conteudo/especial/" + Object.keys(especiais)[i] + "/fotos/" + especial.capa);
+                //imagens_capa.push("/assets/conteudo/especial/" + Object.keys(especiais)[i] + "/fotos/" + especial.capa);
+                imagens_capa.push(`https://raw.githubusercontent.com/YuriGomes4/Nuri/main/assets/conteudo/especial/${Object.keys(especiais)[i]}/fotos/${especial.capa}`);
 
                 var div = document.createElement('div');
                 div.className = 'secao-item';
@@ -359,7 +361,8 @@
                 };
 
                 var img = document.createElement('img');
-                img.src = "/assets/conteudo/especial/" + Object.keys(especiais)[i] + "/fotos/" + especial.capa;
+                //img.src = "/assets/conteudo/especial/" + Object.keys(especiais)[i] + "/fotos/" + especial.capa;
+                img.src = `https://raw.githubusercontent.com/YuriGomes4/Nuri/main/assets/conteudo/especial/${Object.keys(especiais)[i]}/fotos/${especial.capa}`;
 
                 var p = document.createElement('p');
                 p.textContent = especial.nome;
@@ -373,7 +376,8 @@
             for (var i = 0; i < Object.keys(historias).length; i++) {
                 var historia = historias[Object.keys(historias)[i]];
 
-                imagens_capa.push("/assets/conteudo/historia/" + Object.keys(historias)[i] + "/fotos/" + historia.capa);
+                //imagens_capa.push("/assets/conteudo/historia/" + Object.keys(historias)[i] + "/fotos/" + historia.capa);
+                imagens_capa.push(`https://raw.githubusercontent.com/YuriGomes4/Nuri/main/assets/conteudo/historia/${Object.keys(historias)[i]}/fotos/${historia.capa}`);
 
                 var div = document.createElement('div');
                 div.className = 'secao-item';
@@ -386,7 +390,8 @@
                 };
 
                 var img = document.createElement('img');
-                img.src = "/assets/conteudo/historia/" + Object.keys(historias)[i] + "/fotos/" + historia.capa;
+                //img.src = "/assets/conteudo/historia/" + Object.keys(historias)[i] + "/fotos/" + historia.capa;
+                img.src = `https://raw.githubusercontent.com/YuriGomes4/Nuri/main/assets/conteudo/historia/${Object.keys(historias)[i]}/fotos/${historia.capa}`;
 
                 var p = document.createElement('p');
                 p.textContent = historia.nome;

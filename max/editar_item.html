@@ -277,29 +277,29 @@
                         console.log(item_sha);
                     });*/
 
-                fetch(`/assets/conteudo/${tipo}/${item_id}/main.json`)
+                fetch(`https://api.github.com/repos/YuriGomes4/Nuri/contents/assets/conteudo/${tipo}/${item_id}/main.json`)
                     .then(response => response.json())
                     .then(item_json => {
-                        console.log(item_json);
-                        item = item_json;
+                        item = JSON.parse(atob(item_json.content));
+                        console.log(item);
             
-                        document.getElementById('titulo').value = item_json.nome;
-                        document.getElementById('sinopse').value = item_json.sinopse;
-                        document.getElementById('autor').value = item_json.autor || '';
-                        document.getElementById('data').value = item_json.data;
-                        document.getElementById('exclusivo').checked = item_json.exclusivo;
+                        document.getElementById('titulo').value = item.nome;
+                        document.getElementById('sinopse').value = item.sinopse;
+                        document.getElementById('autor').value = item.autor || '';
+                        document.getElementById('data').value = item.data;
+                        document.getElementById('exclusivo').checked = item.exclusivo;
 
                         var imagem_capa = '';
-                        if (item_json.capa !== '') {
-                            imagem_capa = `/assets/conteudo/${tipo}/${item_id}/fotos/` + item_json.capa;
+                        if (item.capa !== '') {
+                            imagem_capa = `https://raw.githubusercontent.com/YuriGomes4/Nuri/main/assets/conteudo/${tipo}/${item_id}/fotos/` + item.capa;
                             document.getElementById('preview-capa').src = imagem_capa;
                             document.getElementById('preview-capa').style.opacity = 1;
                             document.getElementById('btn-remover').style.display = 'flex';
                         }
 
-                        if ("participantes" in item_json) {
+                        if ("participantes" in item) {
                             var participantes_list = document.getElementById('participantes-list');
-                            item_json.participantes.forEach(participante => {
+                            item.participantes.forEach(participante => {
                                 var participante_div = document.createElement('div');
                                 participante_div.classList.add('participante');
                                 participante_div.addEventListener('click', function(event) {
@@ -323,7 +323,7 @@
 
                         partes_body.innerHTML = '';
 
-                        item_json.partes.forEach((parte, index) => {
+                        item.partes.forEach((parte, index) => {
                             var parte_div = document.createElement('div');
                             parte_div.classList.add('parte');
                             parte_div.setAttribute('parte-local-id', index);
@@ -415,7 +415,8 @@
                             pt_preview_imagem.classList.add('pt-preview-imagem');
                             var imagem_parte = '';
                             if (parte.imagem !== '') {
-                                imagem_parte = `/assets/conteudo/${tipo}/${item_id}/fotos/` + parte.imagem;
+                                //imagem_parte = `/assets/conteudo/${tipo}/${item_id}/fotos/` + parte.imagem;
+                                imagem_parte = `https://raw.githubusercontent.com/YuriGomes4/Nuri/main/assets/conteudo/${tipo}/${item_id}/fotos/` + parte.imagem;
                                 pt_preview_imagem.setAttribute('src', imagem_parte);
                                 pt_preview_imagem.style.opacity = 1;
                             } else {

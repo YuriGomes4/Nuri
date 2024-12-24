@@ -89,11 +89,13 @@
 
         if (tipo && id) {
             console.log(`Tipo: ${tipo}, ID: ${id}`);
-            fetch(`/assets/conteudo/${tipo}/${id}/main.json`)
+            fetch(`https://api.github.com/repos/YuriGomes4/Nuri/contents/assets/conteudo/${tipo}/${id}/main.json`)
                 .then(response => response.json())
                 .then(item_json => {
-                    console.log(item_json);
-                    var imagem_capa = `/assets/conteudo/${tipo}/${id}/fotos/` + item_json.capa;
+                    main_json = JSON.parse(atob(item_json.content));
+
+                    console.log(main_json);
+                    var imagem_capa = `https://raw.githubusercontent.com/YuriGomes4/Nuri/main/assets/conteudo/${tipo}/${id}/fotos/` + main_json.capa;
                     if (tipo === 'historia') {
                         document.getElementById('img-principal').src = imagem_capa;
                         document.getElementById('img-secundaria').src = imagem_capa;
@@ -104,15 +106,15 @@
                         console.log('Tipo inválido.');
                     }
 
-                    document.getElementById('titulo').innerText = item_json.nome;
-                    const data = item_json.data.split('-').reverse().join('/');
+                    document.getElementById('titulo').innerText = main_json.nome;
+                    const data = main_json.data.split('-').reverse().join('/');
                     document.getElementById('item-data').innerText = data;
-                    document.getElementById('item-qnt-partes').innerText = item_json.partes.length + ' partes';
-                    document.getElementById('item-sinopse').innerText = item_json.sinopse;
+                    document.getElementById('item-qnt-partes').innerText = main_json.partes.length + ' partes';
+                    document.getElementById('item-sinopse').innerText = main_json.sinopse;
 
                     var envolvidos = document.getElementById('envolvidos');
 
-                    if (item_json.autor || item_json.participantes) {
+                    if (main_json.autor || main_json.participantes) {
                         envolvidos.style.display = 'flex';
 
                         var m_autor = document.getElementById('m-autor');
@@ -128,17 +130,17 @@
                             mostrador_participantes.textContent = 'Quem está na história: ';
                         }
 
-                        if (item_json.autor) {
+                        if (main_json.autor) {
                             m_autor.style.display = 'block';
-                            autor.innerText = item_json.autor;
+                            autor.innerText = main_json.autor;
                         } else {
                             m_autor.style.display = 'none';
                         }
 
-                        if (item_json.participantes) {
-                            if (item_json.participantes.length > 0) {
+                        if (main_json.participantes) {
+                            if (main_json.participantes.length > 0) {
                                 m_participantes.style.display = 'block';
-                                participantes.innerText = item_json.participantes.join(', ');
+                                participantes.innerText = main_json.participantes.join(', ');
                             } else {
                                 m_participantes.style.display = 'none';
                             }
@@ -151,15 +153,18 @@
 
                     var partes_lista = document.getElementById('partes-lista');
 
-                    item_json.partes.forEach((parte, index) => {
+                    main_json.partes.forEach((parte, index) => {
                         var div = document.createElement('div');
                         div.className = 'parte-item';
                         div.onclick = function() {
                             page_out(`/max/apresentacao/stories.html?tipo=${tipo}&id=${id}&parte=${index}`);
                         };
 
+                        //var imagem_parte = `https://api.github.com/repos/YuriGomes4/Nuri/contents/assets/conteudo/${tipo}/${id}/fotos/` + parte.imagem;
+                        var imagem_parte = `https://raw.githubusercontent.com/YuriGomes4/Nuri/main/assets/conteudo/${tipo}/${id}/fotos/` + parte.imagem;
+
                         var img = document.createElement('img');
-                        img.src = `/assets/conteudo/${tipo}/${id}/fotos/` + parte.imagem;
+                        img.src = imagem_parte;
 
                         div.appendChild(img);
 

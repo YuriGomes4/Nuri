@@ -105,7 +105,7 @@
         }
 
         async function carregarDados() {
-            const response = await fetch(`/assets/conteudo/${item_tipo}/${item_id}/main.json`);
+            const response = await fetch(`https://api.github.com/repos/yurigomes4/Nuri/contents/assets/conteudo/${item_tipo}/${item_id}/main.json`);
             const item_json = await response.json();
             console.log(item_json);
             return item_json;
@@ -143,7 +143,9 @@
         var indicadores = [];
 
         carregarDados().then(item_json => {
-            console.log(item_json);
+            var item = JSON.parse(atob(item_json.content));
+
+            console.log(item);
             var divImagens = document.getElementById('imagens');
             var divIndicadores = document.getElementById('indicadores');
             var divDescricoes = document.getElementById('descricoes');
@@ -152,8 +154,8 @@
             divIndicadores.innerHTML = '';
             divDescricoes.innerHTML = '';
 
-            for (var i = 0; i < item_json.partes.length; i++) {
-                var imagem = item_json.partes[i].imagem;
+            for (var i = 0; i < item.partes.length; i++) {
+                var imagem = item.partes[i].imagem;
 
                 var divImagem = document.createElement('div');
                 divImagem.classList.add('imagem');
@@ -161,19 +163,21 @@
 
                 var imgFundo = document.createElement('img');
                 imgFundo.classList.add('im-fundo');
-                imgFundo.src = `/assets/conteudo/${item_tipo}/${item_id}/fotos/${imagem}`;
+                //imgFundo.src = `/assets/conteudo/${item_tipo}/${item_id}/fotos/${imagem}`;
+                imgFundo.src = `https://raw.githubusercontent.com/YuriGomes4/Nuri/main/assets/conteudo/${item_tipo}/${item_id}/fotos/${imagem}`;
                 imgFundo.alt = 'Fundo';
                 divImagem.appendChild(imgFundo);
 
                 var imgImagem = document.createElement('img');
                 imgImagem.classList.add('im-imagem');
-                imgImagem.src = `/assets/conteudo/${item_tipo}/${item_id}/fotos/${imagem}`;
+                //imgImagem.src = `/assets/conteudo/${item_tipo}/${item_id}/fotos/${imagem}`;
+                imgImagem.src = `https://raw.githubusercontent.com/YuriGomes4/Nuri/main/assets/conteudo/${item_tipo}/${item_id}/fotos/${imagem}`;
                 imgImagem.alt = 'Imagem';
                 divImagem.appendChild(imgImagem);
 
                 divImagens.appendChild(divImagem);
 
-                var descricao = item_json.partes[i].descricao;
+                var descricao = item.partes[i].descricao;
                 
                 var pDescricao = document.createElement('p');
                 pDescricao.classList.add('descricao');
@@ -212,8 +216,8 @@
             var rodapeNome = document.getElementById('rodape-nome');
             var rodapeInfo = document.getElementById('rodape-info');
 
-            rodapeNome.innerText = item_json.nome;
-            rodapeInfo.innerText = item_json.data.split('-').reverse().join('/') + ' - ' + item_json.partes.length + ' partes';
+            rodapeNome.innerText = item.nome;
+            rodapeInfo.innerText = item.data.split('-').reverse().join('/') + ' - ' + item.partes.length + ' partes';
             
             imagens = document.getElementsByClassName('imagem');
             descricoes = document.getElementsByClassName('descricao');
