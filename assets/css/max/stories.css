@@ -29,7 +29,7 @@ body p {
 #apresentacao {
     max-width: 100vw;
     overflow: hidden;
-    height: 100%;
+    height: calc(100vh - 70px - 26px);
     border-radius: 25px;
     position: relative;
 }
