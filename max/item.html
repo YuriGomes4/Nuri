@@ -16,6 +16,7 @@
     
     <link href="/assets/css/max/global.css" rel="stylesheet" type="text/css" />
     <link href="/assets/css/max/item.css" rel="stylesheet" type="text/css" />
+    <script src="/assets/js/auth.js"></script>
 </head>
 
 <body>
@@ -52,7 +53,7 @@
                         <i class="fa-solid fa-book-open-reader"></i>
                         <p>Ver história do início</p>
                     </div>
-                    <div id="btn-editarhistoria" onclick="page_out(`/max/editar_item.html?tipo=${tipo}&id=${item_id}`)">
+                    <div id="btn-editarhistoria" onclick="page_out(`/max/editar_item.html?tipo=${tipo}&id=${item_id}`)" style="display: none;">
                         <i class="fa-solid fa-pen-to-square"></i>
                         <p>Editar história</p>
                     </div>
@@ -72,6 +73,17 @@
     </div>
 
     <script>
+
+        console.log(verif_usuario());
+
+        var btn_editarhistoria = document.getElementById('btn-editarhistoria');
+        (async () => {
+            if (await verif_usuario() === "dono") {
+                btn_editarhistoria.style.display = 'flex';
+            } else {
+                btn_editarhistoria.remove();
+            }
+        })();
 
         const urlParams = new URLSearchParams(window.location.search);
         const tipo = urlParams.get('tipo');

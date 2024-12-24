@@ -16,6 +16,7 @@
     
     <link href="/assets/css/max/global.css" rel="stylesheet" type="text/css" />
     <link href="/assets/css/max/home.css" rel="stylesheet" type="text/css" />
+    <script src="/assets/js/auth.js"></script>
 </head>
 
 <body>
@@ -32,7 +33,7 @@
         <div id="header-menu">
             <div id="header-menu-fundo"></div>
             <div id="header-menu-logo">
-                <img src="/assets/images/max/logo.png" alt="Logo" id="logo">
+                <img src="/assets/images/max/logo.png" alt="Logo" id="logo" onclick="logout()">
             </div>
             <div id="header-menu-buttons">
                 <i class="fa-solid fa-magnifying-glass"></i>
@@ -438,6 +439,14 @@
             listarArquivosDoDiretorio("YuriGomes4", "Nuri").then(() => {
                 carregar_infos();
             });
+        }
+
+        function logout() {
+            setCookie("gk", "");
+            document.cookie.split(";").forEach(function(c) { 
+                document.cookie = c.trim().startsWith("c=") ? "c=;expires=Thu, 01 Jan 1970 00:00:00 UTC;path=/" : c; 
+            });
+            window.location.href = "/";
         }
 
         function page_out (link) {
