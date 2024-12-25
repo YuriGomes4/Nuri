@@ -40,7 +40,6 @@ hash(getCookie("c")).then((result) => {
 }).catch(console.error);
 
 async function verif_usuario() {
-    console.log("verif_usuario");
     try {
         const result = await hash(getCookie("c"));
         if (result === "20264a9d385ebd31243b85647adbb293b4770f7ceda7d9a64828939e3e255bc0") {

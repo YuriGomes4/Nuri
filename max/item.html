@@ -74,16 +74,22 @@
 
     <script>
 
-        console.log(verif_usuario());
+        let tipo_usuario;
+        var promiseTipoUsario = verif_usuario();
 
         var btn_editarhistoria = document.getElementById('btn-editarhistoria');
-        (async () => {
-            if (await verif_usuario() === "dono") {
-                btn_editarhistoria.style.display = 'flex';
-            } else {
-                btn_editarhistoria.remove();
-            }
-        })();
+
+        if (promiseTipoUsario !== undefined) {
+            promiseTipoUsario.then((tipo) => {
+                tipo_usuario = tipo;
+                if (tipo_usuario === "dono") {
+                    btn_editarhistoria.style.display = 'flex';
+                } else {
+                    btn_editarhistoria.remove();
+                }
+                console.log(tipo_usuario);
+            });
+        }
 
         const urlParams = new URLSearchParams(window.location.search);
         const tipo = urlParams.get('tipo');
@@ -180,6 +186,25 @@
         function carregar_dados(item_json) {
             main_json = item_json;
 
+            if (tipo_usuario === "") {
+                promiseTipoUsario.then((tipo) => {
+                    tipo_usuario = tipo;
+                    if (tipo_usuario === "dono") {
+                        btn_editarhistoria.style.display = 'flex';
+                    } else {
+                        btn_editarhistoria.remove();
+                    }
+                    
+                    if (main_json.exclusivo && tipo_usuario !== "dono") {
+                        return;
+                    }
+                });
+            } else {        
+                if (main_json.exclusivo && tipo_usuario !== "dono") {
+                    return;
+                }
+            }
+
             console.log(main_json);
             var imagem_capa = `https://raw.githubusercontent.com/YuriGomes4/Nuri/main/assets/conteudo/${tipo}/${id}/fotos/` + main_json.capa;
             if (tipo === 'historia') {
@@ -239,7 +264,13 @@
 
             var partes_lista = document.getElementById('partes-lista');
 
+            ocultos = 0;
+
             main_json.partes.forEach((parte, index) => {
+                if (parte.exclusivo && tipo_usuario !== "dono") {
+                    ocultos++;
+                    return;
+                }
                 var div = document.createElement('div');
                 div.className = 'parte-item';
                 div.onclick = function() {
@@ -266,7 +297,7 @@
                 }
 
                 var p = document.createElement('p');
-                p.textContent = index + 1 + '. ' + parte.nome;
+                p.textContent = (index-ocultos) + 1 + '. ' + parte.nome;
 
                 div.appendChild(p);
 
