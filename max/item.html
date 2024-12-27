@@ -43,6 +43,10 @@
                 </div>
             </div>
             <div id="item-info">
+                <div id="div-exclusivo" style="display: none;">
+                    <i class="fa-solid fa-star"></i>
+                    <p>EXCLUSIVO</p>
+                </div>
                 <p id="titulo"></p>
                 <div id="item-carac">
                     <p id="item-data"></p>
@@ -218,6 +222,7 @@
             }
 
             document.getElementById('titulo').innerText = main_json.nome;
+            document.getElementById('div-exclusivo').style.display = main_json.exclusivo ? 'flex' : 'none';
             const data = main_json.data.split('-').reverse().join('/');
             document.getElementById('item-data').innerText = data;
             document.getElementById('item-qnt-partes').innerText = main_json.partes.length + ' partes';
@@ -296,10 +301,19 @@
                     div.appendChild(img);
                 }
 
+                var divTextos = document.createElement('div');
+                divTextos.className = 'parte-textos';
+
                 var p = document.createElement('p');
                 p.textContent = (index-ocultos) + 1 + '. ' + parte.nome;
+                divTextos.appendChild(p);
 
-                div.appendChild(p);
+                var divExclusivo = document.createElement('div');
+                divExclusivo.className = 'parte-exclusivo';
+                divExclusivo.style.display = parte.exclusivo ? 'flex' : 'none';
+                divTextos.appendChild(divExclusivo);
+
+                div.appendChild(divTextos);
 
                 var icon = document.createElement('i');
                 icon.className = 'fa-solid fa-chevron-right';
