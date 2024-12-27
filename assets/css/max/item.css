@@ -28,6 +28,24 @@ body {
     /* min-height: 100vh; */
 }
 
+.parte-exclusivo {
+    display: flex;
+    flex-direction: row;
+    background-color: #0079197a;
+    width: fit-content;
+    padding: 4px 6px;
+    border-radius: 6px;
+    font-size: 11px;
+    gap: 5px;
+    align-items: center;
+}
+
+.parte-textos {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
 #div-exclusivo {
     display: flex;
     flex-direction: row;
