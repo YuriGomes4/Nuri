@@ -94,6 +94,16 @@
     </div>
 
     <script>
+
+        if (document.readyState !== "complete")
+            document.addEventListener("readystatechange", function() {
+                if (document.readyState === "complete") {
+                    onDOMLoaded();
+                }
+            });
+        else 
+            onDOMLoaded();
+
         const urlParams = new URLSearchParams(window.location.search);
         const item_tipo = urlParams.get('tipo');
         const item_id = urlParams.get('id');
@@ -679,11 +689,6 @@
 
             main.style.filter = 'blur(0px)';
         }
-
-        if (document.readyState === "loading")
-            document.addEventListener("DOMContentLoaded", onDOMLoaded);
-        else 
-            onDOMLoaded();
 
         function onDOMLoaded() {
             page_in();

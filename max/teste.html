@@ -25,15 +25,10 @@
     </style>
 </head>
 
-<body>
-    <p class="titulo-codigo">Código de acesso</p>
-
-    <script src="/assets/js/viewport-units-buggyfill.js"></script>
     <script>
-        window.viewportUnitsBuggyfill.init();
-
-        var tituloCodigo = document.querySelector('.titulo-codigo');
-        tituloCodigo.textContent = window.innerHeight;
+        document.addEventListener("readystatechange", (event) => {
+        console.log(`readystate: ${document.readyState}`);
+        });
     </script>
 </body>
 </html>

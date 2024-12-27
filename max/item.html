@@ -78,6 +78,15 @@
 
     <script>
 
+        if (document.readyState !== "complete")
+            document.addEventListener("readystatechange", function() {
+                if (document.readyState === "complete") {
+                    onDOMLoaded();
+                }
+            });
+        else 
+            onDOMLoaded();
+
         let tipo_usuario;
         var promiseTipoUsario = verif_usuario();
 
@@ -325,7 +334,7 @@
             });
         }
 
-        function page_out (link) {
+        function page_out (link, callback=null) {
             var blackout = document.getElementById('blackout');
             var main = document.getElementById('main');
 
@@ -336,6 +345,9 @@
             main.style.filter = 'blur(100px)';
 
             setTimeout(() => {
+                if (callback) {
+                    callback();
+                }
                 if (link === 'back') {
                     window.history.back();
                 } else {
@@ -358,13 +370,6 @@
 
             main.style.filter = 'blur(0px)';
         }
-
-
-
-        if (document.readyState === "loading")
-            document.addEventListener("DOMContentLoaded", onDOMLoaded);
-        else 
-            onDOMLoaded();
 
         function onDOMLoaded() {
             page_in();

@@ -60,11 +60,17 @@
         </div>-->
         <div id="conteudo">
             <div id="filtros">
-                <div class="filtro">
+                <div id="filtro-nenhum" class="filtro" onclick="filtrar('nenhum')" style="display: none;">
+                    <p><i class="fa-solid fa-x"></i></p>
+                </div>
+                <div id="filtro-especial" class="filtro" onclick="filtrar('especial')">
                     <p>Histórias</p>
                 </div>
-                <div class="filtro">
+                <div id="filtro-historia" class="filtro" onclick="filtrar('historia')">
                     <p>Recordações</p>
+                </div>
+                <div id="filtro-participantes" class="filtro" onclick="open_filtro_participantes()" participante="todos" style="display: none;">
+                    <p>Todos os participantes <i class="fa-solid fa-chevron-down"></i></p>
                 </div>
             </div>
             <div id="destaque">
@@ -98,7 +104,27 @@
         </div>
     </div>
 
+    <div id="select-filtro-participantes" style="display: none;">
+        <div id="lista-participantes">
+            <div class="participante ativo" participante="todos" onclick="filtrar('participante-todos')">
+                <p>Todos os participantes</p>
+            </div>
+        </div>
+        <div id="select-filtro-participantes-close-button" onclick="close_filtro_participantes()">
+            <i class="fa-solid fa-x"></i>
+        </div>
+    </div>
+
     <script>
+
+        if (document.readyState !== "complete")
+            document.addEventListener("readystatechange", function() {
+                if (document.readyState === "complete") {
+                    onDOMLoaded();
+                }
+            });
+        else 
+            onDOMLoaded();
 
         let tipo_usuario;
         var promiseTipoUsario = verif_usuario();
@@ -341,27 +367,32 @@
             var destaque_texto = document.getElementById('destaque-texto');
             var destaque_botao = document.getElementById('destaque-botoes').querySelector('.destaque-botao');
             var texto_btnverhistoria = destaque_botao.querySelector('p');
+            var lista_participantes = document.getElementById('lista-participantes');
 
-            if (Object.keys(especiais).length === 0) {
+            conteudos = {};
 
-                var destaque = historias[Object.keys(historias)[0]];
+            var todos = [...Object.values(historias), ...Object.values(especiais)];
 
-                for (var i = 0; i < Object.keys(historias).length; i++) {
-                    var historia = historias[Object.keys(historias)[i]];
+            console.log('Todos:', todos);
 
-                    if (historia.data > destaque.data) {
-                        destaque = historia;
-                    }
-                }
-            } else {
-                var destaque = especiais[Object.keys(especiais)[0]];
+            for (var i = 0; i < todos.length; i++) {
+                //conteudos.push(historias[key]);
+                var conteudo = todos[i];
 
-                for (var i = 0; i < Object.keys(especiais).length; i++) {
-                    var especial = especiais[Object.keys(especiais)[i]];
+                var uid = conteudo.tipo + "-" + conteudo.id;
+                conteudo.uid = uid;
+                conteudos[uid] = conteudo;
+            }
 
-                    if (especial.data > destaque.data) {
-                        destaque = especial;
-                    }
+            console.log('Conteúdos:', conteudos);
+
+            var destaque = conteudos[Object.keys(conteudos)[0]];
+
+            for (var i = 0; i < Object.keys(conteudos).length; i++) {
+                var conteudo = conteudos[Object.keys(conteudos)[i]];
+
+                if (conteudo.data > destaque.data) {
+                    destaque = conteudo;
                 }
             }
         
@@ -380,68 +411,22 @@
 
             var secao_recomendados = document.getElementById('secao-recomendados');
 
-            for (var i = 0; i < Object.keys(especiais).length; i++) {
-                var especial = especiais[Object.keys(especiais)[i]];
+            participantes = [];
+
+            for (var i = 0; i < Object.keys(conteudos).length; i++) {
+                var conteudo = conteudos[Object.keys(conteudos)[i]];
 
                 controle = true;
 
                 if (tipo_usuario === "") {
                 promiseTipoUsario.then((tipo) => {
                     tipo_usuario = tipo;
-                    if (especial.exclusivo && tipo_usuario !== "dono") {
+                    if (conteudo.exclusivo && tipo_usuario !== "dono") {
                         controle = false;
                     }
                 });
                 } else {
-                if (especial.exclusivo && tipo_usuario !== "dono") {
-                    controle = false;
-                }
-                }
-                        
-                if (controle) {
-
-                    //imagens_capa.push("/assets/conteudo/especial/" + Object.keys(especiais)[i] + "/fotos/" + especial.capa);
-                    imagens_capa.push(`https://raw.githubusercontent.com/YuriGomes4/Nuri/main/assets/conteudo/especial/${Object.keys(especiais)[i]}/fotos/${especial.capa}`);
-
-                    var div = document.createElement('div');
-                    div.className = 'secao-item';
-                    div.setAttribute('item-id', especial.id);
-                    /*div.onclick = function() {
-                        window.location.href = '/max/item.html?tipo=especial&id=' + this.getAttribute('item-id');
-                    };*/
-                    div.onclick = function() {
-                        page_out('/max/item.html?tipo=especial&id=' + this.getAttribute('item-id'));
-                    };
-
-                    var img = document.createElement('img');
-                    //img.src = "/assets/conteudo/especial/" + Object.keys(especiais)[i] + "/fotos/" + especial.capa;
-                    img.src = `https://raw.githubusercontent.com/YuriGomes4/Nuri/main/assets/conteudo/especial/${Object.keys(especiais)[i]}/fotos/${especial.capa}`;
-
-                    var p = document.createElement('p');
-                    p.textContent = especial.nome;
-
-                    div.appendChild(img);
-                    div.appendChild(p);
-
-                    secao_recomendados.appendChild(div);
-
-                }
-            }
-
-            for (var i = 0; i < Object.keys(historias).length; i++) {
-                var historia = historias[Object.keys(historias)[i]];
-
-                controle = true;
-
-                if (tipo_usuario === "") {
-                promiseTipoUsario.then((tipo) => {
-                    tipo_usuario = tipo;
-                    if (historia.exclusivo && tipo_usuario !== "dono") {
-                        controle = false;
-                    }
-                });
-                } else {
-                if (historia.exclusivo && tipo_usuario !== "dono") {
+                if (conteudo.exclusivo && tipo_usuario !== "dono") {
                     controle = false;
                 }
                 }
@@ -449,24 +434,23 @@
                 if (controle) {
 
                     //imagens_capa.push("/assets/conteudo/historia/" + Object.keys(historias)[i] + "/fotos/" + historia.capa);
-                    imagens_capa.push(`https://raw.githubusercontent.com/YuriGomes4/Nuri/main/assets/conteudo/historia/${Object.keys(historias)[i]}/fotos/${historia.capa}`);
+                    imagens_capa.push(`https://raw.githubusercontent.com/YuriGomes4/Nuri/main/assets/conteudo/${conteudo.tipo}/${conteudo.id}/fotos/${conteudo.capa}`);
 
                     var div = document.createElement('div');
                     div.className = 'secao-item';
-                    div.setAttribute('item-id', historia.id);
-                    /*div.onclick = function() {
-                        window.location.href = '/max/item.html?tipo=historia&id=' + this.getAttribute('item-id');
-                    };*/
+                    div.setAttribute('item-id', conteudo.id);
+                    div.setAttribute('item-tipo', conteudo.tipo);
+                    div.setAttribute('item-uid', conteudo.tipo + "-" + conteudo.id);
                     div.onclick = function() {
-                        page_out('/max/item.html?tipo=historia&id=' + this.getAttribute('item-id'));
+                        page_out('/max/item.html?tipo='+ this.getAttribute('item-tipo') +'&id=' + this.getAttribute('item-id'));
                     };
 
                     var img = document.createElement('img');
                     //img.src = "/assets/conteudo/historia/" + Object.keys(historias)[i] + "/fotos/" + historia.capa;
-                    img.src = `https://raw.githubusercontent.com/YuriGomes4/Nuri/main/assets/conteudo/historia/${Object.keys(historias)[i]}/fotos/${historia.capa}`;
+                    img.src = `https://raw.githubusercontent.com/YuriGomes4/Nuri/main/assets/conteudo/${conteudo.tipo}/${conteudo.id}/fotos/${conteudo.capa}`;
 
                     var p = document.createElement('p');
-                    p.textContent = historia.nome;
+                    p.textContent = conteudo.nome;
 
                     div.appendChild(img);
                     div.appendChild(p);
@@ -474,7 +458,255 @@
                     secao_recomendados.appendChild(div);
 
                 }
+
+                for (var j = 0; j < conteudo.participantes.length; j++) {
+                    if (!participantes.includes(conteudo.participantes[j])) {
+                        participantes.push(conteudo.participantes[j]);
+                    }
+                }
             }
+
+            for (var i = 0; i < participantes.length; i++) {
+                var div = document.createElement('div');
+                div.className = 'participante';
+                div.setAttribute('participante', participantes[i]);
+                div.onclick = function() {
+                    filtrar("participante-" + this.getAttribute('participante'));
+                };
+
+                var p = document.createElement('p');
+                p.textContent = participantes[i];
+
+                div.appendChild(p);
+
+                lista_participantes.appendChild(div);
+            }
+        }
+
+        filtrados_tipo = [];
+        filtrados_participante = [];
+
+        function filtrar(filtro) {
+            var imagem_destaque = document.getElementById('destaque-imagem').querySelector('img');
+            var titulo_destaque = document.getElementById('destaque-texto').querySelector('p');
+            var destaque_texto = document.getElementById('destaque-texto');
+            var destaque_botao = document.getElementById('destaque-botoes').querySelector('.destaque-botao');
+            var texto_btnverhistoria = destaque_botao.querySelector('p');
+            var secao_recomendados = document.getElementById('secao-recomendados');
+
+            var filtro_nenhum = document.getElementById('filtro-nenhum');
+            var filtro_especial = document.getElementById('filtro-especial');
+            var filtro_historia = document.getElementById('filtro-historia');
+            var filtro_participantes = document.getElementById('filtro-participantes');
+
+            var div_conteudos = document.getElementsByClassName('secao-item');
+
+            var destaque = {};
+
+            if (filtro === "nenhum") {
+
+                filtrados_tipo = [];
+                filtrados_participante = [];
+
+                for (var i = 0; i < div_conteudos.length; i++) {
+                    var div = div_conteudos[i];
+                    var conteudo = conteudos[div.getAttribute('item-uid')];
+                    var tipo = div.getAttribute('item-tipo');
+
+                    //div.style.display = 'flex';
+                    filtrados_tipo.push(div);
+                    filtrados_participante.push(div);
+
+                    if (Object.keys(destaque).length > 0) {
+                        if (conteudo.data > destaque.data) {
+                            destaque = conteudo;
+                        }
+                    } else {
+                        destaque = conteudo;
+                    }
+                }
+
+                imagem_destaque.src = `https://raw.githubusercontent.com/YuriGomes4/Nuri/main/assets/conteudo/${destaque.tipo}/${destaque.id}/fotos/${destaque.capa}`;
+                titulo_destaque.textContent = destaque.nome;
+                destaque_texto.onclick = function() {
+                    //window.location.href = '/max/item.html?tipo=' + destaque.tipo + '&id=' + destaque.id;
+                    page_out('/max/item.html?tipo=' + destaque.tipo + '&id=' + destaque.id);
+                };
+
+                if(destaque.tipo === 'historia') {
+                    texto_btnverhistoria.textContent = 'Ver recordação';
+                } else if(destaque.tipo === 'especial') {
+                    texto_btnverhistoria.textContent = 'Ver história';
+                }
+
+                filtro_nenhum.style.display = 'none';
+                filtro_especial.style.display = 'flex';
+                filtro_historia.style.display = 'flex';
+                filtro_participantes.style.display = 'none';
+
+
+            } else if (filtro === "especial") {
+
+                filtrados_tipo = [];
+                filtrados_participante = [];
+
+                for (var i = 0; i < div_conteudos.length; i++) {
+                    var div = div_conteudos[i];
+                    var conteudo = conteudos[div.getAttribute('item-uid')];
+                    var tipo = div.getAttribute('item-tipo');
+
+                    if (tipo === 'especial') {
+                        //div.style.display = 'flex';
+                        filtrados_tipo.push(div);
+                        filtrados_participante.push(div);
+
+                        if (Object.keys(destaque).length > 0) {
+                            if (conteudo.data > destaque.data) {
+                                destaque = conteudo;
+                            }
+                        } else {
+                            destaque = conteudo;
+                        }
+                    }
+                }
+
+                imagem_destaque.src = `https://raw.githubusercontent.com/YuriGomes4/Nuri/main/assets/conteudo/${destaque.tipo}/${destaque.id}/fotos/${destaque.capa}`;
+                titulo_destaque.textContent = destaque.nome;
+                destaque_texto.onclick = function() {
+                    //window.location.href = '/max/item.html?tipo=' + destaque.tipo + '&id=' + destaque.id;
+                    page_out('/max/item.html?tipo=' + destaque.tipo + '&id=' + destaque.id);
+                };
+                if(destaque.tipo === 'historia') {
+                    texto_btnverhistoria.textContent = 'Ver recordação';
+                } else if(destaque.tipo === 'especial') {
+                    texto_btnverhistoria.textContent = 'Ver história';
+                }
+
+                filtro_nenhum.style.display = 'flex';
+                filtro_historia.style.display = 'none';
+                filtro_participantes.style.display = 'flex';
+            } else if (filtro === "historia") {
+
+                filtrados_tipo = [];
+                filtrados_participante = [];
+
+                for (var i = 0; i < div_conteudos.length; i++) {
+                    var div = div_conteudos[i];
+                    var conteudo = conteudos[div.getAttribute('item-uid')];
+                    var tipo = div.getAttribute('item-tipo');
+
+                    if (tipo === 'historia') {
+                        //div.style.display = 'flex';
+                        filtrados_tipo.push(div);
+                        filtrados_participante.push(div);
+
+                        if (Object.keys(destaque).length > 0) {
+                            if (conteudo.data > destaque.data) {
+                                destaque = conteudo;
+                            }
+                        } else {
+                            destaque = conteudo;
+                        }
+                    }
+                }
+
+                imagem_destaque.src = `https://raw.githubusercontent.com/YuriGomes4/Nuri/main/assets/conteudo/${destaque.tipo}/${destaque.id}/fotos/${destaque.capa}`;
+                titulo_destaque.textContent = destaque.nome;
+                destaque_texto.onclick = function() {
+                    //window.location.href = '/max/item.html?tipo=' + destaque.tipo + '&id=' + destaque.id;
+                    page_out('/max/item.html?tipo=' + destaque.tipo + '&id=' + destaque.id);
+                };
+                if(destaque.tipo === 'historia') {
+                    texto_btnverhistoria.textContent = 'Ver recordação';
+                } else if(destaque.tipo === 'especial') {
+                    texto_btnverhistoria.textContent = 'Ver história';
+                }
+
+                filtro_nenhum.style.display = 'flex';
+                filtro_especial.style.display = 'none';
+                filtro_participantes.style.display = 'flex';
+            } else if (filtro.includes("participante-")) {
+
+                var participante = filtro.split("-")[1];
+
+                filtrados_participante = [];
+
+                for (var i = 0; i < div_conteudos.length; i++) {
+                    var div = div_conteudos[i];
+                    var conteudo = conteudos[div.getAttribute('item-uid')];
+                    var tipo = div.getAttribute('item-tipo');
+
+                    if (conteudo.participantes.includes(participante)) {
+                        //div.style.display = 'flex';
+                        filtrados_participante.push(div);
+                    } else if (participante === "todos") {
+                        //div.style.display = 'flex';
+                        filtrados_participante.push(div);
+                    }
+                }
+
+                filtro_participantes.setAttribute('participante', participante);
+                if (participante === "todos") {
+                    filtro_participantes.querySelector('p').innerHTML = "Todos os participantes <i class='fa-solid fa-chevron-down'></i>";
+                } else {
+                    filtro_participantes.querySelector('p').innerHTML = participante + " <i class='fa-solid fa-chevron-down'></i>";
+                }
+
+                close_filtro_participantes();
+
+                /*filtro_nenhum.style.display = 'flex';
+                filtro_especial.style.display = 'flex';
+                filtro_historia.style.display = 'flex';
+                filtro_participantes.style.display = 'flex';*/
+            }
+
+            try {
+                
+                filtro_final = filtrados_tipo.filter(item => filtrados_participante.includes(item));
+
+                for (var i = 0; i < div_conteudos.length; i++) {
+                    var div = div_conteudos[i];
+                    if (filtro_final.includes(div)) {
+                        div.style.display = 'flex';
+                    } else {
+                        div.style.display = 'none';
+                    }
+                }
+
+            } catch (error) {
+                console.error('Erro ao filtrar:', error);
+            }
+        }
+
+        function open_filtro_participantes() {
+            var filtro_participantes = document.getElementById('filtro-participantes');
+            participante = filtro_participantes.getAttribute('participante');
+            var lista_participantes = document.getElementById('lista-participantes');
+            var participantes = lista_participantes.getElementsByClassName('participante');
+
+            for (var i = 0; i < participantes.length; i++) {
+                if (participantes[i].getAttribute('participante') === participante) {
+                    participantes[i].classList.add('ativo');
+                } else {
+                    participantes[i].classList.remove('ativo');
+                }
+            }
+
+            var select_filtro_participantes = document.getElementById('select-filtro-participantes');
+            select_filtro_participantes.style.display = 'flex';
+            select_filtro_participantes.style.transition = 'opacity 0.5s ease';
+            select_filtro_participantes.offsetHeight;
+            select_filtro_participantes.style.opacity = '1';
+        }
+
+        function close_filtro_participantes() {
+            var select_filtro_participantes = document.getElementById('select-filtro-participantes');
+            select_filtro_participantes.style.transition = 'opacity 0.5s ease';
+            select_filtro_participantes.offsetHeight;
+            select_filtro_participantes.style.opacity = '0';
+            setTimeout(() => {
+                select_filtro_participantes.style.display = 'none';
+            }, 500);
         }
 
         const url = window.location.href;
@@ -551,21 +783,31 @@
 
         function carregar_outras_imagens() {
             outras_imagens.forEach(src => {
-            const img = new Image();
-            img.src = src;
-            img.onload = () => {
-                console.log(`Imagem carregada: ${src}`);
-            };
-            img.onerror = () => {
-                console.error(`Erro ao carregar imagem: ${src}`);
-            };
+                if (src.includes('.mp4')) {
+                    const video = document.createElement('video');
+                    video.src = src;
+                    video.autoplay = false;
+                    video.loop = false;
+                    video.muted = true;
+                    video.style.display = 'none';
+                    document.body.appendChild(video);
+                } else {
+                    const img = new Image();
+                    img.src = src;
+                    img.onload = () => {
+                        console.log(`Imagem carregada: ${src}`);
+                    };
+                    img.onerror = () => {
+                        console.error(`Erro ao carregar imagem: ${src}`);
+                    };
+                }
             });
         }
 
-        if (document.readyState === "loading")
-            document.addEventListener("DOMContentLoaded", onDOMLoaded);
+        /*if (document.readyState !== "complete")
+            document.addEventListener("load", onDOMLoaded);
         else 
-            onDOMLoaded();
+            onDOMLoaded();*/
 
         var controle = 0;
 
