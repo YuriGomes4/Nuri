@@ -136,13 +136,13 @@
             try {
                 const response = await fetch(`https://api.github.com/user`, {
                 headers: {
-                    Authorization: `token ${getCookie("gk")}`
+                    Authorization: `token ${getCookie("gk").split('$sep$')[0]}`
                 }
                 });
 
                 if (response.ok) {
                 console.log('Usuário autenticado:', response);
-                const token = getCookie("gk");
+                const token = getCookie("gk").split('$sep$')[0];
                 api_headers = {
                     Authorization: `Bearer ${token}`
                 };
