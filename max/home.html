@@ -154,13 +154,13 @@
             try {
                 const response = await fetch(`https://api.github.com/user`, {
                 headers: {
-                    Authorization: `token ${getCookie("gk")}`
+                    Authorization: `token ${getCookie("gk").split('$sep$')[0]}`
                 }
                 });
 
                 if (response.ok) {
                 console.log('Usuário autenticado:', response);
-                const token = getCookie("gk");
+                const token = getCookie("gk").split('$sep$')[0];
                 api_headers = {
                     Authorization: `Bearer ${token}`
                 };
@@ -541,7 +541,9 @@
 
                 filtro_nenhum.style.display = 'none';
                 filtro_especial.style.display = 'flex';
+                filtro_especial.classList.remove('ativo');
                 filtro_historia.style.display = 'flex';
+                filtro_historia.classList.remove('ativo');
                 filtro_participantes.style.display = 'none';
 
 
@@ -584,7 +586,9 @@
 
                 filtro_nenhum.style.display = 'flex';
                 filtro_historia.style.display = 'none';
+                filtro_historia.classList.remove('ativo');
                 filtro_participantes.style.display = 'flex';
+                filtro_especial.classList.add('ativo');
             } else if (filtro === "historia") {
 
                 filtrados_tipo = [];
@@ -624,7 +628,9 @@
 
                 filtro_nenhum.style.display = 'flex';
                 filtro_especial.style.display = 'none';
+                filtro_especial.classList.remove('ativo');
                 filtro_participantes.style.display = 'flex';
+                filtro_historia.classList.add('ativo');
             } else if (filtro.includes("participante-")) {
 
                 var participante = filtro.split("-")[1];
