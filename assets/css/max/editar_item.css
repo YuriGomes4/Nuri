@@ -21,6 +21,12 @@ body {
     align-items: center;
 }
 
+.loader {
+    --tamanho: 32px;
+    --tam-borda: 4px;
+    --cor-borda: #ffffff;
+}
+
 .participante > i {
     font-size: 8px;
     pointer-events: none;

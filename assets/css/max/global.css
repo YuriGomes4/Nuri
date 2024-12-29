@@ -2,6 +2,19 @@
     --cor-principal: #440f0f;
 }
 
+.loader {
+    --tamanho: 120px;
+    --tam-borda: 8px;
+    --cor-borda: #ffffff;
+    border: var(--tam-borda) solid var(--cor-borda);
+    border-radius: 50%;
+    border-top: var(--tam-borda) solid #f3f3f300;
+    width: var(--tamanho);
+    height: var(--tamanho);
+    -webkit-animation: spin 2s linear infinite; /* Safari */
+    animation: spin 2s linear infinite;
+}
+
 #blackout {
     position: fixed;
     width: 100dvw;
@@ -12,4 +25,15 @@
     transition: opacity 1s ease;
     opacity: 1;
     pointer-events: none;
+}
+
+/* Safari */
+@-webkit-keyframes spin {
+    0% { -webkit-transform: rotate(0deg); }
+    100% { -webkit-transform: rotate(360deg); }
+}
+  
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }

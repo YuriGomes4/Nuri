@@ -268,7 +268,11 @@
                     var video = document.createElement('video');
                     video.classList.add('im-video');
                     video.crossOrigin = "anonymous";
-                    video.src = `https://raw.githubusercontent.com/YuriGomes4/Nuri/main/assets/conteudo/${item_tipo}/${item_id}/fotos/${imagem}`;
+                    if (imagem.includes('imgur')) {
+                        video.src = imagem;
+                    } else {
+                        video.src = `https://raw.githubusercontent.com/YuriGomes4/Nuri/main/assets/conteudo/${item_tipo}/${item_id}/fotos/${imagem}`;
+                    }
                     video.autoplay = false;
                     video.controls = false;
                     video.muted = false;
@@ -296,14 +300,22 @@
                     var imgFundo = document.createElement('img');
                     imgFundo.classList.add('im-fundo');
                     //imgFundo.src = `/assets/conteudo/${item_tipo}/${item_id}/fotos/${imagem}`;
-                    imgFundo.src = `https://raw.githubusercontent.com/YuriGomes4/Nuri/main/assets/conteudo/${item_tipo}/${item_id}/fotos/${imagem}`;
+                    if (imagem.includes('imgur')) {
+                        imgFundo.src = imagem;
+                    } else {
+                        imgFundo.src = `https://raw.githubusercontent.com/YuriGomes4/Nuri/main/assets/conteudo/${item_tipo}/${item_id}/fotos/${imagem}`;
+                    }
                     imgFundo.alt = 'Fundo';
                     divImagem.appendChild(imgFundo);
 
                     var imgImagem = document.createElement('img');
                     imgImagem.classList.add('im-imagem');
                     //imgImagem.src = `/assets/conteudo/${item_tipo}/${item_id}/fotos/${imagem}`;
-                    imgImagem.src = `https://raw.githubusercontent.com/YuriGomes4/Nuri/main/assets/conteudo/${item_tipo}/${item_id}/fotos/${imagem}`;
+                    if (imagem.includes('imgur')) {
+                        imgImagem.src = imagem;
+                    } else {
+                        imgImagem.src = `https://raw.githubusercontent.com/YuriGomes4/Nuri/main/assets/conteudo/${item_tipo}/${item_id}/fotos/${imagem}`;
+                    }
                     imgImagem.alt = 'Imagem';
                     divImagem.appendChild(imgImagem);
 

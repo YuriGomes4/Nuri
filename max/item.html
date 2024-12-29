@@ -219,7 +219,11 @@
             }
 
             console.log(main_json);
-            var imagem_capa = `https://raw.githubusercontent.com/YuriGomes4/Nuri/main/assets/conteudo/${tipo}/${id}/fotos/` + main_json.capa;
+            if (main_json.capa.includes('imgur')) {
+                var imagem_capa = main_json.capa;
+            } else {
+                var imagem_capa = `https://raw.githubusercontent.com/YuriGomes4/Nuri/main/assets/conteudo/${tipo}/${id}/fotos/` + main_json.capa;
+            }
             if (tipo === 'historia') {
                 document.getElementById('img-principal').src = imagem_capa;
                 document.getElementById('img-secundaria').src = imagem_capa;
@@ -292,7 +296,11 @@
                 };
 
                 //var imagem_parte = `https://api.github.com/repos/YuriGomes4/Nuri/contents/assets/conteudo/${tipo}/${id}/fotos/` + parte.imagem;
-                var imagem_parte = `https://raw.githubusercontent.com/YuriGomes4/Nuri/main/assets/conteudo/${tipo}/${id}/fotos/` + parte.imagem;
+                if (parte.imagem.includes('imgur')) {
+                    var imagem_parte = parte.imagem;
+                } else {
+                    var imagem_parte = `https://raw.githubusercontent.com/YuriGomes4/Nuri/main/assets/conteudo/${tipo}/${id}/fotos/` + parte.imagem;
+                }
 
                 if (parte.imagem.includes('.mp4')) {
                     var video = document.createElement('video');

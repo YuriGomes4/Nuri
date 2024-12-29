@@ -18,6 +18,7 @@
     <link href="/assets/css/max/editar_item.css" rel="stylesheet" type="text/css" />
 
     <script src="/assets/js/github_api.js"></script>
+    <script src="/assets/js/imgur_api.js"></script>
     <script src="/assets/js/auth.js"></script>
 </head>
 
@@ -143,6 +144,7 @@
         var item_id = urlParams.get('id');
         var item = {};
         var dict_imagens = {};
+        var imagens_local = {};
         var tipo_editor = 'editar';
 
         if (tipo && item_id) {
@@ -225,6 +227,7 @@
                 btn.style.display = 'flex';
 
                 dict_imagens[newFileName] = reader.result.split(',')[1];
+                imagens_local[newFileName] = 'capa';
             }
             reader.readAsDataURL(event.target.files[0]);
         }
@@ -235,6 +238,7 @@
             var btn = document.getElementById('btn-remover');
 
             delete dict_imagens[preview.getAttribute('file-name')];
+            delete imagens_local[preview.getAttribute('file-name')];
 
             input.value = '';
             preview.src = '';
@@ -280,6 +284,7 @@
                 btn.style.display = 'flex';
 
                 dict_imagens[newFileName] = reader.result.split(',')[1];
+                imagens_local[newFileName] = parte_id;
             }
             reader.readAsDataURL(event.target.files[0]);
         }
@@ -291,6 +296,7 @@
             var btn = document.getElementById('pt-btn-remover-imagem-' + parte_id);
 
             delete dict_imagens[preview.getAttribute('file-name')];
+            delete imagens_local[preview.getAttribute('file-name')];
 
             input.value = '';
             preview.src = '';
@@ -382,7 +388,11 @@
 
             var imagem_capa = '';
             if (item.capa !== '') {
-                imagem_capa = `https://raw.githubusercontent.com/YuriGomes4/Nuri/main/assets/conteudo/${tipo}/${item_id}/fotos/` + item.capa;
+                if (item.capa.includes('imgur')) {
+                    imagem_capa = item.capa;
+                } else {
+                    imagem_capa = `https://raw.githubusercontent.com/YuriGomes4/Nuri/main/assets/conteudo/${tipo}/${item_id}/fotos/` + item.capa;
+                }
                 document.getElementById('preview-capa').src = imagem_capa;
                 document.getElementById('preview-capa').style.opacity = 1;
                 document.getElementById('btn-remover').style.display = 'flex';
@@ -505,7 +515,11 @@
                     var pt_preview_video = document.createElement('video');
                     pt_preview_video.setAttribute('id', `pt-preview-imagem-${index}`);
                     pt_preview_video.classList.add('pt-preview-imagem');
-                    pt_preview_video.setAttribute('src', `https://raw.githubusercontent.com/YuriGomes4/Nuri/main/assets/conteudo/${tipo}/${item_id}/fotos/` + parte.imagem);
+                    if (parte.imagem.includes('imgur')) {
+                        pt_preview_video.setAttribute('src', parte.imagem);
+                    } else {
+                        pt_preview_video.setAttribute('src', `https://raw.githubusercontent.com/YuriGomes4/Nuri/main/assets/conteudo/${tipo}/${item_id}/fotos/` + parte.imagem);
+                    }
                     //pt_preview_video.setAttribute('controls', 'controls');
                     pt_preview_video.style.opacity = 1;
                     pt_preview_video.addEventListener('click', function() {
@@ -533,7 +547,11 @@
                     var imagem_parte = '';
                     if (parte.imagem !== '') {
                         //imagem_parte = `/assets/conteudo/${tipo}/${item_id}/fotos/` + parte.imagem;
-                        imagem_parte = `https://raw.githubusercontent.com/YuriGomes4/Nuri/main/assets/conteudo/${tipo}/${item_id}/fotos/` + parte.imagem;
+                        if (parte.imagem.includes('imgur')) {
+                            imagem_parte = parte.imagem;
+                        } else {
+                            imagem_parte = `https://raw.githubusercontent.com/YuriGomes4/Nuri/main/assets/conteudo/${tipo}/${item_id}/fotos/` + parte.imagem;
+                        }
                         pt_preview_imagem.setAttribute('src', imagem_parte);
                         pt_preview_imagem.style.opacity = 1;
                     } else {
@@ -882,7 +900,7 @@
 
             if (tipo_editor === 'editar') {
 
-                /*if (item.capa !== '' && item.capa !== null) {
+                if (item.capa !== '' && item.capa !== null) {
                     imagens_json.push(item.capa);
                 }
 
@@ -890,7 +908,7 @@
                     if (!imagens_json.includes(parte.imagem) && parte.imagem !== '') {
                         imagens_json.push(parte.imagem);
                     }
-                });*/
+                });
 
                 try {
                     const response = await fetch(`https://api.github.com/repos/YuriGomes4/Nuri/contents/assets/conteudo/${tipo}/${item_id}/fotos`, {
@@ -920,12 +938,14 @@
 
             var imagem_capa = document.getElementById('preview-capa');
 
-            console.log(imagem_capa.src);
-
             if (imagem_capa.src !== '#' && imagem_capa.src !== '' && imagem_capa.src !== window.location.href) {
                 if (imagem_capa.src.includes(";base64,")) {
                     if (!imagens_atuais.includes(imagem_capa.getAttribute('file-name'))) {
                         imagens_atuais.push(imagem_capa.getAttribute('file-name'));
+                    }
+                } else if (imagem_capa.src.includes("imgur")) {
+                    if (!imagens_atuais.includes(imagem_capa.src)) {
+                        imagens_atuais.push(imagem_capa.src);
                     }
                 } else if (imagem_capa.src.includes("/")) {
                     if (!imagens_atuais.includes(imagem_capa.src.split('/').pop())) {
@@ -945,6 +965,10 @@
                         if (!imagens_atuais.includes(imagem_parte.getAttribute('file-name'))) {
                             imagens_atuais.push(imagem_parte.getAttribute('file-name'));
                         }
+                    } else if (imagem_parte.src.includes("imgur")) {
+                        if (!imagens_atuais.includes(imagem_parte.src)) {
+                            imagens_atuais.push(imagem_parte.src);
+                        }
                     } else if (imagem_parte.src.includes("/")) {
                         if (!imagens_atuais.includes(imagem_parte.src.split('/').pop())) {
                             imagens_atuais.push(imagem_parte.src.split('/').pop());
@@ -952,6 +976,9 @@
                     }
                 }
             }
+
+            console.log('Imagens atuais:', imagens_atuais);
+            console.log('Imagens JSON:', imagens_json);
 
             var imagens_excluir = [];
             var imagens_adicionar = [];
@@ -988,6 +1015,13 @@
         }
 
         function salvar() {
+
+            var btn_salvar = document.getElementById('btn-salvar');
+            var icone_salvar = btn_salvar.querySelector('i');
+
+            btn_salvar.onclick = null;
+            icone_salvar.className = 'loader';
+
             var imagem_capa = document.getElementById('preview-capa');
             var imagem_capa_src = '';
             if (imagem_capa.src !== '#' && imagem_capa.src !== '' && imagem_capa.src !== window.location.href) {
@@ -1048,21 +1082,57 @@
             }
 
             listar_imagens_alteradas().then(async imagens => {
-                var files = [
-                    { path: `assets/conteudo/${tipo}/${item_id}/main.json`, content: JSON.stringify(novo_item), encoding: 'utf-8' }
-                ];
+
+                console.log('Imagens:', imagens);
+
+                /*var files = [];
 
                 if (imagens.imagens_excluir) {
                     for (let imagem of imagens.imagens_excluir) {
-                        files.push({ path: `assets/conteudo/${tipo}/${item_id}/fotos/${imagem}`, content: null, encoding: 'utf-8' });
+                        //files.push({ path: `assets/conteudo/${tipo}/${item_id}/fotos/${imagem}`, content: null, encoding: 'utf-8' });
+
+                        if (imagem.includes('imgur')) {
+                            const imgur = new ImgurAPI(getCookie('iurl'));
+
+                            await imgur.removeImage(imagem.split('/').pop().split('.')[0]).then(response => {
+                                console.log('Imagem excluída:', response);
+                            }).catch(error => {
+                                console.error('Erro ao excluir imagem:', error);
+                            });
+                        } else {
+                            files.push({ path: `assets/conteudo/${tipo}/${item_id}/fotos/${imagem}`, content: null, encoding: 'utf-8' });
+                        }
                     }
                 }
 
                 if (imagens.imagens_adicionar) {
                     for (let imagem of imagens.imagens_adicionar) {
-                        files.push({ path: `assets/conteudo/${tipo}/${item_id}/fotos/${imagem}`, content: dict_imagens[imagem], encoding: 'base64' });
+                        //files.push({ path: `assets/conteudo/${tipo}/${item_id}/fotos/${imagem}`, content: dict_imagens[imagem], encoding: 'base64' });
+                        const imgur = new ImgurAPI(getCookie('iurl'));
+
+                        await imgur.uploadImage(dict_imagens[imagem], 'base64', imagem.split('.')[0], "Imagem").then(response => {
+                            console.log('Imagem adicionada:', response);
+                            if (imagens_local[imagem] === 'capa') {
+                                novo_item.capa = response.link;
+                            } else {
+                                novo_item.partes.forEach(parte => {
+                                    if (parte.imagem === imagem) {
+                                        parte.imagem = response.link;
+                                    }
+                                });
+                            }
+                        }).catch(error => {
+                            console.error('Erro ao adicionar imagem:', error);
+                        });
+
                     }
                 }
+
+                console.log('Novo item:', novo_item);
+
+                files.push({ path: `assets/conteudo/${tipo}/${item_id}/main.json`, content: JSON.stringify(novo_item), encoding: 'utf-8' });
+
+                console.log('Files:', files);
 
                 createCommit('YuriGomes4', 'Nuri', 'Atualizando item', files).then(() => {
                     alert('Item atualizado com sucesso!');
@@ -1074,7 +1144,7 @@
                 }).catch(error => {
                     console.error('Erro ao atualizar item:', error);
                     alert('Erro ao atualizar item.');
-                });
+                });*/
             });
 
             //É só mandar o content como null para remover o arquivo, falta criar pasta e conseguir enviar imagem (precisa converter elas para base64)
@@ -1109,7 +1179,7 @@
         }
 
         async function createCommit(owner, repo, message, files) {
-            const token = getCookie('gk');
+            const token = getCookie('gk').split('$sep$')[0];
 
             const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/git/refs/heads/main`, {
                 method: 'GET',
@@ -1307,7 +1377,7 @@
                 window.location.href = "/";
             }*/
 
-            const token = getCookie('gk');
+            const token = getCookie('gk').split('$sep$')[0];
             if (!token) {
                 var senha = prompt("Digite a senha de alteração:");
                 setCookie('gk', senha);
@@ -1353,6 +1423,11 @@
 
                         onDOMLoaded();
                     })
+                    .catch(error => {
+                        var senha = prompt("Digite a senha de alteração:");
+                        setCookie('gk', senha);
+                        verify_token();
+                    });
                 })
                 .catch(error => {
                     var senha = prompt("Digite a senha de alteração:");
