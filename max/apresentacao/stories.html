@@ -170,7 +170,7 @@
 
         if (item_tipo && item_id) {
             console.log(`Tipo: ${item_tipo}, ID: ${item_id}`);
-            fetch(`https://api.github.com/repos/YuriGomes4/Nuri/contents/assets/conteudo/${item_tipo}/${item_id}/main.json?timestamp=${new Date().getTime()}`, {headers: api_headers})
+            /*fetch(`https://api.github.com/repos/YuriGomes4/Nuri/contents/assets/conteudo/${item_tipo}/${item_id}/main.json?timestamp=${new Date().getTime()}`, {headers: api_headers})
                 .then(response => {
                     if (!response.ok) {
                         throw new Error('Network response was not ok ' + response.statusText);
@@ -200,7 +200,9 @@
                     //main_json = JSON.parse(decodeURIComponent(escape(atob(item_json.content))));
                     
                     carregar_item(JSON.parse(decodeURIComponent(escape(atob(item_json.content)))));
-                });
+                });*/
+
+            carregar_item(JSON.parse(sessionStorage.getItem(tipo))[id]);
         } else {
             console.log('Parâmetros tipo e id não encontrados.');
         }

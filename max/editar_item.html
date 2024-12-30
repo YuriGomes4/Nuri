@@ -332,7 +332,7 @@
         function carregar_item () {
             if (tipo && item_id) {
                 console.log(`Tipo: ${tipo}, ID: ${item_id}`);
-                fetch(`https://api.github.com/repos/YuriGomes4/Nuri/contents/assets/conteudo/${tipo}/${item_id}/main.json?timestamp=${new Date().getTime()}`, {headers: api_headers})
+                /*fetch(`https://api.github.com/repos/YuriGomes4/Nuri/contents/assets/conteudo/${tipo}/${item_id}/main.json?timestamp=${new Date().getTime()}`, {headers: api_headers})
                     .then(response => {
                         if (!response.ok) {
                             throw new Error('Network response was not ok ' + response.statusText);
@@ -362,7 +362,9 @@
                         //main_json = JSON.parse(decodeURIComponent(escape(atob(item_json.content))));
                         
                         carregar_dados(JSON.parse(decodeURIComponent(escape(atob(item_json.content)))));
-                    });
+                    });*/
+
+                carregar_dados(JSON.parse(sessionStorage.getItem(tipo))[id]);
             } else {
                 console.log('Parâmetros tipo e id não encontrados.');
             }
@@ -1130,11 +1132,17 @@
 
                 console.log('Novo item:', novo_item);
 
+                var conteudos = JSON.parse(sessionStorage.getItem(tipo));
+                var novo_conteudos = conteudos;
+                novo_conteudos[item_id] = novo_item;
+
                 files.push({ path: `assets/conteudo/${tipo}/${item_id}/main.json`, content: JSON.stringify(novo_item), encoding: 'utf-8' });
+                files.push({ path: `assets/conteudo/${tipo}.json`, content: JSON.stringify(novo_conteudos), encoding: 'utf-8' });
 
                 console.log('Files:', files);
 
                 createCommit('YuriGomes4', 'Nuri', 'Atualizando item', files).then(() => {
+                    sessionStorage.setItem(tipo, JSON.stringify(novo_conteudos));
                     alert('Item atualizado com sucesso!');
                     if (tipo_editor === 'editar') {
                         page_out("back");
@@ -1188,6 +1196,7 @@
                     'Content-Type': 'application/json'
                 }
             });
+            if (!response.ok) throw new Error('Failed to fetch reference');
             const refData = await response.json();
             const baseTreeSha = refData.object.sha;
 
@@ -1203,6 +1212,7 @@
                         encoding: encoding
                     })
                 });
+                if (!response.ok) throw new Error('Failed to create blob');
                 const data = await response.json();
                 return data.sha;
             };
@@ -1238,6 +1248,7 @@
                         tree: treeEntries
                     })
                 });
+                if (!response.ok) throw new Error('Failed to create tree');
                 const data = await response.json();
                 return data.sha;
             };
@@ -1257,6 +1268,7 @@
                         parents: [baseTreeSha]
                     })
                 });
+                if (!response.ok) throw new Error('Failed to create commit');
                 const data = await response.json();
                 return data.sha;
             };
@@ -1264,7 +1276,7 @@
             const commitSha = await createCommit(treeSha);
 
             const updateBranch = async (commitSha) => {
-                await fetch(`https://api.github.com/repos/${owner}/${repo}/git/refs/heads/main`, {
+                const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/git/refs/heads/main`, {
                     method: 'PATCH',
                     headers: {
                         'Authorization': `token ${token}`,
@@ -1274,6 +1286,7 @@
                         sha: commitSha
                     })
                 });
+                if (!response.ok) throw new Error('Failed to update branch');
             };
 
             await updateBranch(commitSha);

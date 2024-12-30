@@ -197,8 +197,98 @@
 
         var tempoIniciado = Date.now();
 
-        var especiais = {}
-        var historias = {}
+        var conteudos = {}
+
+        async function listar_conteudos() {
+            async function listar_historias() {
+                try {
+                    let response = await fetch(`https://api.github.com/repos/YuriGomes4/Nuri/contents/assets/conteudo/historia.json?timestamp=${new Date().getTime()}`, { headers: api_headers });
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok ' + response.statusText);
+                    }
+                    let data = await response.json();
+                    let historias_json = JSON.parse(decodeURIComponent(escape(atob(data.content))));
+                    for (let i = 0; i < Object.keys(historias_json).length; i++) {
+                        var conteudo = historias_json[Object.keys(historias_json)[i]];
+                        conteudo.tipo = 'historia';
+                        conteudo.id = Object.keys(historias_json)[i];
+                        conteudos[conteudo.id] = conteudo;
+
+                        historias_json[Object.keys(historias_json)[i]] = conteudo;
+                    }
+
+                    sessionStorage.setItem('historia', JSON.stringify(historias_json));
+                } catch (error) {
+                    try {
+                        let response = await fetch(`https://raw.githubusercontent.com/YuriGomes4/Nuri/main/assets/conteudo/historia.json?timestamp=${new Date().getTime()}`);
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok ' + response.statusText);
+                        }
+                        let data = await response.json();
+                        let historias_json = data;
+                        for (let i = 0; i < Object.keys(historias_json).length; i++) {
+                            var conteudo = historias_json[Object.keys(historias_json)[i]];
+                            conteudo.tipo = 'historia';
+                            conteudo.id = Object.keys(historias_json)[i];
+                            conteudos[conteudo.id] = conteudo;
+
+                            historias_json[Object.keys(historias_json)[i]] = conteudo;
+                        }
+
+                        sessionStorage.setItem('historia', JSON.stringify(historias_json));
+                    } catch (error) {
+                        console.error('There has been a problem with your fetch operation:', error);
+                    }
+                }
+            }
+
+            async function listar_especiais() {
+                try {
+                    let response = await fetch(`https://api.github.com/repos/YuriGomes4/Nuri/contents/assets/conteudo/especial.json?timestamp=${new Date().getTime()}`, { headers: api_headers });
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok ' + response.statusText);
+                    }
+                    let data = await response.json();
+                    let especiais_json = JSON.parse(decodeURIComponent(escape(atob(data.content))));
+                    for (let i = 0; i < Object.keys(especiais_json).length; i++) {
+                        var conteudo = especiais_json[Object.keys(especiais_json)[i]];
+                        conteudo.tipo = 'especial';
+                        conteudo.id = Object.keys(especiais_json)[i];
+                        conteudos[conteudo.id] = conteudo;
+
+                        especiais_json[Object.keys(especiais_json)[i]] = conteudo;
+                    }
+
+                    sessionStorage.setItem('especial', JSON.stringify(especiais_json));
+                } catch (error) {
+                    try {
+                        let response = await fetch(`https://raw.githubusercontent.com/YuriGomes4/Nuri/main/assets/conteudo/especial.json?timestamp=${new Date().getTime()}`);
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok ' + response.statusText);
+                        }
+                        let data = await response.json();
+                        let especiais_json = data;
+                        for (let i = 0; i < Object.keys(especiais_json).length; i++) {
+                            var conteudo = especiais_json[Object.keys(especiais_json)[i]];
+                            conteudo.tipo = 'especial';
+                            conteudo.id = Object.keys(especiais_json)[i];
+                            conteudos[conteudo.id] = conteudo;
+
+                            especiais_json[Object.keys(especiais_json)[i]] = conteudo;
+                        }
+
+                        sessionStorage.setItem('especial', JSON.stringify(especiais_json));
+                    } catch (error) {
+                        console.error('There has been a problem with your fetch operation:', error);
+                    }
+                }
+            }
+
+            await listar_historias();
+            await listar_especiais();
+
+            carregar_infos();
+        }
 
         // Função para listar arquivos de um diretório do GitHub
         async function listarArquivosDoDiretorio(owner, repo) {
@@ -369,7 +459,7 @@
             var texto_btnverhistoria = destaque_botao.querySelector('p');
             var lista_participantes = document.getElementById('lista-participantes');
 
-            conteudos = {};
+            /*conteudos = {};
 
             var todos = [...Object.values(historias), ...Object.values(especiais)];
 
@@ -382,7 +472,7 @@
                 var uid = conteudo.tipo + "-" + conteudo.id;
                 conteudo.uid = uid;
                 conteudos[uid] = conteudo;
-            }
+            }*/
 
             console.log('Conteúdos:', conteudos);
 
@@ -396,6 +486,8 @@
                 }
             }
         
+            console.log('Destaque:', destaque);
+
             //imagem_destaque.src = "/assets/conteudo/"+ destaque.tipo +"/" + destaque.id + "/fotos/" + destaque.capa;
             if (destaque.capa.includes('imgur')) {
                 imagem_destaque.src = destaque.capa;
@@ -748,7 +840,7 @@
             }, 500);
         }
 
-        const url = window.location.href;
+        /*const url = window.location.href;
         if (url.includes("localhost") || url.includes("192.168")) {
         //if (url.includes("192.168")) {
             fetchData().then(() => {
@@ -758,7 +850,9 @@
             listarArquivosDoDiretorio("YuriGomes4", "Nuri").then(() => {
                 carregar_infos();
             });
-        }
+        }*/
+
+        listar_conteudos();
 
         function logout() {
             setCookie("gk", "");
