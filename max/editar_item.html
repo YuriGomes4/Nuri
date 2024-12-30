@@ -364,7 +364,7 @@
                         carregar_dados(JSON.parse(decodeURIComponent(escape(atob(item_json.content)))));
                     });*/
 
-                carregar_dados(JSON.parse(sessionStorage.getItem(tipo))[id]);
+                carregar_dados(JSON.parse(sessionStorage.getItem(tipo))[item_id]);
             } else {
                 console.log('Parâmetros tipo e id não encontrados.');
             }
@@ -996,7 +996,7 @@
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${getCookie('gk')}`
+                        'Authorization': `Bearer ${getCookie('gk').split('$sep$')[0]}`
                     }
                 })
                     .then(response => response.json())
@@ -1005,7 +1005,14 @@
                             return { path: file.path, sha: file.sha, content: null, encoding: 'utf-8' };
                         });
 
+                        var conteudos = JSON.parse(sessionStorage.getItem(tipo));
+                        var novo_conteudos = conteudos;
+                        delete novo_conteudos[item_id];
+
+                        files.push({ path: `assets/conteudo/${tipo}.json`, content: JSON.stringify(novo_conteudos, null, 4), encoding: 'utf-8' });
+
                         createCommit('YuriGomes4', 'Nuri', 'Removendo item', files).then(() => {
+                            sessionStorage.setItem(tipo, JSON.stringify(novo_conteudos));
                             alert('Item removido com sucesso!');
                             page_out("/max/home.html?opt=noload");
                         }).catch(error => {

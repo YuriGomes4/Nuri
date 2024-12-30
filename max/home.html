@@ -540,7 +540,7 @@
                     div.className = 'secao-item';
                     div.setAttribute('item-id', conteudo.id);
                     div.setAttribute('item-tipo', conteudo.tipo);
-                    div.setAttribute('item-uid', conteudo.tipo + "-" + conteudo.id);
+                    div.setAttribute('item-uid', conteudo.id);
                     div.onclick = function() {
                         page_out('/max/item.html?tipo='+ this.getAttribute('item-tipo') +'&id=' + this.getAttribute('item-id'));
                     };
