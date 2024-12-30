@@ -514,7 +514,7 @@
 
                 controle = true;
 
-                if (tipo_usuario === "") {
+                if (tipo_usuario === "" || tipo_usuario === undefined) {
                 promiseTipoUsario.then((tipo) => {
                     tipo_usuario = tipo;
                     if (conteudo.exclusivo && tipo_usuario !== "dono") {
@@ -578,6 +578,8 @@
                     }
                 }
             }
+
+            participantes.sort();
 
             for (var i = 0; i < participantes.length; i++) {
                 var div = document.createElement('div');

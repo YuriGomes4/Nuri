@@ -87,7 +87,7 @@
         else 
             onDOMLoaded();
 
-        let tipo_usuario;
+        var tipo_usuario;
         var promiseTipoUsario = verif_usuario();
 
         var btn_editarhistoria = document.getElementById('btn-editarhistoria');
@@ -201,7 +201,7 @@
         function carregar_dados(item_json) {
             main_json = item_json;
 
-            if (tipo_usuario === "") {
+            if (tipo_usuario === "" || tipo_usuario === undefined) {
                 promiseTipoUsario.then((tipo) => {
                     tipo_usuario = tipo;
                     if (tipo_usuario === "dono") {
@@ -211,11 +211,13 @@
                     }
                     
                     if (main_json.exclusivo && tipo_usuario !== "dono") {
+                        console.log('Apenas o dono pode ver este conteúdo.');
                         return;
                     }
                 });
             } else {        
                 if (main_json.exclusivo && tipo_usuario !== "dono") {
+                    console.log('Apenas o dono pode ver este conteúdo.');
                     return;
                 }
             }

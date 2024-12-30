@@ -44,20 +44,20 @@
         <div id="apresentacao">
             <div id="imagens">
                 <div class="imagem" imagem-id="1">
-                    <img class="im-fundo" src="/assets/conteudo/historia/5/fotos/foto1.jpg" alt="Fundo">
-                    <img class="im-imagem" src="/assets/conteudo/historia/5/fotos/foto1.jpg" alt="Imagem">
+                    <img class="im-fundo" src="" alt="Fundo">
+                    <img class="im-imagem" src="" alt="Imagem">
                 </div>
                 <div class="imagem" imagem-id="2">
-                    <img class="im-fundo" src="/assets/conteudo/historia/5/fotos/foto2.jpg" alt="Fundo">
-                    <img class="im-imagem" src="/assets/conteudo/historia/5/fotos/foto2.jpg" alt="Imagem">
+                    <img class="im-fundo" src="" alt="Fundo">
+                    <img class="im-imagem" src="" alt="Imagem">
                 </div>
                 <div class="imagem" imagem-id="3">
-                    <img class="im-fundo" src="/assets/conteudo/historia/5/fotos/foto3.jpg" alt="Fundo">
-                    <img class="im-imagem" src="/assets/conteudo/historia/5/fotos/foto3.jpg" alt="Imagem">
+                    <img class="im-fundo" src="" alt="Fundo">
+                    <img class="im-imagem" src="" alt="Imagem">
                 </div>
                 <div class="imagem" imagem-id="4">
-                    <img class="im-fundo" src="/assets/conteudo/historia/5/fotos/foto4.jpg" alt="Fundo">
-                    <img class="im-imagem" src="/assets/conteudo/historia/5/fotos/foto4.jpg" alt="Imagem">
+                    <img class="im-fundo" src="" alt="Fundo">
+                    <img class="im-imagem" src="" alt="Imagem">
                 </div>
             </div>
             <div id="descricoes">
@@ -89,7 +89,9 @@
                 <p id="rodape-nome"></p>
                 <p id="rodape-info"></p>
             </div>
-            <div id="rodape-botoes"></div>
+            <div id="rodape-botoes">
+                <i id="mute-btn" onclick="mudar_video_mudo()" style="display: none;"></i>
+            </div>
         </div>
     </div>
 
@@ -126,8 +128,60 @@
             parte_inicial = 0;
         }
 
+        var tamanhoTelaDisponivel = window.innerHeight;
+        var divApresentacao = document.getElementById('apresentacao');
+
+        divApresentacao.style.height = (tamanhoTelaDisponivel - 70 - 26)+'px';
+        divApresentacao.offsetHeight;
+
+        var botoes = document.getElementById('botoes');
+        var btnAnterior = document.getElementById('btn-anterior');
+        var btnProximo = document.getElementById('btn-proximo');
+        var btnHeader = document.getElementById('btn-header');
+        var ativa = parte_inicial;
+        var intervalo;
+        var tempo = 5000; // 5 segundos
+        
+        var tempoRestante = tempo;
+        var tempoPausado;
+        var statusTempo = 'pausado';
+        
+        var btn_playpause = document.getElementById('btn-playpause');
+        
+        if ('ontouchstart' in window) {
+            btnAnterior.ontouchstart = touchStartAnterior;
+            btnAnterior.ontouchend = touchEndAnterior;
+            btnProximo.ontouchstart = touchStartProximo;
+            btnProximo.ontouchend = touchEndProximo;
+        } else {
+            btnAnterior.onmousedown = touchStartAnterior;
+            btnAnterior.onmouseup = touchEndAnterior;
+            btnProximo.onmousedown = touchStartProximo;
+            btnProximo.onmouseup = touchEndProximo;
+        }
+        
+        /*btnAnterior.onclick = anterior;
+        btnProximo.onclick = proximo;*/
+        
+        var imagens = [];
+        var descricoes = [];
+        var indicadores = [];
+        
+        can_autoplay = false;
+        
+        video_status = 'imagem';
+
+        var video_mudo = getCookie('video_mudo');
+        if (video_mudo === 'true') {
+            video_mudo = true;
+            document.getElementById('mute-btn').className = 'fas fa-volume-xmark';
+        } else {
+            video_mudo = false;
+            document.getElementById('mute-btn').className = 'fas fa-volume-high';
+        }
+        
         function setCookie(name, value) {
-			document.cookie = name + "=" + value;
+            document.cookie = name + "=" + value;
 		}
 
         function getCookie(name) {
@@ -202,49 +256,10 @@
                     carregar_item(JSON.parse(decodeURIComponent(escape(atob(item_json.content)))));
                 });*/
 
-            carregar_item(JSON.parse(sessionStorage.getItem(tipo))[id]);
+            carregar_item(JSON.parse(sessionStorage.getItem(item_tipo))[item_id]);
         } else {
             console.log('Parâmetros tipo e id não encontrados.');
         }
-
-        var tamanhoTelaDisponivel = window.innerHeight;
-        var divApresentacao = document.getElementById('apresentacao');
-
-        divApresentacao.style.height = (tamanhoTelaDisponivel - 70 - 26)+'px';
-        divApresentacao.offsetHeight;
-
-        var botoes = document.getElementById('botoes');
-        var btnAnterior = document.getElementById('btn-anterior');
-        var btnProximo = document.getElementById('btn-proximo');
-        var btnHeader = document.getElementById('btn-header');
-        var ativa = parte_inicial;
-        var intervalo;
-        var tempo = 5000; // 5 segundos
-
-        var tempoRestante = tempo;
-        var tempoPausado;
-        var statusTempo = 'pausado';
-
-        var btn_playpause = document.getElementById('btn-playpause');
-
-        if ('ontouchstart' in window) {
-            btnAnterior.ontouchstart = touchStartAnterior;
-            btnAnterior.ontouchend = touchEndAnterior;
-            btnProximo.ontouchstart = touchStartProximo;
-            btnProximo.ontouchend = touchEndProximo;
-        } else {
-            btnAnterior.onmousedown = touchStartAnterior;
-            btnAnterior.onmouseup = touchEndAnterior;
-            btnProximo.onmousedown = touchStartProximo;
-            btnProximo.onmouseup = touchEndProximo;
-        }
-
-        /*btnAnterior.onclick = anterior;
-        btnProximo.onclick = proximo;*/
-
-        var imagens = [];
-        var descricoes = [];
-        var indicadores = [];
 
         function carregar_item(item_json){
             //var item = JSON.parse(decodeURIComponent(escape(atob(item_json.content))));
@@ -277,26 +292,30 @@
                     }
                     video.autoplay = false;
                     video.controls = false;
-                    video.muted = false;
+                    video.muted = video_mudo;
                     video.loop = false;
-                    divImagem.appendChild(video);
 
-                    video.addEventListener('loadeddata', () => {
-                        video.currentTime = video.duration / 2;
-                    });
+                    var imgFundo = document.createElement('img');
+                    imgFundo.classList.add('im-fundo');
+                    divImagem.appendChild(imgFundo);
 
-                    video.addEventListener('seeked', () => {
+                    video.addEventListener('loadeddata', (event) => {
+                        var video = event.target;
+                        var divImagem = video.parentElement;
                         var canvas = document.createElement('canvas');
                         canvas.width = video.videoWidth;
                         canvas.height = video.videoHeight;
                         var context = canvas.getContext('2d');
-                        context.drawImage(video, 0, 0, canvas.width, canvas.height);
-                        var imgFundo = document.createElement('img');
-                        imgFundo.classList.add('im-fundo');
-                        imgFundo.src = canvas.toDataURL();
-                        imgFundo.alt = 'Fundo';
-                        divImagem.insertBefore(imgFundo, video);
+                        video.currentTime = video.duration / 2;
+                        video.addEventListener('seeked', () => {
+                            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+                            var imgFundo = divImagem.querySelector('.im-fundo');
+                            imgFundo.src = canvas.toDataURL();
+                            imgFundo.alt = 'Fundo';
+                        }, { once: true });
                     });
+
+                    divImagem.appendChild(video);
                 } else {
 
                     var imgFundo = document.createElement('img');
@@ -378,10 +397,6 @@
 
         }
 
-        can_autoplay = false;
-
-        video_status = 'imagem';
-
         function mudarImagem(nova) {
             statusTempo = 'pausado';
             imagens[ativa].classList.remove('ativa');
@@ -394,20 +409,28 @@
                 imagens[ativa].querySelector('.im-video').pause();
             }
 
+            var mute_btn = document.getElementById('mute-btn');
+
             imagens[nova].classList.add('ativa');
             var im_imagem_nova = imagens[nova].querySelector('.im-imagem');
             if (im_imagem_nova !== null) {
+                mute_btn.style.display = 'none';
+
                 im_imagem_nova.style.transition = 'transform ' + 5000 + 'ms ease-out';
                 im_imagem_nova.offsetWidth;
                 im_imagem_nova.style.transform = 'scale(1)';
                 //video_status = 'imagem';
             } else {
+                mute_btn.style.display = 'flex';
+
                 var video = imagens[nova].querySelector('.im-video');
                 //video.controls = true;
                 video.currentTime = 0;
                 var playPromise = video.play();
                 if (playPromise !== undefined) {
                     playPromise.then(() => {
+                        video.muted = video_mudo;
+                        video.currentTime = 0;
                         can_autoplay = true;
                     }).catch((error) => {
                         console.log('Erro ao reproduzir vídeo:', error);
@@ -477,6 +500,8 @@
             } else {
                 if (playPromise !== undefined) {
                     playPromise.then(() => {
+                        video.muted = video_mudo;
+                        video.currentTime = 0;
                         can_autoplay = true;
                         tempo = video.duration * 1000;
                         tempoRestante = tempo;
@@ -663,6 +688,20 @@
                 pausarIntervalo();
             } else {
                 despausarIntervalo();
+            }
+        }
+
+        function mudar_video_mudo() {
+            video_mudo = !video_mudo;
+            if (video_mudo) {
+                document.getElementById('mute-btn').className = 'fas fa-volume-xmark';
+            } else {
+                document.getElementById('mute-btn').className = 'fas fa-volume-high';
+            }
+            setCookie('video_mudo', video_mudo);
+            var video = imagens[ativa].querySelector('.im-video');
+            if (video !== null) {
+                video.muted = video_mudo;
             }
         }
 

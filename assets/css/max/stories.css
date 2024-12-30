@@ -12,6 +12,21 @@ body {
     font-family: Roboto;
 }
 
+#rodape-botoes {
+    margin-left: auto;
+    display: flex;
+    color: #fff;
+}
+
+#mute-btn {
+    --tamanho: 30px;
+    height: var(--tamanho);
+    width: var(--tamanho);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 body p {
     margin: 0;
 }
