@@ -922,17 +922,18 @@
                     });
                     if (!response.ok) {
                         console.error('Erro ao listar imagens:', response);
-                        return [];
+                        //return [];
+                    } else {
+                        const response_json = await response.json();
+                        response_json.forEach(imagem => {
+                            if (!imagens_json.includes(imagem.name) && imagem.type === "file") {
+                                imagens_json.push(imagem.name);
+                            }
+                        });
                     }
-                    const response_json = await response.json();
-                    response_json.forEach(imagem => {
-                        if (!imagens_json.includes(imagem.name) && imagem.type === "file") {
-                            imagens_json.push(imagem.name);
-                        }
-                    });
                 } catch (error) {
                     console.error('Erro ao listar imagens:', error);
-                    return [];
+                    //return [];
                 }
             }
 
