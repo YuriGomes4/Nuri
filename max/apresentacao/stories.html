@@ -189,6 +189,13 @@
 			return cookieValue ? cookieValue.pop() : '';
 		}
 
+        if (localStorage.getItem('info_json') === null) {
+            info_json = {itens_vistos: [], itens_avaliados: []};
+            localStorage.setItem('info_json', JSON.stringify(info_json));
+        } else {
+            info_json = JSON.parse(localStorage.getItem('info_json'));
+        }
+
         var api_headers = {};
 
         async function verify_token_header() {
@@ -261,13 +268,6 @@
             console.log('Parâmetros tipo e id não encontrados.');
         }
 
-        if (localStorage.getItem('info_json') === null) {
-            info_json = {itens_vistos: [], itens_avaliados: []};
-            localStorage.setItem('info_json', JSON.stringify(info_json));
-        } else {
-            info_json = JSON.parse(localStorage.getItem('info_json'));
-        }
-
         function carregar_item(item_json){
             //var item = JSON.parse(decodeURIComponent(escape(atob(item_json.content))));
             var item = item_json;
@@ -329,6 +329,23 @@
                     });
 
                     divImagem.appendChild(video);
+                } else if (imagem === '') {
+                    var imgFundo = document.createElement('img');
+                    imgFundo.classList.add('im-fundo');
+                    if (item.capa.includes('imgur')) {
+                        imgFundo.src = item.capa;
+                    } else {
+                        imgFundo.src = `https://raw.githubusercontent.com/YuriGomes4/Nuri/main/assets/conteudo/${item_tipo}/${item_id}/fotos/${item.capa}`;
+                    }
+                    imgFundo.alt = 'Fundo';
+                    divImagem.appendChild(imgFundo);
+
+                    var imgImagem = document.createElement('img');
+                    imgImagem.classList.add('im-imagem');
+                    imgImagem.src = '';
+                    imgImagem.alt = 'Imagem';
+                    imgImagem.style.opacity = 0;
+                    divImagem.appendChild(imgImagem);
                 } else {
 
                     var imgFundo = document.createElement('img');

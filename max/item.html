@@ -25,6 +25,28 @@
 
     <div id="fundo"></div>
 
+    <div id="menu-avaliacao" style="display: none;">
+        <div id="main-menu-avaliacao">
+            <div id="menu-avaliacao-header">
+                <p>Avaliação</p>
+                <i class="fa-solid fa-x" onclick="fechar_avalicao()"></i>
+            </div>
+            <div id="menu-avaliacao-body">
+                <div id="avaliacao">
+                    <i class="fa-regular fa-star" onclick="mudar_avaliacao(1)"></i>
+                    <i class="fa-regular fa-star" onclick="mudar_avaliacao(2)"></i>
+                    <i class="fa-regular fa-star" onclick="mudar_avaliacao(3)"></i>
+                    <i class="fa-regular fa-star" onclick="mudar_avaliacao(4)"></i>
+                    <i class="fa-regular fa-star" onclick="mudar_avaliacao(5)"></i>
+                </div>
+            </div>
+            <div id="menu-avaliacao-footer">
+                <div id="btn-avaliar" onclick="avaliar_item()">Avaliar</div>
+                <p id="aviso-avaliacao" style="display: none;">Você precisa escolher uma avaliação.</p>
+            </div>
+        </div>
+    </div>
+
     <div id="main">
         <div id="header-menu">
             <div id="header-menu-logo">
@@ -53,7 +75,7 @@
                     <p id="item-qnt-partes"></p>
                 </div>
                 <div id="item-buttons">
-                    <div id="btn-verhistoria" onclick="page_out(`/max/apresentacao/stories.html?tipo=${tipo}&id=${item_id}`)">
+                    <div id="btn-verhistoria" onclick="ver_historia()">
                         <i class="fa-solid fa-book-open-reader"></i>
                         <p>Ver história do início</p>
                     </div>
@@ -78,14 +100,22 @@
 
     <script>
 
-        if (document.readyState !== "complete")
+        if (document.readyState !== "complete") {
             document.addEventListener("readystatechange", function() {
                 if (document.readyState === "complete") {
                     onDOMLoaded();
                 }
             });
-        else 
+        } else { 
             onDOMLoaded();
+        }
+
+        if (localStorage.getItem('info_json') === null) {
+            info_json = {itens_vistos: [], itens_avaliados: []};
+            localStorage.setItem('info_json', JSON.stringify(info_json));
+        } else {
+            info_json = JSON.parse(localStorage.getItem('info_json'));
+        }
 
         var tipo_usuario;
         var promiseTipoUsario = verif_usuario();
@@ -108,6 +138,17 @@
         const tipo = urlParams.get('tipo');
         const id = urlParams.get('id');
         const item_id = id;
+        const opt = urlParams.get('opt');
+
+        if (opt) {
+            if (opt === 'avaliar') {
+                const url = new URL(window.location.href);
+                url.searchParams.delete('opt');
+                window.history.replaceState({}, document.title, url.toString());
+                abrir_avaliacao();
+                //page_out('back');
+            }
+        }
 
         var texto_btnverhistoria = document.getElementById('btn-verhistoria').querySelector('p');
         if (tipo === 'historia') {
@@ -198,14 +239,8 @@
             console.log('Parâmetros tipo e id não encontrados.');
         }
 
-        if (localStorage.getItem('info_json') === null) {
-            info_json = {itens_vistos: [], itens_avaliados: []};
-            localStorage.setItem('info_json', JSON.stringify(info_json));
-        } else {
-            info_json = JSON.parse(localStorage.getItem('info_json'));
-        }
-
         function carregar_dados(item_json) {
+
             main_json = item_json;
 
             if (tipo_usuario === "" || tipo_usuario === undefined) {
@@ -221,136 +256,209 @@
                         console.log('Apenas o dono pode ver este conteúdo.');
                         return;
                     }
+
+                    carregar(item_json);
                 });
-            } else {        
+            } else {      
+                if (tipo_usuario === "dono") {
+                    btn_editarhistoria.style.display = 'flex';
+                } else {
+                    btn_editarhistoria.remove();
+                }  
+
                 if (main_json.exclusivo && tipo_usuario !== "dono") {
                     console.log('Apenas o dono pode ver este conteúdo.');
                     return;
                 }
+
+                carregar(item_json);
             }
 
-            console.log(main_json);
-            if (main_json.capa.includes('imgur')) {
-                var imagem_capa = main_json.capa;
-            } else {
-                var imagem_capa = `https://raw.githubusercontent.com/YuriGomes4/Nuri/main/assets/conteudo/${tipo}/${id}/fotos/` + main_json.capa;
-            }
-            if (tipo === 'historia') {
-                document.getElementById('img-principal').src = imagem_capa;
-                document.getElementById('img-secundaria').src = imagem_capa;
-            } else if (tipo === 'especial') {
-                document.getElementById('img-principal').src = imagem_capa;
-                document.getElementById('img-secundaria').src = imagem_capa;
-            } else {
-                console.log('Tipo inválido.');
-            }
+            function carregar(main_json) {
 
-            document.getElementById('titulo').innerText = main_json.nome;
-            document.getElementById('div-exclusivo').style.display = main_json.exclusivo ? 'flex' : 'none';
-            const data = main_json.data.split('-').reverse().join('/');
-            document.getElementById('item-data').innerText = data;
-            document.getElementById('item-qnt-partes').innerText = main_json.partes.length + ' partes';
-            document.getElementById('item-sinopse').innerText = main_json.sinopse;
-
-            var envolvidos = document.getElementById('envolvidos');
-
-            if (main_json.autor || main_json.participantes) {
-                envolvidos.style.display = 'flex';
-
-                var m_autor = document.getElementById('m-autor');
-                var m_participantes = document.getElementById('m-participantes');
-                var autor = document.getElementById('autor');
-                var participantes = document.getElementById('participantes');
-
-                var mostrador_participantes = m_participantes.querySelector('.mostrador');
-                console.log(mostrador_participantes);
-                if (tipo === 'historia') {
-                    mostrador_participantes.textContent = 'Quem está na recordação: ';
-                } else if (tipo === 'especial') {
-                    mostrador_participantes.textContent = 'Quem está na história: ';
-                }
-
-                if (main_json.autor) {
-                    m_autor.style.display = 'block';
-                    autor.innerText = main_json.autor;
+                console.log(main_json);
+                if (main_json.capa.includes('imgur')) {
+                    var imagem_capa = main_json.capa;
                 } else {
-                    m_autor.style.display = 'none';
+                    var imagem_capa = `https://raw.githubusercontent.com/YuriGomes4/Nuri/main/assets/conteudo/${tipo}/${id}/fotos/` + main_json.capa;
+                }
+                if (tipo === 'historia') {
+                    document.getElementById('img-principal').src = imagem_capa;
+                    document.getElementById('img-secundaria').src = imagem_capa;
+                } else if (tipo === 'especial') {
+                    document.getElementById('img-principal').src = imagem_capa;
+                    document.getElementById('img-secundaria').src = imagem_capa;
+                } else {
+                    console.log('Tipo inválido.');
                 }
 
-                if (main_json.participantes) {
-                    if (main_json.participantes.length > 0) {
-                        m_participantes.style.display = 'block';
-                        participantes.innerText = main_json.participantes.join(', ');
+                document.getElementById('titulo').innerText = main_json.nome;
+                document.getElementById('div-exclusivo').style.display = main_json.exclusivo ? 'flex' : 'none';
+                const data = main_json.data.split('-').reverse().join('/');
+                document.getElementById('item-data').innerText = data;
+                document.getElementById('item-qnt-partes').innerText = main_json.partes.length + ' partes';
+                document.getElementById('item-sinopse').innerText = main_json.sinopse;
+
+                var envolvidos = document.getElementById('envolvidos');
+
+                if (main_json.autor || main_json.participantes) {
+                    envolvidos.style.display = 'flex';
+
+                    var m_autor = document.getElementById('m-autor');
+                    var m_participantes = document.getElementById('m-participantes');
+                    var autor = document.getElementById('autor');
+                    var participantes = document.getElementById('participantes');
+
+                    var mostrador_participantes = m_participantes.querySelector('.mostrador');
+                    console.log(mostrador_participantes);
+                    if (tipo === 'historia') {
+                        mostrador_participantes.textContent = 'Quem está na recordação: ';
+                    } else if (tipo === 'especial') {
+                        mostrador_participantes.textContent = 'Quem está na história: ';
+                    }
+
+                    if (main_json.autor) {
+                        m_autor.style.display = 'block';
+                        autor.innerText = main_json.autor;
+                    } else {
+                        m_autor.style.display = 'none';
+                    }
+
+                    if (main_json.participantes) {
+                        if (main_json.participantes.length > 0) {
+                            m_participantes.style.display = 'block';
+                            participantes.innerText = main_json.participantes.join(', ');
+                        } else {
+                            m_participantes.style.display = 'none';
+                        }
                     } else {
                         m_participantes.style.display = 'none';
                     }
                 } else {
-                    m_participantes.style.display = 'none';
+                    envolvidos.style.display = 'none';
                 }
-            } else {
-                envolvidos.style.display = 'none';
+
+                var partes_lista = document.getElementById('partes-lista');
+
+                ocultos = 0;
+
+                main_json.partes.forEach((parte, index) => {
+                    if (parte.exclusivo && tipo_usuario !== "dono") {
+                        ocultos++;
+                        return;
+                    }
+                    var div = document.createElement('div');
+                    div.className = 'parte-item';
+                    div.onclick = function() {
+                        page_out(`/max/apresentacao/stories.html?tipo=${tipo}&id=${id}&parte=${index}`);
+                    };
+
+                    //var imagem_parte = `https://api.github.com/repos/YuriGomes4/Nuri/contents/assets/conteudo/${tipo}/${id}/fotos/` + parte.imagem;
+                    if (parte.imagem.includes('imgur')) {
+                        var imagem_parte = parte.imagem;
+                    } else if (parte.imagem === '') {
+                        var imagem_parte = imagem_capa;
+                    } else {
+                        var imagem_parte = `https://raw.githubusercontent.com/YuriGomes4/Nuri/main/assets/conteudo/${tipo}/${id}/fotos/` + parte.imagem;
+                    }
+
+                    if (parte.imagem.includes('.mp4')) {
+                        var video = document.createElement('video');
+                        video.src = imagem_parte;
+                        video.autoplay = false;
+                        video.controls = false;
+                        video.muted = false;
+                        video.loop = false;
+
+                        div.appendChild(video);
+                    } else {
+                        var img = document.createElement('img');
+                        img.src = imagem_parte;
+
+                        div.appendChild(img);
+                    }
+
+                    var divTextos = document.createElement('div');
+                    divTextos.className = 'parte-textos';
+
+                    var p = document.createElement('p');
+                    p.textContent = (index-ocultos) + 1 + '. ' + parte.nome;
+                    divTextos.appendChild(p);
+
+                    var divExclusivo = document.createElement('div');
+                    divExclusivo.className = 'parte-exclusivo';
+                    divExclusivo.innerHTML = '<i class="fa-solid fa-star"></i><p>EXCLUSIVO</p>';
+                    divExclusivo.style.display = parte.exclusivo ? 'flex' : 'none';
+                    divTextos.appendChild(divExclusivo);
+
+                    div.appendChild(divTextos);
+
+                    var icon = document.createElement('i');
+                    icon.className = 'fa-solid fa-chevron-right';
+
+                    div.appendChild(icon);
+
+                    partes_lista.appendChild(div);
+                });
+            }
+        }
+
+        function abrir_avaliacao() {
+            if (info_json.itens_avaliados.includes(item_id)) {
+                console.log('Item já avaliado.');
+                return;
             }
 
-            var partes_lista = document.getElementById('partes-lista');
+            var titulo = document.getElementById('menu-avaliacao-header').querySelector('p');
+            if (tipo === 'historia') {
+                titulo.textContent = 'Quanto você gostou da recordação?';
+            } else if (tipo === 'especial') {
+                titulo.textContent = 'Quanto você gostou da história?';
+            } else {
+                console.log('Tipo inválido.');
+            }
 
-            ocultos = 0;
+            document.getElementById('menu-avaliacao').style.display = 'flex';
+        }
 
-            main_json.partes.forEach((parte, index) => {
-                if (parte.exclusivo && tipo_usuario !== "dono") {
-                    ocultos++;
-                    return;
-                }
-                var div = document.createElement('div');
-                div.className = 'parte-item';
-                div.onclick = function() {
-                    page_out(`/max/apresentacao/stories.html?tipo=${tipo}&id=${id}&parte=${index}`);
-                };
+        function fechar_avalicao() {
+            document.getElementById('menu-avaliacao').style.display = 'none';
+        }
 
-                //var imagem_parte = `https://api.github.com/repos/YuriGomes4/Nuri/contents/assets/conteudo/${tipo}/${id}/fotos/` + parte.imagem;
-                if (parte.imagem.includes('imgur')) {
-                    var imagem_parte = parte.imagem;
+        function mudar_avaliacao(n) {
+            var avaliacao = document.getElementById('avaliacao');
+            var estrelas = avaliacao.querySelectorAll('i');
+            estrelas.forEach((estrelas, index) => {
+                if (index < n) {
+                    estrelas.className = 'fa-solid fa-star';
                 } else {
-                    var imagem_parte = `https://raw.githubusercontent.com/YuriGomes4/Nuri/main/assets/conteudo/${tipo}/${id}/fotos/` + parte.imagem;
+                    estrelas.className = 'fa-regular fa-star';
                 }
-
-                if (parte.imagem.includes('.mp4')) {
-                    var video = document.createElement('video');
-                    video.src = imagem_parte;
-                    video.autoplay = false;
-                    video.controls = false;
-                    video.muted = false;
-                    video.loop = false;
-
-                    div.appendChild(video);
-                } else {
-                    var img = document.createElement('img');
-                    img.src = imagem_parte;
-
-                    div.appendChild(img);
-                }
-
-                var divTextos = document.createElement('div');
-                divTextos.className = 'parte-textos';
-
-                var p = document.createElement('p');
-                p.textContent = (index-ocultos) + 1 + '. ' + parte.nome;
-                divTextos.appendChild(p);
-
-                var divExclusivo = document.createElement('div');
-                divExclusivo.className = 'parte-exclusivo';
-                divExclusivo.innerHTML = '<i class="fa-solid fa-star"></i><p>EXCLUSIVO</p>';
-                divExclusivo.style.display = parte.exclusivo ? 'flex' : 'none';
-                divTextos.appendChild(divExclusivo);
-
-                div.appendChild(divTextos);
-
-                var icon = document.createElement('i');
-                icon.className = 'fa-solid fa-chevron-right';
-
-                div.appendChild(icon);
-
-                partes_lista.appendChild(div);
             });
+            avaliacao.setAttribute('avaliacao', n);
+
+            var aviso = document.getElementById('aviso-avaliacao');
+            aviso.style.display = 'none';
+        }
+
+        function avaliar_item() {
+            var avaliacao = document.getElementById('avaliacao').getAttribute('avaliacao');
+            if (avaliacao > 0) {
+                fetch(`http://144.22.227.71:7979/contador/${item_id}/avaliacao?avaliacao=${avaliacao}`, {method: 'POST',});
+                info_json.itens_avaliados.push(item_id);
+                localStorage.setItem('info_json', JSON.stringify(info_json));
+                fechar_avalicao();
+            } else {
+                document.getElementById('aviso-avaliacao').style.display = 'block';
+            }
+        }
+
+        function ver_historia() {
+            const urlParams = new URLSearchParams(window.location.search);
+            urlParams.set('opt', 'avaliar');
+            window.history.replaceState({}, '', `${window.location.pathname}?${urlParams}`);
+
+            page_out(`/max/apresentacao/stories.html?tipo=${tipo}&id=${id}&parte=0`);
         }
 
         function page_out (link, callback=null) {
