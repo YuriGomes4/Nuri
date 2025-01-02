@@ -1036,6 +1036,8 @@
             if (imagem_capa.src !== '#' && imagem_capa.src !== '' && imagem_capa.src !== window.location.href) {
                 if (imagem_capa.src.includes(";base64,")) {
                     imagem_capa_src = imagem_capa.getAttribute('file-name');
+                } else if (imagem_capa.src.includes("imgur")) {
+                    imagem_capa_src = imagem_capa.src;
                 } else if (imagem_capa.src.includes("/")) {
                     imagem_capa_src = imagem_capa.src.split('/').pop();
                 }
@@ -1066,6 +1068,8 @@
                 if (imagem_parte.src !== '#' && imagem_parte.src !== '' && imagem_parte.src !== window.location.href) {
                     if (imagem_parte.src.includes(";base64,")) {
                         imagem_parte_src = imagem_parte.getAttribute('file-name');
+                    } else if (imagem_parte.src.includes("imgur")) {
+                        imagem_parte_src = imagem_parte.src;
                     } else if (imagem_parte.src.includes("/")) {
                         imagem_parte_src = imagem_parte.src.split('/').pop();
                     }
@@ -1107,6 +1111,7 @@
                                 console.log('Imagem excluída:', response);
                             }).catch(error => {
                                 console.error('Erro ao excluir imagem:', error);
+                                alert('Erro ao excluir imagem.', error);
                             });
                         } else {
                             files.push({ path: `assets/conteudo/${tipo}/${item_id}/fotos/${imagem}`, content: null, encoding: 'utf-8' });
@@ -1132,6 +1137,7 @@
                             }
                         }).catch(error => {
                             console.error('Erro ao adicionar imagem:', error);
+                            alert('Erro ao adicionar imagem.', error);
                         });
 
                     }
@@ -1142,6 +1148,8 @@
                 var conteudos = JSON.parse(sessionStorage.getItem(tipo));
                 var novo_conteudos = conteudos;
                 novo_conteudos[item_id] = novo_item;
+
+                console.log('Novos conteúdos:', novo_conteudos[item_id]);
 
                 files.push({ path: `assets/conteudo/${tipo}/${item_id}/main.json`, content: JSON.stringify(novo_item), encoding: 'utf-8' });
                 files.push({ path: `assets/conteudo/${tipo}.json`, content: JSON.stringify(novo_conteudos), encoding: 'utf-8' });
