@@ -194,6 +194,13 @@
             main.style.filter = 'blur(0px)';
         }
 
+        if (localStorage.getItem('info_json') === null) {
+            info_json = {itens_vistos: [], itens_avaliados: []};
+            localStorage.setItem('info_json', JSON.stringify(info_json));
+        } else {
+            info_json = JSON.parse(localStorage.getItem('info_json'));
+        }
+
 
         var tempoIniciado = Date.now();
 
@@ -212,6 +219,20 @@
                         var conteudo = historias_json[Object.keys(historias_json)[i]];
                         conteudo.tipo = 'historia';
                         conteudo.id = Object.keys(historias_json)[i];
+                        try {
+                            let response = await fetch(`http://144.22.227.71:7979/contador/${conteudo.id}?timestamp=${new Date().getTime()}`);
+                            if (!response.ok) {
+                                throw new Error('Network response was not ok ' + response.statusText);
+                            }
+                            let contador = await response.json();
+                            conteudo.contador = contador;
+                            //conteudos[conteudo.id] = conteudo;
+                        } catch (error) {
+                            if (!Object.keys(conteudo).includes('contador')) {
+                                conteudo.contador = {"avaliacao_media": 0,"avaliacoes": 0,"visualizacoes": 0};
+                                //conteudos[conteudo.id] = conteudo;
+                            }
+                        }
                         conteudos[conteudo.id] = conteudo;
 
                         historias_json[Object.keys(historias_json)[i]] = conteudo;
@@ -230,6 +251,20 @@
                             var conteudo = historias_json[Object.keys(historias_json)[i]];
                             conteudo.tipo = 'historia';
                             conteudo.id = Object.keys(historias_json)[i];
+                            try {
+                                let response = await fetch(`http://144.22.227.71:7979/contador/${conteudo.id}?timestamp=${new Date().getTime()}`);
+                                if (!response.ok) {
+                                    throw new Error('Network response was not ok ' + response.statusText);
+                                }
+                                let contador = await response.json();
+                                conteudo.contador = contador;
+                                //conteudos[conteudo.id] = conteudo;
+                            } catch (error) {
+                                if (!Object.keys(conteudo).includes('contador')) {
+                                    conteudo.contador = {"avaliacao_media": 0,"avaliacoes": 0,"visualizacoes": 0};
+                                    //conteudos[conteudo.id] = conteudo;
+                                }
+                            }
                             conteudos[conteudo.id] = conteudo;
 
                             historias_json[Object.keys(historias_json)[i]] = conteudo;
@@ -254,6 +289,20 @@
                         var conteudo = especiais_json[Object.keys(especiais_json)[i]];
                         conteudo.tipo = 'especial';
                         conteudo.id = Object.keys(especiais_json)[i];
+                        try {
+                            let response = await fetch(`http://144.22.227.71:7979/contador/${conteudo.id}?timestamp=${new Date().getTime()}`);
+                            if (!response.ok) {
+                                throw new Error('Network response was not ok ' + response.statusText);
+                            }
+                            let contador = await response.json();
+                            conteudo.contador = contador;
+                            //conteudos[conteudo.id] = conteudo;
+                        } catch (error) {
+                            if (!Object.keys(conteudo).includes('contador')) {
+                                conteudo.contador = {"avaliacao_media": 0,"avaliacoes": 0,"visualizacoes": 0};
+                                //conteudos[conteudo.id] = conteudo;
+                            }
+                        }
                         conteudos[conteudo.id] = conteudo;
 
                         especiais_json[Object.keys(especiais_json)[i]] = conteudo;
@@ -272,6 +321,20 @@
                             var conteudo = especiais_json[Object.keys(especiais_json)[i]];
                             conteudo.tipo = 'especial';
                             conteudo.id = Object.keys(especiais_json)[i];
+                            try {
+                                let response = await fetch(`http://144.22.227.71:7979/contador/${conteudo.id}?timestamp=${new Date().getTime()}`);
+                                if (!response.ok) {
+                                    throw new Error('Network response was not ok ' + response.statusText);
+                                }
+                                let contador = await response.json();
+                                conteudo.contador = contador;
+                                //conteudos[conteudo.id] = conteudo;
+                            } catch (error) {
+                                if (!Object.keys(conteudo).includes('contador')) {
+                                    conteudo.contador = {"avaliacao_media": 0,"avaliacoes": 0,"visualizacoes": 0};
+                                    //conteudos[conteudo.id] = conteudo;
+                                }
+                            }
                             conteudos[conteudo.id] = conteudo;
 
                             especiais_json[Object.keys(especiais_json)[i]] = conteudo;
@@ -286,6 +349,31 @@
 
             await listar_historias();
             await listar_especiais();
+
+            /*async function atualizar_contador() {
+                for (var i = 0; i < Object.keys(conteudos).length; i++) {
+                    var conteudo = conteudos[Object.keys(conteudos)[i]];
+                    
+                    try {
+                        let response = await fetch(`http://144.22.227.71:7979/contador/${conteudo.id}?timestamp=${new Date().getTime()}`);
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok ' + response.statusText);
+                        }
+                        let contador = await response.json();
+                        conteudo.contador = contador;
+                        conteudos[conteudo.id] = conteudo;
+                    } catch (error) {
+                        if (!Object.keys(conteudo).includes('contador')) {
+                            conteudo.contador = {"avaliacao_media": 0,"avaliacoes": 0,"visualizacoes": 0};
+                            conteudos[conteudo.id] = conteudo;
+                        }
+                    }
+                }
+
+                sessionStorage.setItem('conteudo', JSON.stringify(conteudos));
+            }
+
+            await atualizar_contador();*/
 
             carregar_infos();
         }

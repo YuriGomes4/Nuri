@@ -198,6 +198,13 @@
             console.log('Parâmetros tipo e id não encontrados.');
         }
 
+        if (localStorage.getItem('info_json') === null) {
+            info_json = {itens_vistos: [], itens_avaliados: []};
+            localStorage.setItem('info_json', JSON.stringify(info_json));
+        } else {
+            info_json = JSON.parse(localStorage.getItem('info_json'));
+        }
+
         function carregar_dados(item_json) {
             main_json = item_json;
 

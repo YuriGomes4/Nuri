@@ -261,9 +261,22 @@
             console.log('Parâmetros tipo e id não encontrados.');
         }
 
+        if (localStorage.getItem('info_json') === null) {
+            info_json = {itens_vistos: [], itens_avaliados: []};
+            localStorage.setItem('info_json', JSON.stringify(info_json));
+        } else {
+            info_json = JSON.parse(localStorage.getItem('info_json'));
+        }
+
         function carregar_item(item_json){
             //var item = JSON.parse(decodeURIComponent(escape(atob(item_json.content))));
             var item = item_json;
+
+            fetch(`http://144.22.227.71:7979/contador/${item.id}/visualizacao`, {method: 'POST'});
+            if (!info_json.itens_vistos.includes(item.id)) {
+                info_json.itens_vistos.push(item.id);
+                localStorage.setItem('info_json', JSON.stringify(info_json));
+            }
 
             console.log(item);
             var divImagens = document.getElementById('imagens');
