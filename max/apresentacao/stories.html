@@ -272,7 +272,7 @@
             //var item = JSON.parse(decodeURIComponent(escape(atob(item_json.content))));
             var item = item_json;
 
-            fetch(`http://144.22.227.71:7979/contador/${item.id}/visualizacao`, {method: 'POST'});
+            fetch(`https://contador.yurienicole.com.br/contador/${item.id}/visualizacao`, {method: 'POST'});
             if (!info_json.itens_vistos.includes(item.id)) {
                 info_json.itens_vistos.push(item.id);
                 localStorage.setItem('info_json', JSON.stringify(info_json));

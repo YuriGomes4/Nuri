@@ -236,7 +236,7 @@
                         conteudo.tipo = 'historia';
                         conteudo.id = Object.keys(historias_json)[i];
                         try {
-                            let response = await fetch(`http://144.22.227.71:7979/contador/${conteudo.id}?timestamp=${new Date().getTime()}`);
+                            let response = await fetch(`https://contador.yurienicole.com.br/contador/${conteudo.id}?timestamp=${new Date().getTime()}`);
                             if (!response.ok) {
                                 throw new Error('Network response was not ok ' + response.statusText);
                             }
@@ -268,7 +268,7 @@
                             conteudo.tipo = 'historia';
                             conteudo.id = Object.keys(historias_json)[i];
                             try {
-                                let response = await fetch(`http://144.22.227.71:7979/contador/${conteudo.id}?timestamp=${new Date().getTime()}`);
+                                let response = await fetch(`https://contador.yurienicole.com.br/contador/${conteudo.id}?timestamp=${new Date().getTime()}`);
                                 if (!response.ok) {
                                     throw new Error('Network response was not ok ' + response.statusText);
                                 }
@@ -306,7 +306,7 @@
                         conteudo.tipo = 'especial';
                         conteudo.id = Object.keys(especiais_json)[i];
                         try {
-                            let response = await fetch(`http://144.22.227.71:7979/contador/${conteudo.id}?timestamp=${new Date().getTime()}`);
+                            let response = await fetch(`https://contador.yurienicole.com.br/contador/${conteudo.id}?timestamp=${new Date().getTime()}`);
                             if (!response.ok) {
                                 throw new Error('Network response was not ok ' + response.statusText);
                             }
@@ -338,7 +338,7 @@
                             conteudo.tipo = 'especial';
                             conteudo.id = Object.keys(especiais_json)[i];
                             try {
-                                let response = await fetch(`http://144.22.227.71:7979/contador/${conteudo.id}?timestamp=${new Date().getTime()}`);
+                                let response = await fetch(`https://contador.yurienicole.com.br/contador/${conteudo.id}?timestamp=${new Date().getTime()}`);
                                 if (!response.ok) {
                                     throw new Error('Network response was not ok ' + response.statusText);
                                 }
@@ -371,7 +371,7 @@
                     var conteudo = conteudos[Object.keys(conteudos)[i]];
                     
                     try {
-                        let response = await fetch(`http://144.22.227.71:7979/contador/${conteudo.id}?timestamp=${new Date().getTime()}`);
+                        let response = await fetch(`https://contador.yurienicole.com.br/contador/${conteudo.id}?timestamp=${new Date().getTime()}`);
                         if (!response.ok) {
                             throw new Error('Network response was not ok ' + response.statusText);
                         }

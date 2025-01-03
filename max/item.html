@@ -444,7 +444,7 @@
         function avaliar_item() {
             var avaliacao = document.getElementById('avaliacao').getAttribute('avaliacao');
             if (avaliacao > 0) {
-                fetch(`http://144.22.227.71:7979/contador/${item_id}/avaliacao?avaliacao=${avaliacao}`, {method: 'POST',});
+                fetch(`https://contador.yurienicole.com.br/contador/${item_id}/avaliacao?avaliacao=${avaliacao}`, {method: 'POST',});
                 info_json.itens_avaliados.push(item_id);
                 localStorage.setItem('info_json', JSON.stringify(info_json));
                 fechar_avalicao();
