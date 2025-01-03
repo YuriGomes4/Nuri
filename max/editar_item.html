@@ -287,6 +287,62 @@
                 imagens_local[newFileName] = parte_id;
             }
             reader.readAsDataURL(event.target.files[0]);
+
+            if (event.target.files.length > 1) {
+                (async () => {
+                    for (var i = 1; i < event.target.files.length; i++) {
+                        addParte();
+
+                        var new_parte_id = document.getElementsByClassName('parte').length - 1;
+
+                        var file = event.target.files[i];
+                        var fileExtension = file.name.split('.').pop();
+                        var randomDigits = Math.floor(100000 + Math.random() * 900000);
+                        if (file.type.startsWith('video/')) {
+                            var newFileName = `video_${randomDigits}.${fileExtension}`;
+                        } else {
+                            var newFileName = `imagem_${randomDigits}.${fileExtension}`;
+                        }
+
+                        await new Promise((resolve) => {
+                            var reader = new FileReader();
+                            reader.onload = function() {
+                                var output;
+                                if (file.type.startsWith('video/')) {
+                                    output = document.createElement('video');
+                                    //output.setAttribute('controls', 'controls');
+                                } else {
+                                    output = document.createElement('img');
+                                }
+                                output.id = 'pt-preview-imagem-' + new_parte_id;
+                                output.classList.add('pt-preview-imagem');
+                                output.onclick = function() {
+                                    document.getElementById('pt-imagem-' + new_parte_id).click();
+                                };
+                                output.src = reader.result;
+                                output.setAttribute('file-name', newFileName);
+                                output.style.opacity = 1;
+
+                                var previewContainer = document.getElementById('pt-preview-imagem-' + new_parte_id).parentNode;
+                                previewContainer.replaceChild(output, document.getElementById('pt-preview-imagem-' + new_parte_id));
+
+                                var btn = document.getElementById('pt-btn-remover-imagem-' + new_parte_id);
+                                btn.style.display = 'flex';
+
+                                dict_imagens[newFileName] = reader.result.split(',')[1];
+                                imagens_local[newFileName] = new_parte_id;
+
+                                if (i === event.target.files.length - 1) {
+                                    window.scrollTo(0, document.body.scrollHeight);
+                                }
+
+                                resolve();
+                            }
+                            reader.readAsDataURL(event.target.files[i]);
+                        });
+                    }
+                })();
+            }
         }
 
         function remover_imagem_parte(event) {
@@ -508,6 +564,8 @@
 
                 var pt_imagem_input = document.createElement('input');
                 pt_imagem_input.setAttribute('type', 'file');
+                pt_imagem_input.accept = 'image/*, video/*';
+                pt_imagem_input.multiple = true;
                 pt_imagem_input.setAttribute('id', `pt-imagem-${index}`);
                 pt_imagem_input.classList.add('pt-imagem');
                 pt_imagem_input.style.display = 'none';
@@ -714,6 +772,8 @@
 
             var pt_imagem_input = document.createElement('input');
             pt_imagem_input.setAttribute('type', 'file');
+            pt_imagem_input.accept = 'image/*, video/*';
+            pt_imagem_input.multiple = true;
             pt_imagem_input.setAttribute('id', `pt-imagem-${parte_local_id}`);
             pt_imagem_input.classList.add('pt-imagem');
             pt_imagem_input.style.display = 'none';
@@ -1137,8 +1197,13 @@
                                 });
                             }
                         }).catch(error => {
+                            novo_item.partes.forEach(parte => {
+                                if (parte.imagem === imagem) {
+                                    parte.imagem = '';
+                                }
+                            });
                             console.error('Erro ao adicionar imagem:', error);
-                            alert('Erro ao adicionar imagem.', error);
+                            alert('Erro ao adicionar imagem. - ' + error);
                         });
 
                     }
