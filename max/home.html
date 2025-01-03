@@ -787,6 +787,8 @@
 
                 if (Object.keys(conteudos_recomendados).length > 0) {
                     secao_recomendados.parentElement.style.display = 'block';
+                } else {
+                    secao_recomendados.parentElement.style.display = 'none';
                 }
             }
 
@@ -844,6 +846,8 @@
 
                 if (conteudos_melhores_avaliados.length > 0) {
                     secao_melhores_avaliados.parentElement.style.display = 'block';
+                } else {
+                    secao_melhores_avaliados.parentElement.style.display = 'none';
                 }
             }
 
@@ -901,6 +905,8 @@
 
                 if (conteudos_ultimos_lancamentos.length > 0) {
                     secao_ultimos_lancamentos.parentElement.style.display = 'block';
+                } else {
+                    secao_ultimos_lancamentos.parentElement.style.display = 'none';
                 }
             }
 
@@ -958,6 +964,8 @@
 
                 if (conteudos_mais_vistos.length > 0) {
                     secao_mais_vistos.parentElement.style.display = 'block';
+                } else {
+                    secao_mais_vistos.parentElement.style.display = 'none';
                 }
             }
 
@@ -1122,27 +1130,108 @@
                     }
                 }
 
-                if (destaque.capa.includes('imgur')) {
-                    imagem_destaque.src = destaque.capa;
+                if (Object.keys(destaque).length > 0) {
+                    if (destaque.capa.includes('imgur')) {
+                        imagem_destaque.src = destaque.capa;
+                    } else {
+                        imagem_destaque.src = `https://raw.githubusercontent.com/YuriGomes4/Nuri/main/assets/conteudo/${destaque.tipo}/${destaque.id}/fotos/${destaque.capa}`;
+                    }
+                    titulo_destaque.textContent = destaque.nome;
+                    destaque_texto.onclick = function() {
+                        //window.location.href = '/max/item.html?tipo=' + destaque.tipo + '&id=' + destaque.id;
+                        page_out('/max/item.html?tipo=' + destaque.tipo + '&id=' + destaque.id);
+                    };
+
+                    if(destaque.tipo === 'historia') {
+                        texto_btnverhistoria.textContent = 'Ver recordação';
+                    } else if(destaque.tipo === 'especial') {
+                        texto_btnverhistoria.textContent = 'Ver história';
+                    }
+
+                    destaque_botao.onclick = function() {
+                        //window.location.href = '/max/item.html?tipo=' + destaque.tipo + '&id=' + destaque.id;
+                        page_out('/max/apresentacao/stories.html?tipo=' + destaque.tipo + '&id=' + destaque.id);
+                    };
+                }
+
+                var secao_recomendados = document.getElementById('secao-recomendados');
+                var secao_melhores_avaliados = document.getElementById('secao-melhores-avaliados');
+                var secao_ultimos_lancamentos = document.getElementById('secao-ultimos-lancamentos');
+                var secao_mais_vistos = document.getElementById('secao-mais-vistos');
+
+                var divs_secao_recomendados = secao_recomendados.getElementsByClassName('secao-item');
+                var divs_secao_melhores_avaliados = secao_melhores_avaliados.getElementsByClassName('secao-item');
+                var divs_secao_ultimos_lancamentos = secao_ultimos_lancamentos.getElementsByClassName('secao-item');
+                var divs_secao_mais_vistos = secao_mais_vistos.getElementsByClassName('secao-item');
+
+                var secao_recomendados_visivel = false;
+                var secao_melhores_avaliados_visivel = false;
+                var secao_ultimos_lancamentos_visivel = false;
+                var secao_mais_vistos_visivel = false;
+
+                for (var i = 0; i < divs_secao_recomendados.length; i++) {
+                    var div = divs_secao_recomendados[i];
+
+                    if (filtro_final.includes(div)) {
+                        secao_recomendados_visivel = true;
+                        secao_recomendados_visivel = true;
+                        break;
+                    }
+                }
+
+                for (var i = 0; i < divs_secao_melhores_avaliados.length; i++) {
+                    var div = divs_secao_melhores_avaliados[i];
+
+                    if (filtro_final.includes(div)) {
+                        secao_melhores_avaliados_visivel = true;
+                        secao_melhores_avaliados_visivel = true;
+                        break;
+                    }
+                }
+
+                for (var i = 0; i < divs_secao_ultimos_lancamentos.length; i++) {
+                    var div = divs_secao_ultimos_lancamentos[i];
+
+                    if (filtro_final.includes(div)) {
+                        secao_ultimos_lancamentos_visivel = true;
+                        secao_ultimos_lancamentos_visivel = true;
+                        break;
+                    }
+                }
+
+                for (var i = 0; i < divs_secao_mais_vistos.length; i++) {
+                    var div = divs_secao_mais_vistos[i];
+
+                    if (filtro_final.includes(div)) {
+                        secao_mais_vistos_visivel = true;
+                        secao_mais_vistos_visivel = true;
+                        break;
+                    }
+                }
+
+                if (secao_recomendados_visivel) {
+                    secao_recomendados.parentElement.style.display = 'block';
                 } else {
-                    imagem_destaque.src = `https://raw.githubusercontent.com/YuriGomes4/Nuri/main/assets/conteudo/${destaque.tipo}/${destaque.id}/fotos/${destaque.capa}`;
-                }
-                titulo_destaque.textContent = destaque.nome;
-                destaque_texto.onclick = function() {
-                    //window.location.href = '/max/item.html?tipo=' + destaque.tipo + '&id=' + destaque.id;
-                    page_out('/max/item.html?tipo=' + destaque.tipo + '&id=' + destaque.id);
-                };
-
-                if(destaque.tipo === 'historia') {
-                    texto_btnverhistoria.textContent = 'Ver recordação';
-                } else if(destaque.tipo === 'especial') {
-                    texto_btnverhistoria.textContent = 'Ver história';
+                    secao_recomendados.parentElement.style.display = 'none';
                 }
 
-                destaque_botao.onclick = function() {
-                    //window.location.href = '/max/item.html?tipo=' + destaque.tipo + '&id=' + destaque.id;
-                    page_out('/max/apresentacao/stories.html?tipo=' + destaque.tipo + '&id=' + destaque.id);
-                };
+                if (secao_melhores_avaliados_visivel) {
+                    secao_melhores_avaliados.parentElement.style.display = 'block';
+                } else {
+                    secao_melhores_avaliados.parentElement.style.display = 'none';
+                }
+
+                if (secao_ultimos_lancamentos_visivel) {
+                    secao_ultimos_lancamentos.parentElement.style.display = 'block';
+                } else {
+                    secao_ultimos_lancamentos.parentElement.style.display = 'none';
+                }
+
+                if (secao_mais_vistos_visivel) {
+                    secao_mais_vistos.parentElement.style.display = 'block';
+                } else {
+                    secao_mais_vistos.parentElement.style.display = 'none';
+                }
 
             } catch (error) {
                 console.error('Erro ao filtrar:', error);
