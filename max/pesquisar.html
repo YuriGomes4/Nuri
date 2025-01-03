@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width">
+	<title>Nossa história</title>
+
+    <link rel="manifest" href="/assets/pwa/manifest.json">
+	  
+	<!--<link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico">-->
+
+	<link href='https://fonts.googleapis.com/css?family=Reenie+Beanie|Shantell+Sans|Kavoon' rel='stylesheet' type='text/css'>
+
+    <link rel="stylesheet" href="/assets/fontawesome/css/all.css">
+    
+    <link href="/assets/css/max/global.css" rel="stylesheet" type="text/css" />
+    <link href="/assets/css/max/pesquisar.css" rel="stylesheet" type="text/css" />
+    <script src="/assets/js/auth.js"></script>
+</head>
+
+<body>
+
+    <div id="blackout"></div>
+
+    <div id="fundo"></div>
+
+    <div id="main">
+        <div id="header-menu">
+            <div id="header-menu-logo">
+                <i class="fa-solid fa-arrow-left" onclick="page_out('back')"></i>
+            </div>
+            <div id="header-menu-buttons">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <i class="fa-solid fa-circle-user"></i>
+            </div>
+        </div>
+        <div id="conteudo">
+            <div id="pesquisa">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="pesquisa-input" placeholder="Pesquisar" oninput="pesquisar(this.value)">
+                <i id="apagar-pesquisa" class="fa-solid fa-x" onclick="apagar_pesquisa()" style="display: none;"></i>
+            </div>
+            <div id="conteudos-lista">
+                <p id="conteudo-titulo">Todos os conteúdos em ordem</p>
+            </div>
+            <div id="conteudos-grid" style="display: none;">
+            </div>
+            <p id="conteudo-placeholder" style="display: none;">Nenhuma história ou recordação encontrada</p>
+        </div>
+    </div>
+
+    <script>
+
+        if (document.readyState !== "complete") {
+            document.addEventListener("readystatechange", function() {
+                if (document.readyState === "complete") {
+                    onDOMLoaded();
+                }
+            });
+        } else { 
+            onDOMLoaded();
+        }
+
+        if (localStorage.getItem('info_json') === null) {
+            info_json = {itens_vistos: [], itens_avaliados: []};
+            localStorage.setItem('info_json', JSON.stringify(info_json));
+        } else {
+            info_json = JSON.parse(localStorage.getItem('info_json'));
+        }
+
+        var tipo_usuario;
+        var promiseTipoUsario = verif_usuario();
+
+        const urlParams = new URLSearchParams(window.location.search);
+
+        function setCookie(name, value) {
+			document.cookie = name + "=" + value;
+		}
+
+        function getCookie(name) {
+			const cookieValue = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
+			return cookieValue ? cookieValue.pop() : '';
+		}
+
+        carregar_dados();
+
+        function carregar_dados() {
+
+            historias = JSON.parse(sessionStorage.getItem('historia'));
+            especiais = JSON.parse(sessionStorage.getItem('especial'));
+
+            conteudos = [];
+
+            if (historias !== null) {
+                for (var i = 0; i < Object.keys(historias).length; i++) {
+                    var historia = historias[Object.keys(historias)[i]];
+                    conteudos.push(historia);
+                }
+            }
+
+            if (especiais !== null) {
+                for (var i = 0; i < Object.keys(especiais).length; i++) {
+                    var especial = especiais[Object.keys(especiais)[i]];
+                    conteudos.push(especial);
+                }
+            }
+
+            var conteudosArray = Object.values(conteudos);
+            conteudosArray.sort((a, b) => new Date(b.data) - new Date(a.data));
+            conteudos_data = [];
+            conteudosArray.forEach(conteudo => {
+                conteudos_data.push(conteudo);
+            });
+
+            
+
+            if (tipo_usuario === "" || tipo_usuario === undefined) {
+                promiseTipoUsario.then((tipo) => {
+                    tipo_usuario = tipo;
+
+                    carregar();
+                });
+            } else {      
+                carregar();
+            }
+
+            function carregar() {
+
+                var conteudos_lista = document.getElementById('conteudos-lista');
+                //conteudos_lista.innerHTML = '';
+                var conteudos_grid = document.getElementById('conteudos-grid');
+                conteudos_grid.innerHTML = '';
+
+                for (var i = 0; i < conteudos_data.length; i++) {
+                    var conteudo = conteudos_data[i];
+
+                    //console.log(conteudo);
+
+                    var conteudo_div = document.createElement('div');
+                    conteudo_div.className = 'conteudo-item';
+                    //conteudo_div.id = conteudo.id;
+
+                    var conteudo_img = document.createElement('img');
+                    if (conteudo.capa.includes('imgur')) {
+                        conteudo_img.src = conteudo.capa;
+                    } else {
+                        conteudo_img.src = `https://raw.githubusercontent.com/YuriGomes4/Nuri/main/assets/conteudo/${conteudo.tipo}/${conteudo.id}/fotos/${conteudo.capa}`;
+                    }
+                    conteudo_img.alt = conteudo.nome;
+                    conteudo_img.className = 'conteudo-item-img';
+                    conteudo_img.setAttribute('item-id', conteudo.id);
+                    conteudo_img.setAttribute('item-tipo', conteudo.tipo);
+                    conteudo_img.onclick = (function() {
+                        page_out('/max/item.html?tipo=' + this.getAttribute('item-tipo') + '&id=' + this.getAttribute('item-id'));
+                    });
+
+                    var conteudo_textos = document.createElement('div');
+                    conteudo_textos.className = 'conteudo-item-textos';
+                    conteudo_textos.setAttribute('item-id', conteudo.id);
+                    conteudo_textos.setAttribute('item-tipo', conteudo.tipo);
+                    conteudo_textos.onclick = (function() {
+                        page_out('/max/item.html?tipo=' + this.getAttribute('item-tipo') + '&id=' + this.getAttribute('item-id'));
+                    });
+
+                    var conteudo_titulo = document.createElement('p');
+                    conteudo_titulo.textContent = conteudo.nome;
+                    conteudo_titulo.className = 'conteudo-item-titulo';
+
+                    var conteudo_data = document.createElement('p');
+                    conteudo_data.textContent = conteudo.data.split('-').reverse().join('/');
+                    conteudo_data.className = 'conteudo-item-data';
+
+                    conteudo_textos.appendChild(conteudo_titulo);
+                    conteudo_textos.appendChild(conteudo_data);
+
+                    var conteudo_btn = document.createElement('i');
+                    conteudo_btn.className = 'fa-solid fa-book-open-reader';
+                    conteudo_btn.setAttribute('item-id', conteudo.id);
+                    conteudo_btn.setAttribute('item-tipo', conteudo.tipo);
+                    conteudo_btn.onclick = (function() {
+                        page_out('/max/apresentacao/stories.html?tipo='+ this.getAttribute('item-tipo') +'&id=' + this.getAttribute('item-id'));
+                    });
+
+                    conteudo_div.appendChild(conteudo_img);
+                    conteudo_div.appendChild(conteudo_textos);
+                    conteudo_div.appendChild(conteudo_btn);
+
+                    conteudos_lista.appendChild(conteudo_div);
+
+
+
+                    var div = document.createElement('div');
+                    div.className = 'secao-item';
+                    div.setAttribute('item-id', conteudo.id);
+                    div.setAttribute('item-tipo', conteudo.tipo);
+                    div.setAttribute('item-uid', conteudo.id);
+                    div.onclick = function() {
+                        page_out('/max/item.html?tipo='+ this.getAttribute('item-tipo') +'&id=' + this.getAttribute('item-id'));
+                    };
+
+                    var img = document.createElement('img');
+                    //img.src = "/assets/conteudo/historia/" + Object.keys(historias)[i] + "/fotos/" + historia.capa;
+                    if (conteudo.capa.includes('imgur')) {
+                        img.src = conteudo.capa;
+                    } else {
+                        img.src = `https://raw.githubusercontent.com/YuriGomes4/Nuri/main/assets/conteudo/${conteudo.tipo}/${conteudo.id}/fotos/${conteudo.capa}`;
+                    }
+
+                    var p = document.createElement('p');
+                    p.textContent = conteudo.nome;
+
+                    div.appendChild(img);
+                    div.appendChild(p);
+
+                    conteudos_grid.appendChild(div);
+
+                    //conteudos_grid.style.display = 'flex';
+                }
+
+                //calcular_tamanho_grid();
+            }
+        }
+
+        function calcular_tamanho_grid() {
+            var conteudos_grid = document.getElementById('conteudos-grid');
+            var itens_conteudos = conteudos_grid.getElementsByClassName('secao-item');
+            var gap = parseInt(window.getComputedStyle(conteudos_grid).gap.split('px')[0]);
+            var padding = parseInt(window.getComputedStyle(conteudos_grid).padding.split('px')[1]);
+            var tamanho_real_tela = window.innerWidth;
+            var tamanho_disponivel = tamanho_real_tela - padding*2;
+            var tamanho_item = 100;
+
+            console.log(tamanho_real_tela);
+            console.log(conteudos_grid, itens_conteudos, gap, padding, tamanho_disponivel, tamanho_item);
+            var novo_tamanho = (tamanho_disponivel/(tamanho_item));
+
+            console.log(novo_tamanho);
+            var gaps = parseInt(novo_tamanho)-1;
+            console.log(gaps);
+
+            if (novo_tamanho >= 2) {
+                novo_tamanho = novo_tamanho - gaps*(gap/tamanho_item);
+            }
+
+            novo_tamanho_item = tamanho_item+parseInt((((novo_tamanho+((gaps-(parseInt(novo_tamanho)-1))*(gap/tamanho_item))) - parseInt(novo_tamanho))*100)/parseInt(novo_tamanho));
+
+            for (var i = 0; i < itens_conteudos.length; i++) {
+                var item = itens_conteudos[i];
+                item.style.width = novo_tamanho_item + 'px';
+            }
+        }
+
+        function apagar_pesquisa() {
+            document.getElementById('pesquisa-input').value = '';
+            pesquisar('');
+        }
+
+        function pesquisar(valor) {
+            var conteudos_lista = document.getElementById('conteudos-lista');
+            var conteudos_grid = document.getElementById('conteudos-grid');
+            var apagar_pesquisa = document.getElementById('apagar-pesquisa');
+
+            if (valor === '') {
+                conteudos_grid.style.display = 'none';
+                conteudos_lista.style.display = 'flex';
+                apagar_pesquisa.style.display = 'none';
+                document.getElementById('conteudo-placeholder').style.display = 'none';
+            } else {
+                apagar_pesquisa.style.display = 'flex';
+
+                var filtrados = 0;
+
+                var conteudos = conteudos_grid.getElementsByClassName('secao-item');
+                console.log(conteudos);
+
+                for (var i = 0; i < conteudos.length; i++) {
+                    if (conteudos[i].getAttribute('item-tipo') === 'especial') {
+                        var conteudo = especiais[conteudos[i].getAttribute('item-id')];
+                    } else {
+                        var conteudo = historias[conteudos[i].getAttribute('item-id')];
+                    }
+                    var conteudo_div = conteudos[i];
+                    //var nome = conteudo.getElementsByTagName('p')[0].textContent;
+
+                    var filtrar = true;
+
+                    if (conteudo.nome.toLowerCase().includes(valor.toLowerCase())) {
+                        filtrar = false;
+                    } else if (conteudo.sinopse.toLowerCase().includes(valor.toLowerCase())) {
+                        filtrar = false;
+                    } else {
+                        for (var j = 0; j < conteudo.participantes.length; j++) {
+                            if (conteudo.participantes[j].toLowerCase().includes(valor.toLowerCase())) {
+                                filtrar = false;
+                                break;
+                            }
+                        }
+
+                        if (filtrar) {
+                            for (var j = 0; j < conteudo.partes.length; j++) {
+                                if (conteudo.partes[j].nome.toLowerCase().includes(valor.toLowerCase())) {
+                                    filtrar = false;
+                                    break;
+                                } else if (conteudo.partes[j].descricao.toLowerCase().includes(valor.toLowerCase())) {
+                                    filtrar = false;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
+                    if (filtrar) {
+                        conteudo_div.style.display = 'none';
+                    } else {
+                        conteudo_div.style.display = 'flex';
+                        filtrados++;
+                    }
+                }
+
+                conteudos_lista.style.display = 'none';
+                conteudos_grid.style.display = 'flex';
+
+                calcular_tamanho_grid();
+
+                if (filtrados === 0) {
+                    document.getElementById('conteudo-placeholder').style.display = 'block';
+                } else {
+                    document.getElementById('conteudo-placeholder').style.display = 'none';
+                }
+            }
+        }
+
+        function ver_historia(item_id) {
+            /*const urlParams = new URLSearchParams(window.location.search);
+            urlParams.set('opt', 'avaliar');
+            window.history.replaceState({}, '', `${window.location.pathname}?${urlParams}`);*/
+
+            var conteudo = conteudos[item_id];
+
+            page_out(`/max/item.html?tipo=${conteudo.tipo}&id=${conteudo.id}`);
+        }
+
+        function page_out (link, callback=null) {
+            var blackout = document.getElementById('blackout');
+            var main = document.getElementById('main');
+
+            blackout.style.transition = 'opacity 0.5s ease';
+            blackout.offsetHeight;
+            blackout.style.opacity = 1;
+
+            main.style.filter = 'blur(100px)';
+
+            setTimeout(() => {
+                if (callback) {
+                    callback();
+                }
+                if (link === 'back') {
+                    window.history.back();
+                } else {
+                    window.location.href = link;
+                }
+                page_in();
+            }, 500);
+
+        }
+
+        function page_in () {
+            var blackout = document.getElementById('blackout');
+            var main = document.getElementById('main');
+
+            //blackout.style.transition = 'none';
+            blackout.style.opacity = 1;
+            blackout.offsetHeight;
+            blackout.style.transition = 'opacity 0.5s ease';
+            blackout.style.opacity = 0;
+
+            main.style.filter = 'blur(0px)';
+        }
+
+        function onDOMLoaded() {
+            page_in();
+        }
+    </script>
+</body>
+
+</html>

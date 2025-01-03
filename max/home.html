@@ -36,7 +36,7 @@
                 <img src="/assets/images/max/logo.png" alt="Logo" id="logo" onclick="logout()">
             </div>
             <div id="header-menu-buttons">
-                <i class="fa-solid fa-magnifying-glass"></i>
+                <i class="fa-solid fa-magnifying-glass" onclick="page_out('/max/pesquisar.html')"></i>
                 <i class="fa-solid fa-circle-plus" onclick="page_out('/max/editar_item.html')"></i>
             </div>
         </div>
@@ -688,7 +688,8 @@
                 conteudosArray.sort((a, b) => b.pontuacao - a.pontuacao);
                 var conteudos_melhores_avaliados = [];
                 conteudosArray.forEach(conteudo => {
-                    if (conteudos_melhores_avaliados.length < 10 && conteudo.contador.avaliacoes > 0) {
+                    //if (conteudos_melhores_avaliados.length < 10 && conteudo.contador.avaliacoes > 0) {
+                    if (conteudo.contador.avaliacoes > 0) {
                         conteudos_melhores_avaliados.push(conteudo);
                     }
                 });
@@ -698,18 +699,18 @@
             conteudosArray.sort((a, b) => b.contador.visualizacoes - a.contador.visualizacoes);
             var conteudos_mais_vistos = [];
             conteudosArray.forEach(conteudo => {
-                if (conteudos_mais_vistos.length < 10) {
-                    conteudos_mais_vistos.push(conteudo);
-                }
+                //if (conteudos_mais_vistos.length < 10) {
+                conteudos_mais_vistos.push(conteudo);
+                //}
             });
 
             var conteudosArray = Object.values(conteudos);
             conteudosArray.sort((a, b) => new Date(b.data) - new Date(a.data));
             var conteudos_ultimos_lancamentos = [];
             conteudosArray.forEach(conteudo => {
-                if (conteudos_ultimos_lancamentos.length < 10) {
-                    conteudos_ultimos_lancamentos.push(conteudo);
-                }
+                //if (conteudos_ultimos_lancamentos.length < 10) {
+                conteudos_ultimos_lancamentos.push(conteudo);
+                //}
             });
 
 
@@ -796,6 +797,8 @@
                 console.log('Conteúdos melhores avaliados:', conteudos_melhores_avaliados);
                 var secao_melhores_avaliados = document.getElementById('secao-melhores-avaliados');
 
+                var contador = 0;
+
                 for (var i = 0; i < conteudos_melhores_avaliados.length; i++) {
                     var conteudo = conteudos_melhores_avaliados[i];
 
@@ -824,6 +827,9 @@
                         div.onclick = function() {
                             page_out('/max/item.html?tipo='+ this.getAttribute('item-tipo') +'&id=' + this.getAttribute('item-id'));
                         };
+                        if (contador > 9) {
+                            div.style.display = 'none';
+                        }
 
                         var img = document.createElement('img');
                         //img.src = "/assets/conteudo/historia/" + Object.keys(historias)[i] + "/fotos/" + historia.capa;
@@ -841,6 +847,7 @@
 
                         secao_melhores_avaliados.appendChild(div);
 
+                        contador++;
                     }
                 }
 
@@ -854,6 +861,8 @@
             function carregar_ultimos_lancamentos(conteudos_ultimos_lancamentos) {
                 console.log('Conteúdos últimos lançamentos:', conteudos_ultimos_lancamentos);
                 var secao_ultimos_lancamentos = document.getElementById('secao-ultimos-lancamentos');
+
+                var contador = 0;
 
                 for (var i = 0; i < conteudos_ultimos_lancamentos.length; i++) {
                     var conteudo = conteudos_ultimos_lancamentos[i];
@@ -883,6 +892,9 @@
                         div.onclick = function() {
                             page_out('/max/item.html?tipo='+ this.getAttribute('item-tipo') +'&id=' + this.getAttribute('item-id'));
                         };
+                        if (contador > 9) {
+                            div.style.display = 'none';
+                        }
 
                         var img = document.createElement('img');
                         //img.src = "/assets/conteudo/historia/" + Object.keys(historias)[i] + "/fotos/" + historia.capa;
@@ -900,6 +912,7 @@
 
                         secao_ultimos_lancamentos.appendChild(div);
 
+                        contador++;
                     }
                 }
 
@@ -913,6 +926,8 @@
             function carregar_mais_vistos(conteudos_mais_vistos) {
                 console.log('Conteúdos mais vistos:', conteudos_mais_vistos);
                 var secao_mais_vistos = document.getElementById('secao-mais-vistos');
+
+                var contador = 0;
 
                 for (var i = 0; i < conteudos_mais_vistos.length; i++) {
                     var conteudo = conteudos_mais_vistos[i];
@@ -942,6 +957,9 @@
                         div.onclick = function() {
                             page_out('/max/item.html?tipo='+ this.getAttribute('item-tipo') +'&id=' + this.getAttribute('item-id'));
                         };
+                        if (contador > 9) {
+                            div.style.display = 'none';
+                        }
 
                         var img = document.createElement('img');
                         //img.src = "/assets/conteudo/historia/" + Object.keys(historias)[i] + "/fotos/" + historia.capa;
@@ -959,6 +977,7 @@
 
                         secao_mais_vistos.appendChild(div);
 
+                        contador++;
                     }
                 }
 
@@ -1169,43 +1188,67 @@
                 var secao_ultimos_lancamentos_visivel = false;
                 var secao_mais_vistos_visivel = false;
 
+                var contador_recomendados = 0;
+
                 for (var i = 0; i < divs_secao_recomendados.length; i++) {
                     var div = divs_secao_recomendados[i];
 
                     if (filtro_final.includes(div)) {
                         secao_recomendados_visivel = true;
-                        secao_recomendados_visivel = true;
-                        break;
+                        //break;
+                        contador_recomendados++;
+                    }
+
+                    if (contador_recomendados > 9) {
+                        div.style.display = 'none';
                     }
                 }
+
+                var contador_melhores_avaliados = 0;
 
                 for (var i = 0; i < divs_secao_melhores_avaliados.length; i++) {
                     var div = divs_secao_melhores_avaliados[i];
 
                     if (filtro_final.includes(div)) {
                         secao_melhores_avaliados_visivel = true;
-                        secao_melhores_avaliados_visivel = true;
-                        break;
+                        //break;
+                        contador_melhores_avaliados++;
+                    }
+
+                    if (contador_melhores_avaliados > 9) {
+                        div.style.display = 'none';
                     }
                 }
+
+                var contador_ultimos_lancamentos = 0;
 
                 for (var i = 0; i < divs_secao_ultimos_lancamentos.length; i++) {
                     var div = divs_secao_ultimos_lancamentos[i];
 
                     if (filtro_final.includes(div)) {
                         secao_ultimos_lancamentos_visivel = true;
-                        secao_ultimos_lancamentos_visivel = true;
-                        break;
+                        //break;
+                        contador_ultimos_lancamentos++;
+                    }
+
+                    if (contador_ultimos_lancamentos > 9) {
+                        div.style.display = 'none';
                     }
                 }
+
+                var contador_mais_vistos = 0;
 
                 for (var i = 0; i < divs_secao_mais_vistos.length; i++) {
                     var div = divs_secao_mais_vistos[i];
 
                     if (filtro_final.includes(div)) {
                         secao_mais_vistos_visivel = true;
-                        secao_mais_vistos_visivel = true;
-                        break;
+                        //break;
+                        contador_mais_vistos++;
+                    }
+
+                    if (contador_mais_vistos > 9) {
+                        div.style.display = 'none';
                     }
                 }
 
