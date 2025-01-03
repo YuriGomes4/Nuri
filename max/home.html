@@ -97,9 +97,25 @@
                 <div class="secao-titulo">
                     <p>Recomendados</p>
                 </div>
-                <div class="secao-conteudo" id="secao-recomendados">
-
+                <div class="secao-conteudo" id="secao-recomendados"></div>
+            </div>
+            <div class="secao">
+                <div class="secao-titulo">
+                    <p>Melhores avaliados</p>
                 </div>
+                <div class="secao-conteudo" id="secao-melhores-avaliados"></div>
+            </div>
+            <div class="secao">
+                <div class="secao-titulo">
+                    <p>Últimos lançamentos</p>
+                </div>
+                <div class="secao-conteudo" id="secao-ultimos-lancamentos"></div>
+            </div>
+            <div class="secao">
+                <div class="secao-titulo">
+                    <p>Mais vistos</p>
+                </div>
+                <div class="secao-conteudo" id="secao-mais-vistos"></div>
             </div>
         </div>
     </div>
@@ -536,6 +552,43 @@
 
         //listarArquivosDoDiretorio("YuriGomes4", "Nuri");
 
+        function getDominantColor(imageObject) {
+            var context = document.createElement("canvas").getContext("2d");
+
+            // Ensure the image is loaded with crossOrigin attribute set to "Anonymous"
+            if (!imageObject.crossOrigin) {
+                imageObject.crossOrigin = "Anonymous";
+            }
+
+            //desenha a imagem para um pixel e deixe o navegador encontrar a cor dominante
+            context.drawImage(imageObject, 0, 0, 1, 1);
+
+            //obter cor de pixel
+            const i = context.getImageData(0, 0, 1, 1).data;
+
+            const dominantColor = `rgba(${i[0]},${i[1]},${i[2]},${i[3]})`;
+            console.log(dominantColor);
+
+            const hexColor = "#" + ((1 << 24) + (i[0] << 16) + (i[1] << 8) + i[2]).toString(16).slice(1);
+            console.log(hexColor);
+
+            document.documentElement.style.setProperty('--cor-principal', dominantColor);
+        }
+
+        window.addEventListener('scroll', function() {
+            var fundo = document.getElementById('fundo');
+            var scrollPosition = window.scrollY;
+            var windowHeight = window.innerHeight;
+            var maxScroll = windowHeight * 0.75;
+
+            if (scrollPosition <= maxScroll) {
+                var opacity = 1 - (scrollPosition / maxScroll);
+                fundo.style.opacity = opacity;
+            } else {
+                fundo.style.opacity = 0;
+            }
+        });
+
         var imagens_capa = []
         var outras_imagens = []
 
@@ -567,73 +620,36 @@
             } else {
                 imagem_destaque.src = `https://raw.githubusercontent.com/YuriGomes4/Nuri/main/assets/conteudo/${destaque.tipo}/${destaque.id}/fotos/${destaque.capa}`;
             }
+            imagem_destaque.addEventListener('load', function() {
+                getDominantColor(this);
+            });
             titulo_destaque.textContent = destaque.nome;
             destaque_texto.onclick = function() {
                 //window.location.href = '/max/item.html?tipo=' + destaque.tipo + '&id=' + destaque.id;
                 page_out('/max/item.html?tipo=' + destaque.tipo + '&id=' + destaque.id);
             };
+
             if(destaque.tipo === 'historia') {
                 texto_btnverhistoria.textContent = 'Ver recordação';
             } else if(destaque.tipo === 'especial') {
                 texto_btnverhistoria.textContent = 'Ver história';
             }
 
-            var secao_recomendados = document.getElementById('secao-recomendados');
+            destaque_botao.onclick = function() {
+                //window.location.href = '/max/item.html?tipo=' + destaque.tipo + '&id=' + destaque.id;
+                page_out('/max/apresentacao/stories.html?tipo=' + destaque.tipo + '&id=' + destaque.id);
+            };
 
             participantes = [];
+
+            maior_qnt_avaliacao = 0;
+            maior_avalicao_media = 5;
 
             for (var i = 0; i < Object.keys(conteudos).length; i++) {
                 var conteudo = conteudos[Object.keys(conteudos)[i]];
 
-                controle = true;
-
-                if (tipo_usuario === "" || tipo_usuario === undefined) {
-                promiseTipoUsario.then((tipo) => {
-                    tipo_usuario = tipo;
-                    if (conteudo.exclusivo && tipo_usuario !== "dono") {
-                        controle = false;
-                    }
-                });
-                } else {
-                if (conteudo.exclusivo && tipo_usuario !== "dono") {
-                    controle = false;
-                }
-                }
-
-                if (controle) {
-
-                    //imagens_capa.push("/assets/conteudo/historia/" + Object.keys(historias)[i] + "/fotos/" + historia.capa);
-                    if (conteudo.capa.includes('imgur')) {
-                        imagens_capa.push(conteudo.capa);
-                    } else {
-                        imagens_capa.push(`https://raw.githubusercontent.com/YuriGomes4/Nuri/main/assets/conteudo/${conteudo.tipo}/${conteudo.id}/fotos/${conteudo.capa}`);
-                    }
-
-                    var div = document.createElement('div');
-                    div.className = 'secao-item';
-                    div.setAttribute('item-id', conteudo.id);
-                    div.setAttribute('item-tipo', conteudo.tipo);
-                    div.setAttribute('item-uid', conteudo.id);
-                    div.onclick = function() {
-                        page_out('/max/item.html?tipo='+ this.getAttribute('item-tipo') +'&id=' + this.getAttribute('item-id'));
-                    };
-
-                    var img = document.createElement('img');
-                    //img.src = "/assets/conteudo/historia/" + Object.keys(historias)[i] + "/fotos/" + historia.capa;
-                    if (conteudo.capa.includes('imgur')) {
-                        img.src = conteudo.capa;
-                    } else {
-                        img.src = `https://raw.githubusercontent.com/YuriGomes4/Nuri/main/assets/conteudo/${conteudo.tipo}/${conteudo.id}/fotos/${conteudo.capa}`;
-                    }
-
-                    var p = document.createElement('p');
-                    p.textContent = conteudo.nome;
-
-                    div.appendChild(img);
-                    div.appendChild(p);
-
-                    secao_recomendados.appendChild(div);
-
+                if (conteudo.contador.avaliacoes > maior_qnt_avaliacao) {
+                    maior_qnt_avaliacao = conteudo.contador.avaliacoes;
                 }
 
                 for (var j = 0; j < conteudo.participantes.length; j++) {
@@ -651,6 +667,301 @@
                     }
                 }
             }
+
+            if (maior_qnt_avaliacao > 0) {
+                for (var i = 0; i < Object.keys(conteudos).length; i++) {
+                    var conteudo = conteudos[Object.keys(conteudos)[i]];
+
+                    if (conteudo.contador.avaliacoes > 0) {
+                        pontuacao_qnt_avalicoes = (conteudo.contador.avaliacoes / maior_qnt_avaliacao) * 50;
+                        pontuacao_avalicao_media = (conteudo.contador.avaliacao_media / maior_avalicao_media) * 100;
+
+                        pontuacao = pontuacao_qnt_avalicoes + pontuacao_avalicao_media;
+
+                        conteudo.pontuacao = pontuacao;
+                    } else {
+                        conteudo.pontuacao = 0;
+                    }
+                }
+
+                var conteudosArray = Object.values(conteudos);
+                conteudosArray.sort((a, b) => b.pontuacao - a.pontuacao);
+                var conteudos_melhores_avaliados = [];
+                conteudosArray.forEach(conteudo => {
+                    if (conteudos_melhores_avaliados.length < 10 && conteudo.contador.avaliacoes > 0) {
+                        conteudos_melhores_avaliados.push(conteudo);
+                    }
+                });
+            }
+
+            var conteudosArray = Object.values(conteudos);
+            conteudosArray.sort((a, b) => b.contador.visualizacoes - a.contador.visualizacoes);
+            var conteudos_mais_vistos = [];
+            conteudosArray.forEach(conteudo => {
+                if (conteudos_mais_vistos.length < 10) {
+                    conteudos_mais_vistos.push(conteudo);
+                }
+            });
+
+            var conteudosArray = Object.values(conteudos);
+            conteudosArray.sort((a, b) => new Date(b.data) - new Date(a.data));
+            var conteudos_ultimos_lancamentos = [];
+            conteudosArray.forEach(conteudo => {
+                if (conteudos_ultimos_lancamentos.length < 10) {
+                    conteudos_ultimos_lancamentos.push(conteudo);
+                }
+            });
+
+
+            if (tipo_usuario === "" || tipo_usuario === undefined) {
+                promiseTipoUsario.then((tipo) => {
+                    tipo_usuario = tipo;
+
+                    //carregar_recomendados(conteudos);
+                    if (maior_qnt_avaliacao > 0) {
+                        carregar_melhores_avaliados(conteudos_melhores_avaliados);
+                    }
+                    carregar_ultimos_lancamentos(conteudos_ultimos_lancamentos);
+                    carregar_mais_vistos(conteudos_mais_vistos);
+                });
+            } else {
+                //carregar_recomendados(conteudos);
+                if (maior_qnt_avaliacao > 0) {
+                    carregar_melhores_avaliados(conteudos_melhores_avaliados);
+                }
+                carregar_ultimos_lancamentos(conteudos_ultimos_lancamentos);
+                carregar_mais_vistos(conteudos_mais_vistos);
+            }
+
+            function carregar_recomendados(conteudos_recomendados) {
+                console.log('Conteúdos recomendados:', conteudos_recomendados);
+                var secao_recomendados = document.getElementById('secao-recomendados');
+
+                for (var i = 0; i < Object.keys(conteudos_recomendados).length; i++) {
+                    var conteudo = conteudos_recomendados[Object.keys(conteudos_recomendados)[i]];
+
+                    controle = true;
+
+
+                    if (conteudo.exclusivo && tipo_usuario !== "dono") {
+                        controle = false;
+                    }
+
+
+                    if (controle) {
+
+                        //imagens_capa.push("/assets/conteudo/historia/" + Object.keys(historias)[i] + "/fotos/" + historia.capa);
+                        if (conteudo.capa.includes('imgur')) {
+                            imagens_capa.push(conteudo.capa);
+                        } else {
+                            imagens_capa.push(`https://raw.githubusercontent.com/YuriGomes4/Nuri/main/assets/conteudo/${conteudo.tipo}/${conteudo.id}/fotos/${conteudo.capa}`);
+                        }
+
+                        var div = document.createElement('div');
+                        div.className = 'secao-item';
+                        div.setAttribute('item-id', conteudo.id);
+                        div.setAttribute('item-tipo', conteudo.tipo);
+                        div.setAttribute('item-uid', conteudo.id);
+                        div.onclick = function() {
+                            page_out('/max/item.html?tipo='+ this.getAttribute('item-tipo') +'&id=' + this.getAttribute('item-id'));
+                        };
+
+                        var img = document.createElement('img');
+                        //img.src = "/assets/conteudo/historia/" + Object.keys(historias)[i] + "/fotos/" + historia.capa;
+                        if (conteudo.capa.includes('imgur')) {
+                            img.src = conteudo.capa;
+                        } else {
+                            img.src = `https://raw.githubusercontent.com/YuriGomes4/Nuri/main/assets/conteudo/${conteudo.tipo}/${conteudo.id}/fotos/${conteudo.capa}`;
+                        }
+
+                        var p = document.createElement('p');
+                        p.textContent = conteudo.nome;
+
+                        div.appendChild(img);
+                        div.appendChild(p);
+
+                        secao_recomendados.appendChild(div);
+
+                    }
+                }
+
+                if (Object.keys(conteudos_recomendados).length > 0) {
+                    secao_recomendados.parentElement.style.display = 'block';
+                }
+            }
+
+            function carregar_melhores_avaliados(conteudos_melhores_avaliados) {
+                console.log('Conteúdos melhores avaliados:', conteudos_melhores_avaliados);
+                var secao_melhores_avaliados = document.getElementById('secao-melhores-avaliados');
+
+                for (var i = 0; i < conteudos_melhores_avaliados.length; i++) {
+                    var conteudo = conteudos_melhores_avaliados[i];
+
+                    controle = true;
+
+
+                    if (conteudo.exclusivo && tipo_usuario !== "dono") {
+                        controle = false;
+                    }
+
+
+                    if (controle) {
+
+                        //imagens_capa.push("/assets/conteudo/historia/" + Object.keys(historias)[i] + "/fotos/" + historia.capa);
+                        if (conteudo.capa.includes('imgur')) {
+                            imagens_capa.push(conteudo.capa);
+                        } else {
+                            imagens_capa.push(`https://raw.githubusercontent.com/YuriGomes4/Nuri/main/assets/conteudo/${conteudo.tipo}/${conteudo.id}/fotos/${conteudo.capa}`);
+                        }
+
+                        var div = document.createElement('div');
+                        div.className = 'secao-item';
+                        div.setAttribute('item-id', conteudo.id);
+                        div.setAttribute('item-tipo', conteudo.tipo);
+                        div.setAttribute('item-uid', conteudo.id);
+                        div.onclick = function() {
+                            page_out('/max/item.html?tipo='+ this.getAttribute('item-tipo') +'&id=' + this.getAttribute('item-id'));
+                        };
+
+                        var img = document.createElement('img');
+                        //img.src = "/assets/conteudo/historia/" + Object.keys(historias)[i] + "/fotos/" + historia.capa;
+                        if (conteudo.capa.includes('imgur')) {
+                            img.src = conteudo.capa;
+                        } else {
+                            img.src = `https://raw.githubusercontent.com/YuriGomes4/Nuri/main/assets/conteudo/${conteudo.tipo}/${conteudo.id}/fotos/${conteudo.capa}`;
+                        }
+
+                        var p = document.createElement('p');
+                        p.textContent = conteudo.nome;
+
+                        div.appendChild(img);
+                        div.appendChild(p);
+
+                        secao_melhores_avaliados.appendChild(div);
+
+                    }
+                }
+
+                if (conteudos_melhores_avaliados.length > 0) {
+                    secao_melhores_avaliados.parentElement.style.display = 'block';
+                }
+            }
+
+            function carregar_ultimos_lancamentos(conteudos_ultimos_lancamentos) {
+                console.log('Conteúdos últimos lançamentos:', conteudos_ultimos_lancamentos);
+                var secao_ultimos_lancamentos = document.getElementById('secao-ultimos-lancamentos');
+
+                for (var i = 0; i < conteudos_ultimos_lancamentos.length; i++) {
+                    var conteudo = conteudos_ultimos_lancamentos[i];
+
+                    controle = true;
+
+
+                    if (conteudo.exclusivo && tipo_usuario !== "dono") {
+                        controle = false;
+                    }
+
+
+                    if (controle) {
+
+                        //imagens_capa.push("/assets/conteudo/historia/" + Object.keys(historias)[i] + "/fotos/" + historia.capa);
+                        if (conteudo.capa.includes('imgur')) {
+                            imagens_capa.push(conteudo.capa);
+                        } else {
+                            imagens_capa.push(`https://raw.githubusercontent.com/YuriGomes4/Nuri/main/assets/conteudo/${conteudo.tipo}/${conteudo.id}/fotos/${conteudo.capa}`);
+                        }
+
+                        var div = document.createElement('div');
+                        div.className = 'secao-item';
+                        div.setAttribute('item-id', conteudo.id);
+                        div.setAttribute('item-tipo', conteudo.tipo);
+                        div.setAttribute('item-uid', conteudo.id);
+                        div.onclick = function() {
+                            page_out('/max/item.html?tipo='+ this.getAttribute('item-tipo') +'&id=' + this.getAttribute('item-id'));
+                        };
+
+                        var img = document.createElement('img');
+                        //img.src = "/assets/conteudo/historia/" + Object.keys(historias)[i] + "/fotos/" + historia.capa;
+                        if (conteudo.capa.includes('imgur')) {
+                            img.src = conteudo.capa;
+                        } else {
+                            img.src = `https://raw.githubusercontent.com/YuriGomes4/Nuri/main/assets/conteudo/${conteudo.tipo}/${conteudo.id}/fotos/${conteudo.capa}`;
+                        }
+
+                        var p = document.createElement('p');
+                        p.textContent = conteudo.nome;
+
+                        div.appendChild(img);
+                        div.appendChild(p);
+
+                        secao_ultimos_lancamentos.appendChild(div);
+
+                    }
+                }
+
+                if (conteudos_ultimos_lancamentos.length > 0) {
+                    secao_ultimos_lancamentos.parentElement.style.display = 'block';
+                }
+            }
+
+            function carregar_mais_vistos(conteudos_mais_vistos) {
+                console.log('Conteúdos mais vistos:', conteudos_mais_vistos);
+                var secao_mais_vistos = document.getElementById('secao-mais-vistos');
+
+                for (var i = 0; i < conteudos_mais_vistos.length; i++) {
+                    var conteudo = conteudos_mais_vistos[i];
+
+                    controle = true;
+
+
+                    if (conteudo.exclusivo && tipo_usuario !== "dono") {
+                        controle = false;
+                    }
+
+
+                    if (controle) {
+
+                        //imagens_capa.push("/assets/conteudo/historia/" + Object.keys(historias)[i] + "/fotos/" + historia.capa);
+                        if (conteudo.capa.includes('imgur')) {
+                            imagens_capa.push(conteudo.capa);
+                        } else {
+                            imagens_capa.push(`https://raw.githubusercontent.com/YuriGomes4/Nuri/main/assets/conteudo/${conteudo.tipo}/${conteudo.id}/fotos/${conteudo.capa}`);
+                        }
+
+                        var div = document.createElement('div');
+                        div.className = 'secao-item';
+                        div.setAttribute('item-id', conteudo.id);
+                        div.setAttribute('item-tipo', conteudo.tipo);
+                        div.setAttribute('item-uid', conteudo.id);
+                        div.onclick = function() {
+                            page_out('/max/item.html?tipo='+ this.getAttribute('item-tipo') +'&id=' + this.getAttribute('item-id'));
+                        };
+
+                        var img = document.createElement('img');
+                        //img.src = "/assets/conteudo/historia/" + Object.keys(historias)[i] + "/fotos/" + historia.capa;
+                        if (conteudo.capa.includes('imgur')) {
+                            img.src = conteudo.capa;
+                        } else {
+                            img.src = `https://raw.githubusercontent.com/YuriGomes4/Nuri/main/assets/conteudo/${conteudo.tipo}/${conteudo.id}/fotos/${conteudo.capa}`;
+                        }
+
+                        var p = document.createElement('p');
+                        p.textContent = conteudo.nome;
+
+                        div.appendChild(img);
+                        div.appendChild(p);
+
+                        secao_mais_vistos.appendChild(div);
+
+                    }
+                }
+
+                if (conteudos_mais_vistos.length > 0) {
+                    secao_mais_vistos.parentElement.style.display = 'block';
+                }
+            }
+
+
 
             participantes.sort();
 
@@ -704,31 +1015,6 @@
                     //div.style.display = 'flex';
                     filtrados_tipo.push(div);
                     filtrados_participante.push(div);
-
-                    if (Object.keys(destaque).length > 0) {
-                        if (conteudo.data > destaque.data) {
-                            destaque = conteudo;
-                        }
-                    } else {
-                        destaque = conteudo;
-                    }
-                }
-
-                if (destaque.capa.includes('imgur')) {
-                    imagem_destaque.src = destaque.capa;
-                } else {
-                    imagem_destaque.src = `https://raw.githubusercontent.com/YuriGomes4/Nuri/main/assets/conteudo/${destaque.tipo}/${destaque.id}/fotos/${destaque.capa}`;
-                }
-                titulo_destaque.textContent = destaque.nome;
-                destaque_texto.onclick = function() {
-                    //window.location.href = '/max/item.html?tipo=' + destaque.tipo + '&id=' + destaque.id;
-                    page_out('/max/item.html?tipo=' + destaque.tipo + '&id=' + destaque.id);
-                };
-
-                if(destaque.tipo === 'historia') {
-                    texto_btnverhistoria.textContent = 'Ver recordação';
-                } else if(destaque.tipo === 'especial') {
-                    texto_btnverhistoria.textContent = 'Ver história';
                 }
 
                 filtro_nenhum.style.display = 'none';
@@ -753,31 +1039,7 @@
                         //div.style.display = 'flex';
                         filtrados_tipo.push(div);
                         filtrados_participante.push(div);
-
-                        if (Object.keys(destaque).length > 0) {
-                            if (conteudo.data > destaque.data) {
-                                destaque = conteudo;
-                            }
-                        } else {
-                            destaque = conteudo;
-                        }
                     }
-                }
-
-                if (destaque.capa.includes('imgur')) {
-                    imagem_destaque.src = destaque.capa;
-                } else {
-                    imagem_destaque.src = `https://raw.githubusercontent.com/YuriGomes4/Nuri/main/assets/conteudo/${destaque.tipo}/${destaque.id}/fotos/${destaque.capa}`;
-                }
-                titulo_destaque.textContent = destaque.nome;
-                destaque_texto.onclick = function() {
-                    //window.location.href = '/max/item.html?tipo=' + destaque.tipo + '&id=' + destaque.id;
-                    page_out('/max/item.html?tipo=' + destaque.tipo + '&id=' + destaque.id);
-                };
-                if(destaque.tipo === 'historia') {
-                    texto_btnverhistoria.textContent = 'Ver recordação';
-                } else if(destaque.tipo === 'especial') {
-                    texto_btnverhistoria.textContent = 'Ver história';
                 }
 
                 filtro_nenhum.style.display = 'flex';
@@ -799,31 +1061,7 @@
                         //div.style.display = 'flex';
                         filtrados_tipo.push(div);
                         filtrados_participante.push(div);
-
-                        if (Object.keys(destaque).length > 0) {
-                            if (conteudo.data > destaque.data) {
-                                destaque = conteudo;
-                            }
-                        } else {
-                            destaque = conteudo;
-                        }
                     }
-                }
-
-                if (destaque.capa.includes('imgur')) {
-                    imagem_destaque.src = destaque.capa;
-                } else {
-                    imagem_destaque.src = `https://raw.githubusercontent.com/YuriGomes4/Nuri/main/assets/conteudo/${destaque.tipo}/${destaque.id}/fotos/${destaque.capa}`;
-                }
-                titulo_destaque.textContent = destaque.nome;
-                destaque_texto.onclick = function() {
-                    //window.location.href = '/max/item.html?tipo=' + destaque.tipo + '&id=' + destaque.id;
-                    page_out('/max/item.html?tipo=' + destaque.tipo + '&id=' + destaque.id);
-                };
-                if(destaque.tipo === 'historia') {
-                    texto_btnverhistoria.textContent = 'Ver recordação';
-                } else if(destaque.tipo === 'especial') {
-                    texto_btnverhistoria.textContent = 'Ver história';
                 }
 
                 filtro_nenhum.style.display = 'flex';
@@ -859,11 +1097,6 @@
                 }
 
                 close_filtro_participantes();
-
-                /*filtro_nenhum.style.display = 'flex';
-                filtro_especial.style.display = 'flex';
-                filtro_historia.style.display = 'flex';
-                filtro_participantes.style.display = 'flex';*/
             }
 
             try {
@@ -872,12 +1105,44 @@
 
                 for (var i = 0; i < div_conteudos.length; i++) {
                     var div = div_conteudos[i];
+                    var conteudo = conteudos[div.getAttribute('item-uid')];
+                    
                     if (filtro_final.includes(div)) {
                         div.style.display = 'flex';
+
+                        if (Object.keys(destaque).length > 0) {
+                            if (conteudo.data > destaque.data) {
+                                destaque = conteudo;
+                            }
+                        } else {
+                            destaque = conteudo;
+                        }
                     } else {
                         div.style.display = 'none';
                     }
                 }
+
+                if (destaque.capa.includes('imgur')) {
+                    imagem_destaque.src = destaque.capa;
+                } else {
+                    imagem_destaque.src = `https://raw.githubusercontent.com/YuriGomes4/Nuri/main/assets/conteudo/${destaque.tipo}/${destaque.id}/fotos/${destaque.capa}`;
+                }
+                titulo_destaque.textContent = destaque.nome;
+                destaque_texto.onclick = function() {
+                    //window.location.href = '/max/item.html?tipo=' + destaque.tipo + '&id=' + destaque.id;
+                    page_out('/max/item.html?tipo=' + destaque.tipo + '&id=' + destaque.id);
+                };
+
+                if(destaque.tipo === 'historia') {
+                    texto_btnverhistoria.textContent = 'Ver recordação';
+                } else if(destaque.tipo === 'especial') {
+                    texto_btnverhistoria.textContent = 'Ver história';
+                }
+
+                destaque_botao.onclick = function() {
+                    //window.location.href = '/max/item.html?tipo=' + destaque.tipo + '&id=' + destaque.id;
+                    page_out('/max/apresentacao/stories.html?tipo=' + destaque.tipo + '&id=' + destaque.id);
+                };
 
             } catch (error) {
                 console.error('Erro ao filtrar:', error);
