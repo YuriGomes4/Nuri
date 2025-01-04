@@ -6,7 +6,8 @@ class ImgurAPI {
 
     async request(endpoint, method = 'GET', body = null) {
         const headers = {
-            'Authorization': `Bearer ${this.token}`
+            'Authorization': `Bearer ${this.token}`,
+            //'Content-Type': 'multipart/form-data'
         };
 
         const response = await fetch(`${this.baseURL}${endpoint}`, {

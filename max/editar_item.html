@@ -226,7 +226,8 @@
                 var btn = document.getElementById('btn-remover');
                 btn.style.display = 'flex';
 
-                dict_imagens[newFileName] = reader.result.split(',')[1];
+                //dict_imagens[newFileName] = reader.result.split(',')[1];
+                dict_imagens[newFileName] = file;
                 imagens_local[newFileName] = 'capa';
             }
             reader.readAsDataURL(event.target.files[0]);
@@ -283,7 +284,8 @@
                 var btn = document.getElementById('pt-btn-remover-imagem-' + parte_id);
                 btn.style.display = 'flex';
 
-                dict_imagens[newFileName] = reader.result.split(',')[1];
+                //dict_imagens[newFileName] = reader.result.split(',')[1];
+                dict_imagens[newFileName] = file;
                 imagens_local[newFileName] = parte_id;
             }
             reader.readAsDataURL(event.target.files[0]);
@@ -329,7 +331,8 @@
                                 var btn = document.getElementById('pt-btn-remover-imagem-' + new_parte_id);
                                 btn.style.display = 'flex';
 
-                                dict_imagens[newFileName] = reader.result.split(',')[1];
+                                //dict_imagens[newFileName] = reader.result.split(',')[1];
+                                dict_imagens[newFileName] = file;
                                 imagens_local[newFileName] = new_parte_id;
 
                                 if (i === event.target.files.length - 1) {
@@ -1185,7 +1188,9 @@
                         //files.push({ path: `assets/conteudo/${tipo}/${item_id}/fotos/${imagem}`, content: dict_imagens[imagem], encoding: 'base64' });
                         const imgur = new ImgurAPI(getCookie('iurl'));
 
-                        await imgur.uploadImage(dict_imagens[imagem], 'base64', imagem.split('.')[0], "Imagem").then(response => {
+                        console.log('Base64:', dict_imagens[imagem]);
+
+                        await imgur.uploadImage(dict_imagens[imagem], 'file', imagem.split('.')[0], "Imagem").then(response => {
                             console.log('Imagem adicionada:', response);
                             if (imagens_local[imagem] === 'capa') {
                                 novo_item.capa = response.link;
