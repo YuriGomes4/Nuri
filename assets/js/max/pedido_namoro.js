@@ -3,15 +3,6 @@ function getCookie(name) {
     return cookieValue ? cookieValue.pop() : '';
 }
 
-function hash(string) {
-  const utf8 = new TextEncoder().encode(string);
-  return crypto.subtle.digest('SHA-256', utf8).then((hashBuffer) => {
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    const hashHex = hashArray.map(bytes => bytes.toString(16).padStart(2, '0')).join('');
-    return hashHex;
-  });
-}
-
 /*hash(getCookie("c")).then((result) => {
     hashResult = result;
     if (hashResult !== "20264a9d385ebd31243b85647adbb293b4770f7ceda7d9a64828939e3e255bc0") {
@@ -27,9 +18,14 @@ var url = window.location.origin;
 
 
 carregado = false;
-    
 
-async function loadFotos() {
+const urlParams = new URLSearchParams(window.location.search);
+const item_tipo = urlParams.get('tipo');
+const item_id = urlParams.get('id');
+    
+console.log(item_tipo, item_id);
+
+async function loadFotos(main_json) {
 
     if (!carregado) {
         carregado = true;
@@ -253,14 +249,27 @@ async function loadFotos() {
                 }
             }
         }
+
+        var secoes = document.getElementById('fullpage').querySelectorAll('.section');
+
+        for (var i = 0; i < main_json.partes.length; i++) {
+            var parte = main_json.partes[i];
+
+            if (parte.exclusivo && tipo_usuario !== 'dono') {
+                if (Object.keys(parte).includes('nao_exclusivo')) {
+                    var secao = secoes[i];
+                    var titulo = secao.querySelector('.titulo-texto');
+                    var texto = secao.querySelector('.descricao-texto');
+
+                    titulo.textContent = parte.nao_exclusivo.nome;
+                    texto.innerHTML = parte.nao_exclusivo.descricao;
+                }
+            }
+        }
     } catch (error) {
         console.error(error);
     }
 }
-
-loadFotos();
-
-
 
 function page_out (link) {
     var blackout = document.getElementById('blackout');
@@ -300,8 +309,16 @@ function page_in () {
     main.setAttribute('style', '--blur: 0px');
     fundo.style.filter = 'blur(0px)';
 }
+var tipo_usuario;
+var promiseTipoUsario = verif_usuario();
 
-loadFotos();
+if (promiseTipoUsario !== undefined) {
+    promiseTipoUsario.then((tipo) => {
+        tipo_usuario = tipo;
+        loadFotos(JSON.parse(sessionStorage.getItem(item_tipo))[item_id]);
+        console.log(tipo_usuario);
+    });
+}
 
 controle = 0;
 

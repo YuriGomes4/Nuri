@@ -86,7 +86,7 @@ body {
 #main-menu-avaliacao {
     display: flex;
     flex-direction: column;
-    box-shadow: 0 0 320px 230px #000000;
+    box-shadow: 0 0 210px 145px #000000;
     background-color: #1c1c1c;
     padding: 20px;
     border-radius: 20px;

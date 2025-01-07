@@ -350,11 +350,19 @@
                     var div = document.createElement('div');
                     div.className = 'parte-item';
                     div.onclick = function() {
+                        const urlParams = new URLSearchParams(window.location.search);
+                        urlParams.set('opt', 'avaliar');
+                        window.history.replaceState({}, '', `${window.location.pathname}?${urlParams}`);
+
                         if (Object.keys(main_json).includes('apresentacao')) {
-                            page_out(`/max/apresentacao/${main_json.apresentacao}.html?#${index}`);
+                            page_out(`/max/apresentacao/${main_json.apresentacao}.html?tipo=${tipo}&id=${id}#${index+1}`);
                         } else {
                             page_out(`/max/apresentacao/stories.html?tipo=${tipo}&id=${id}&parte=${index}`);
                         }
+
+                        setTimeout(() => {
+                            abrir_avaliacao();
+                        }, 2000);
                     };
 
                     //var imagem_parte = `https://api.github.com/repos/YuriGomes4/Nuri/contents/assets/conteudo/${tipo}/${id}/fotos/` + parte.imagem;
@@ -463,10 +471,13 @@
             window.history.replaceState({}, '', `${window.location.pathname}?${urlParams}`);
 
             if (Object.keys(main_json).includes('apresentacao')) {
-                page_out(`/max/apresentacao/${main_json.apresentacao}.html`);
+                page_out(`/max/apresentacao/${main_json.apresentacao}.html?tipo=${tipo}&id=${id}`);
             } else {
                 page_out(`/max/apresentacao/stories.html?tipo=${tipo}&id=${id}&parte=0`);
             }
+            setTimeout(() => {
+                abrir_avaliacao();
+            }, 2000);
         }
 
         function page_out (link, callback=null) {
