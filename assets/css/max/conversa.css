@@ -1,0 +1,177 @@
+/* Estilo Geral */
+body {
+
+	--tm-primaryColor: #ff4e4e;
+	--tm-secondaryColor: #681717;
+	--tm-tertiaryColor: #ffffff;
+
+	/*font-family: cursive;*/
+	margin: 0;
+	padding: 0;
+
+	background-color: rgb(0, 7, 15);
+}
+
+.fundo {
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-image: url("/assets/images/bolinhas-br.png");
+    background-size: 300px 300px; /* Set background image size to 100px x 100px */
+    background-repeat: repeat; /* Make the image repeat horizontally and vertically */
+    opacity: 100%;
+    transition: filter 0.5s;
+    filter: blur(100px);
+}
+
+/* Navbar */
+.navbar_header {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	color: white;
+	padding: 10px 0;
+	display: flex;
+	justify-content: center;
+}
+
+.navbar {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-evenly;
+	max-width: 700px;
+	width: 100%;
+}
+
+.nav_link {
+	text-decoration: none;
+	color: white;
+	font-family: 'Shantell Sans', cursive;
+	text-align: center;
+}
+
+.nav_link.active {
+	font-weight: bold;
+	/*text-decoration: overline;*/
+	color: var(--tm-primaryColor);
+	font-family: 'Kavoon', cursive;
+}
+
+.mensagem {
+	width: fit-content;
+	height: fit-content;
+	max-width: 95%;
+	display: flex;
+	flex-direction: column;
+}
+
+.mensagem-esquerda {
+	border-radius: 25px 25px 25px 10px;
+	background-color: var(--tm-secondaryColor);
+	margin-right: auto;
+}
+
+.mensagem-direita {
+	border-radius: 25px 25px 10px 25px;
+	background-color: var(--tm-primaryColor);
+	margin-left: auto;
+	justify-content: flex-end;
+}
+
+.resposta-mensagem {
+	border-radius: 15px 15px 15px 15px;
+	padding-right: 30px;
+	margin: 10px;
+	background-color: rgba(0, 0, 0, 0.226);
+	margin-bottom: 0px;
+}
+
+.texto-mensagem {
+	color: white;
+	margin: 8px 10px;
+	font-family: "Shantell Sans", cursive;
+	font-size: 15px;
+	/*word-break: break-all;*/
+	display: flex;
+}
+
+.texto-resposta-mensagem {
+	color: white;
+	margin: 6px 10px;
+	font-family: "Shantell Sans", cursive;
+	font-size: 13px;
+	/*word-break: break-all;*/
+	display: flex;
+}
+
+#main {
+	padding: 5vh 5%;
+	position: relative;
+}
+
+#titulo-texto1 {
+	color: white;
+	font-size: 40px;
+	font-family: 'Shantell Sans', cursive;
+	font-weight: bold;
+	margin: 0% 10% 0% 10%;
+	text-align: center;
+	margin-top: 50px;
+}
+
+#titulo-texto2 {
+	color: var(--tm-primaryColor);
+	font-size: 40px;
+	font-family: 'Kavoon', cursive;
+	font-weight: bold;
+	text-shadow: 0px 0 var(--tm-secondaryColor), -2px 0 var(--tm-secondaryColor), 0 2px var(--tm-secondaryColor), 0 -2px var(--tm-secondaryColor),
+	 1px 1px var(--tm-secondaryColor), -1px -1px var(--tm-secondaryColor), 1px -1px var(--tm-secondaryColor), -1px 1px var(--tm-secondaryColor);
+}
+
+#mensagens {
+	display: flex;
+	flex-direction: column;
+	gap: 5px;
+}
+
+#back-btn {
+    --tamanho: 50px;
+    height: var(--tamanho);
+    width: var(--tamanho);
+    min-width: var(--tamanho);
+    min-height: var(--tamanho);
+    background-color: #000000ad;
+    /* color: #fff; */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 25px;
+    border-radius: var(--tamanho);
+}
+
+.navbar_header {
+    z-index: 9999;
+    padding: 20px;
+    width: auto;
+}
+
+#blackout {
+    position: fixed;
+    width: 100dvw;
+    height: 100dvh;
+    background-color: #000000;
+    z-index: 9999;
+    /* filter: blur(30px); */
+    transition: opacity 1s ease;
+    opacity: 1;
+    pointer-events: none;
+}
+
+#main {
+    filter: blur(100px);
+    transition: filter 0.5s;
+    --blur: 100px;
+}
