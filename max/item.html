@@ -350,7 +350,11 @@
                     var div = document.createElement('div');
                     div.className = 'parte-item';
                     div.onclick = function() {
-                        page_out(`/max/apresentacao/stories.html?tipo=${tipo}&id=${id}&parte=${index}`);
+                        if (Object.keys(main_json).includes('apresentacao')) {
+                            page_out(`/max/apresentacao/${main_json.apresentacao}.html?#${index}`);
+                        } else {
+                            page_out(`/max/apresentacao/stories.html?tipo=${tipo}&id=${id}&parte=${index}`);
+                        }
                     };
 
                     //var imagem_parte = `https://api.github.com/repos/YuriGomes4/Nuri/contents/assets/conteudo/${tipo}/${id}/fotos/` + parte.imagem;
@@ -458,7 +462,11 @@
             urlParams.set('opt', 'avaliar');
             window.history.replaceState({}, '', `${window.location.pathname}?${urlParams}`);
 
-            page_out(`/max/apresentacao/stories.html?tipo=${tipo}&id=${id}&parte=0`);
+            if (Object.keys(main_json).includes('apresentacao')) {
+                page_out(`/max/apresentacao/${main_json.apresentacao}.html`);
+            } else {
+                page_out(`/max/apresentacao/stories.html?tipo=${tipo}&id=${id}&parte=0`);
+            }
         }
 
         function page_out (link, callback=null) {
