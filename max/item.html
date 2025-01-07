@@ -344,8 +344,10 @@
 
                 main_json.partes.forEach((parte, index) => {
                     if (parte.exclusivo && tipo_usuario !== "dono") {
-                        ocultos++;
-                        return;
+                        if (!Object.keys(parte).includes('nao_exclusivo')) {             
+                            ocultos++;
+                            return;
+                        }
                     }
                     var div = document.createElement('div');
                     div.className = 'parte-item';
@@ -394,13 +396,21 @@
                     divTextos.className = 'parte-textos';
 
                     var p = document.createElement('p');
-                    p.textContent = (index-ocultos) + 1 + '. ' + parte.nome;
+                    if (!Object.keys(parte).includes('nao_exclusivo')) {    
+                        p.textContent = (index-ocultos) + 1 + '. ' + parte.nome;
+                    } else {
+                        p.textContent = (index-ocultos) + 1 + '. ' + parte.nao_exclusivo.nome;
+                    }
                     divTextos.appendChild(p);
 
                     var divExclusivo = document.createElement('div');
                     divExclusivo.className = 'parte-exclusivo';
                     divExclusivo.innerHTML = '<i class="fa-solid fa-star"></i><p>EXCLUSIVO</p>';
-                    divExclusivo.style.display = parte.exclusivo ? 'flex' : 'none';
+                    if (!Object.keys(parte).includes('nao_exclusivo')) {    
+                        divExclusivo.style.display = parte.exclusivo ? 'flex' : 'none';
+                    } else {
+                        divExclusivo.style.display = 'none';
+                    }
                     divTextos.appendChild(divExclusivo);
 
                     div.appendChild(divTextos);

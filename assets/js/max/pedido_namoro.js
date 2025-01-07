@@ -255,14 +255,20 @@ async function loadFotos(main_json) {
         for (var i = 0; i < main_json.partes.length; i++) {
             var parte = main_json.partes[i];
 
+            var secao = secoes[i];
             if (parte.exclusivo && tipo_usuario !== 'dono') {
+                console.log(secao);
                 if (Object.keys(parte).includes('nao_exclusivo')) {
-                    var secao = secoes[i];
-                    var titulo = secao.querySelector('.titulo-texto');
-                    var texto = secao.querySelector('.descricao-texto');
+                    var titulo = secao.querySelector('#titulo-texto');
+                    var texto = secao.querySelector('#descricao-texto');
 
-                    titulo.textContent = parte.nao_exclusivo.nome;
+                    titulo.textContent = parte.nao_exclusivo.nome.toUpperCase();
                     texto.innerHTML = parte.nao_exclusivo.descricao;
+
+                    var div_fotos = secao.querySelector('#div-fotos');
+                    div_fotos.innerHTML = '';
+                } else {
+                    secao.remove();
                 }
             }
         }
